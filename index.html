@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESRIDE | Premium Mobility</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">RESRIDE</div>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#request">Engine</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#benefits">Benefits</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <div class="logo-container-main">
+                <i class="fa-solid fa-car-side logo-icon-top"></i>
+                <div class="logo-glow"></div>
+            </div>
+            <h1 class="logo-text">RESRIDE</h1>
+            <div class="welcome-container">
+                <p class="typewriter">Hello, Welcome to RESRIDE !!!</p>
+            </div>
+            <p class="tagline">Restroom + Ride. Mobility without compromise.</p>
+            <div class="hero-btns fade-in">
+                <a href="#request" class="btn glow-btn-blue">Smart Engine</a>
+                <a href="#benefits" class="btn glow-btn-outline">View Benefits</a>
+            </div>
+        </div>
+    </header>
+
+    <section id="request" class="booking-container">
+        <div class="glass-card">
+            <h2 class="section-title">Smart Dispatch Engine</h2>
+            <div class="location-engine">
+                <div class="input-box">
+                    <label><i class="fas fa-map-marker-alt"></i> Starting City</label>
+                    <select id="start-city" onchange="updateSubPlaces('start')">
+                        <option value="">Select City</option>
+                        <option value="Kolkata">Kolkata</option>
+                        <option value="Howrah">Howrah</option>
+                        <option value="Siliguri">Siliguri</option>
+                        <option value="Durgapur">Durgapur</option>
+                    </select>
+                    <label class="sub-label">Sub-place</label>
+                    <select id="start-sub" disabled><option value="">Select Area</option></select>
+                </div>
+                <div class="input-box">
+                    <label><i class="fas fa-route"></i> Destination City</label>
+                    <select id="end-city" onchange="updateSubPlaces('end')">
+                        <option value="">Select City</option>
+                        <option value="Kolkata">Kolkata</option>
+                        <option value="Siliguri">Siliguri</option>
+                    </select>
+                    <label class="sub-label">Sub-place</label>
+                    <select id="end-sub" disabled><option value="">Select Area</option></select>
+                </div>
+                <div class="input-box">
+                    <label><i class="fas fa-clock"></i> Booking Time</label>
+                    <input type="time" id="booking-time" value="07:00">
+                </div>
+            </div>
+
+            <div class="map-simulation">
+                <div class="route-line"></div>
+                <div id="vehicle-icon" class="vehicle-icon">
+                    <i class="fa-solid fa-car-side"></i>
+                </div>
+                <div class="point-start"></div>
+                <div class="point-end"></div>
+            </div>
+
+            <div class="action-grid">
+                <button class="resride-btn normal-btn" onclick="processRide('Normal')">
+                    <i class="fas fa-car"></i>
+                    <span>Standard Ride</span>
+                </button>
+                <button class="resride-btn emergency-btn" onclick="processRide('Emergency')">
+                    <i class="fas fa-biohazard"></i>
+                    <span>Emergency Ride</span>
+                </button>
+            </div>
+
+            <div class="terminal-container">
+                <div class="terminal-header">
+                    <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                    <span class="title">RESRIDE_CORE_LOG</span>
+                </div>
+                <div id="system-log" class="terminal-body">
+                    <p class="entry">> System initialized. Waiting for parameters...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="architecture" class="tech-stack">
+        <div class="container">
+            <h2 class="section-title">System Architecture</h2>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="card-glow-small"></div>
+                    <i class="fa-solid fa-list-ol tech-icon"></i>
+                    <h3>Queue (FIFO)</h3>
+                    <p>Handles standard ride requests in chronological order with maximum efficiency.</p>
+                </div>
+                <div class="tech-card highlight">
+                    <div class="card-glow-small blue-glow"></div>
+                    <i class="fa-solid fa-bolt tech-icon"></i>
+                    <h3>Priority Queue</h3>
+                    <p>The "Emergency Brain" that intercepts urgent requests and moves them to the front.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="card-glow-small"></div>
+                    <i class="fa-solid fa-link tech-icon"></i>
+                    <h3>Linked List</h3>
+                    <p>Dynamically manages active ride states and real-time vehicle allocation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="benefits" class="benefits-premium">
+        <h2 class="section-title">Elevating Your Journey</h2>
+        <div class="benefits-grid">
+            <div class="benefit-premium-card">
+                <div class="card-glow-effect"></div>
+                <div class="icon-box"><i class="fa-solid fa-toilet"></i></div>
+                <h3>Mobile Restrooms</h3>
+                <p>Equipped with state-of-the-art hygienic facilities for long-distance comfort and peace of mind.</p>
+            </div>
+            <div class="benefit-premium-card red-theme">
+                <div class="card-glow-effect red-glow"></div>
+                <div class="icon-box"><i class="fa-solid fa-truck-medical"></i></div>
+                <h3>Priority Urgency</h3>
+                <p>Proprietary Priority Queue algorithms that prioritize passengers in physical distress instantly.</p>
+            </div>
+            <div class="benefit-premium-card">
+                <div class="card-glow-effect"></div>
+                <div class="icon-box"><i class="fa-solid fa-shield-virus"></i></div>
+                <h3>Hygienic Cabins</h3>
+                <p>Hospital-grade sanitization after every journey to ensure 100% safety and human dignity.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="founder-note">
+        <p>© 2025 RESRIDE | Built by Mrinmoy Maji</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
