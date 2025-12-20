@@ -60,34 +60,38 @@
                     <select id="end-city" onchange="updateSubPlaces('end')">
                         <option value="">Select City</option>
                         <option value="Kolkata">Kolkata</option>
+                        <option value="Howrah">Howrah</option>
                         <option value="Siliguri">Siliguri</option>
+                        <option value="Durgapur">Durgapur</option>
                     </select>
                     <label class="sub-label">Sub-place</label>
                     <select id="end-sub" disabled><option value="">Select Area</option></select>
                 </div>
                 <div class="input-box">
-                    <label><i class="fas fa-clock"></i> Booking Time</label>
+                    <label><i class="fas fa-star"></i> Restroom Quality</label>
+                    <select id="washroom-quality">
+                        <option value="3">Standard (3-Star)</option>
+                        <option value="4">Deluxe (4-Star)</option>
+                        <option value="5">Luxury (5-Star)</option>
+                    </select>
+                    <label class="sub-label"><i class="fas fa-clock"></i> Booking Time</label>
                     <input type="time" id="booking-time" value="07:00">
                 </div>
             </div>
 
             <div class="map-simulation">
                 <div class="route-line"></div>
-                <div id="vehicle-icon" class="vehicle-icon">
-                    <i class="fa-solid fa-car-side"></i>
-                </div>
+                <div id="vehicle-icon" class="vehicle-icon"><i class="fa-solid fa-car-side"></i></div>
                 <div class="point-start"></div>
                 <div class="point-end"></div>
             </div>
 
             <div class="action-grid">
                 <button class="resride-btn normal-btn" onclick="processRide('Normal')">
-                    <i class="fas fa-car"></i>
-                    <span>Standard Ride</span>
+                    <i class="fas fa-car"></i><span>Standard Ride</span>
                 </button>
                 <button class="resride-btn emergency-btn" onclick="processRide('Emergency')">
-                    <i class="fas fa-biohazard"></i>
-                    <span>Emergency Ride</span>
+                    <i class="fas fa-biohazard"></i><span>Emergency Ride</span>
                 </button>
             </div>
 
@@ -97,7 +101,7 @@
                     <span class="title">RESRIDE_CORE_LOG</span>
                 </div>
                 <div id="system-log" class="terminal-body">
-                    <p class="entry">> System initialized. Waiting for parameters...</p>
+                    <p class="entry">> System initialized. Ready for West Bengal ops...</p>
                 </div>
             </div>
         </div>
@@ -108,22 +112,19 @@
             <h2 class="section-title">System Architecture</h2>
             <div class="tech-grid">
                 <div class="tech-card">
-                    <div class="card-glow-small"></div>
                     <i class="fa-solid fa-list-ol tech-icon"></i>
                     <h3>Queue (FIFO)</h3>
-                    <p>Handles standard ride requests in chronological order with maximum efficiency.</p>
+                    <p>Handles standard requests in order.</p>
                 </div>
                 <div class="tech-card highlight">
-                    <div class="card-glow-small blue-glow"></div>
                     <i class="fa-solid fa-bolt tech-icon"></i>
                     <h3>Priority Queue</h3>
-                    <p>The "Emergency Brain" that intercepts urgent requests and moves them to the front.</p>
+                    <p>Prioritizes emergency requests.</p>
                 </div>
                 <div class="tech-card">
-                    <div class="card-glow-small"></div>
                     <i class="fa-solid fa-link tech-icon"></i>
                     <h3>Linked List</h3>
-                    <p>Dynamically manages active ride states and real-time vehicle allocation.</p>
+                    <p>Dynamic vehicle state management.</p>
                 </div>
             </div>
         </div>
@@ -133,29 +134,24 @@
         <h2 class="section-title">Elevating Your Journey</h2>
         <div class="benefits-grid">
             <div class="benefit-premium-card">
-                <div class="card-glow-effect"></div>
                 <div class="icon-box"><i class="fa-solid fa-toilet"></i></div>
                 <h3>Mobile Restrooms</h3>
-                <p>Equipped with state-of-the-art hygienic facilities for long-distance comfort and peace of mind.</p>
+                <p>Premium facilities for long journeys.</p>
             </div>
             <div class="benefit-premium-card red-theme">
-                <div class="card-glow-effect red-glow"></div>
                 <div class="icon-box"><i class="fa-solid fa-truck-medical"></i></div>
                 <h3>Priority Urgency</h3>
-                <p>Proprietary Priority Queue algorithms that prioritize passengers in physical distress instantly.</p>
+                <p>Instant dispatch for physiological distress.</p>
             </div>
             <div class="benefit-premium-card">
-                <div class="card-glow-effect"></div>
                 <div class="icon-box"><i class="fa-solid fa-shield-virus"></i></div>
                 <h3>Hygienic Cabins</h3>
-                <p>Hospital-grade sanitization after every journey to ensure 100% safety and human dignity.</p>
+                <p>Hospital-grade sanitization standards.</p>
             </div>
         </div>
     </section>
 
-    <footer class="founder-note">
-        <p>© 2025 RESRIDE | Built by Mrinmoy Maji</p>
-    </footer>
+    <footer class="founder-note"><p>© 2025 RESRIDE | Built by Mrinmoy Maji</p></footer>
 
     <script src="script.js"></script>
 </body>
