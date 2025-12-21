@@ -47,9 +47,15 @@ function processRide(rideType) {
         return;
     }
 
-    // Advanced logic: Speed and Pickup Variance
-    const pickupWait = (rideType === 'Emergency') ? (Math.floor(Math.random() * 3) + 2) : (Math.floor(Math.random() * 5) + 8);
-    const surge = (rideType === 'Emergency') ? 1.5 : (Math.random() * 0.3 + 1.1).toFixed(1);
+    // --- FIX: PICKUP DIFFERENTIATION ---
+    let pickupWait = 11; // Default Standard
+    let surge = 1.2;     // Default Standard
+    
+    if (rideType === 'Emergency') {
+        pickupWait = 3;  // Emergency is much faster
+        surge = 1.5;     // Higher cost for priority
+    }
+
     let distance = (startCity === endCity) ? 12 : (distanceMatrix[startCity][endCity] || 50);
     let avgSpeed = (startCity === endCity) ? 22 : 55;
 
@@ -62,9 +68,17 @@ function processRide(rideType) {
     document.getElementById('label-start').innerText = startSub;
     document.getElementById('label-end').innerText = endSub;
 
+    // Time Math
     let [h, m] = timeInput.split(':').map(Number);
     let totalMins = (h * 60) + m;
-    const format = (mins) => `${Math.floor(mins / 60) % 24}:${(mins % 60).toString().padStart(2, '0')}`;
+    const format = (mins) => {
+        let hr = Math.floor(mins / 60) % 24;
+        let mn = mins % 60;
+        return `${hr.toString().padStart(2, '0')}:${mn.toString().padStart(2, '0')}`;
+    };
+
+    let pckTimeStr = format(totalMins + pickupWait);
+    let arrivalTimeStr = format(totalMins + pickupWait + Math.round(distance/avgSpeed*60));
 
     // Reset Animation State
     isTripActive = true;
@@ -72,13 +86,13 @@ function processRide(rideType) {
     car.classList.remove('vehicle-moving');
     car.style.transition = 'none'; 
     car.style.left = '10%';
-    car.style.color = rideType === 'Emergency' ? '#ff0055' : '#38bdf8';
+    car.style.color = (rideType === 'Emergency') ? '#ff0055' : '#38bdf8';
     
     setTimeout(() => {
         car.style.transition = 'left 4s cubic-bezier(0.45, 0.05, 0.55, 0.95)';
         car.classList.add('vehicle-moving');
 
-        // Telemetry Update simulation
+        // Telemetry Update
         setTimeout(() => {
             log.innerHTML = `<p style="color:#aaa; font-size:0.8rem;">> LIVE TELEMETRY: Lat 22.57 / Lon 88.36 | Speed: ${avgSpeed}km/h | G-Force: 0.1g</p>` + log.innerHTML;
         }, 2000);
@@ -102,7 +116,7 @@ function processRide(rideType) {
     log.innerHTML = `<div style="margin-bottom:20px; border-left:3px solid ${rideType === 'Emergency' ? '#ff0055' : '#38bdf8'}; padding-left:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px;">
         <p style="color:#fff; font-weight:bold;">> ${rideType.toUpperCase()} ALLOCATED (Surge ${surge}x)</p>
         <p style="font-size:0.75rem; color:#aaa;">✨ Sanitized: ${sani} mins ago | Sterile 🚽</p>
-        <p style="color: #0ff;">> 🚗 PICKUP ETA: ${pickupWait} MINS (${format(totalMins + pickupWait)}) | 🏁 REACH: ${format(totalMins + pickupWait + Math.round(distance/avgSpeed*60))}</p>
+        <p style="color: #0ff;">> 🚗 PICKUP ETA: ${pickupWait} MINS (${pckTimeStr}) | 🏁 REACH: ${arrivalTimeStr}</p>
     </div>` + log.innerHTML;
 }
 
@@ -118,5 +132,5 @@ function cancelRide() {
     const penalty = Math.round(currentFare * 0.1);
     wallet -= penalty;
     document.getElementById('wallet-balance').innerHTML = `<i class="fas fa-wallet"></i> ₹${wallet}`;
-    log.innerHTML = `<div style="margin-top:10px; padding:10px; border:1px solid #ff5f56; background: rgba(255, 95, 86, 0.1);"><p style="color:#ff5f56; font-weight:bold;">❌ CANCELLED</p><p>10% Fee Deducted: ₹${penalty}</p></div>` + log.innerHTML;
+    log.innerHTML = `<div style="margin-top:10px; padding:10px; border: 1px solid #ff5f56; background: rgba(255, 95, 86, 0.1);"><p style="color:#ff5f56; font-weight:bold;">❌ CANCELLED</p><p>10% Fee Deducted: ₹${penalty}</p></div>` + log.innerHTML;
 }
