@@ -17,7 +17,7 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 .nav-links a { text-decoration: none; color: white; transition: 0.3s; opacity: 0.7; font-size: 0.9rem; }
 .nav-links a:hover { opacity: 1; color: var(--neon-blue); }
 
-/* HERO SECTION - ORIGINAL GRAPHICS */
+/* HERO */
 .hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
 .logo-container-main { position: relative; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
 .logo-icon-top { font-size: 5rem; color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue); }
@@ -72,7 +72,7 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
 .terminal-body { background: #000; color: #27c93f; height: 250px; padding: 20px; font-family: 'Courier New', monospace; overflow-y: auto; font-size: 0.95rem; }
 
-/* SYSTEM ARCHITECTURE & BENEFITS - FULLY RESTORED */
+/* SYSTEM ARCHITECTURE & BENEFITS */
 .tech-stack, .benefits-premium { padding: 120px 20px; text-align: center; background: rgba(0,0,0,0.2); }
 .tech-grid, .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 60px; max-width: 1200px; margin-inline: auto; }
 .tech-card, .benefit-premium-card { position: relative; background: var(--glass); border: 1px solid var(--border); padding: 50px; border-radius: 25px; transition: 0.5s; overflow: hidden; }
