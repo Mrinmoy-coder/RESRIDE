@@ -80,18 +80,23 @@
             </div>
 
             <div class="map-simulation">
+                <span id="label-start" style="position:absolute; left:10%; bottom:5px; font-size:0.7rem; color:#38bdf8; font-weight:bold; z-index:5;"></span>
                 <div class="route-line"></div>
                 <div id="vehicle-icon" class="vehicle-icon"><i class="fa-solid fa-car-side"></i></div>
                 <div class="point-start"></div>
                 <div class="point-end"></div>
+                <span id="label-end" style="position:absolute; right:10%; bottom:5px; font-size:0.7rem; color:#fff; font-weight:bold; z-index:5;"></span>
             </div>
 
-            <div class="action-grid">
+            <div class="action-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
                 <button class="resride-btn normal-btn" onclick="processRide('Normal')">
                     <i class="fas fa-car"></i><span>Standard Ride</span>
                 </button>
                 <button class="resride-btn emergency-btn" onclick="processRide('Emergency')">
                     <i class="fas fa-biohazard"></i><span>Emergency Ride</span>
+                </button>
+                <button class="resride-btn cancel-btn" onclick="cancelRide()" style="border-color: #64748b; color: #94a3b8;">
+                    <i class="fas fa-times-circle"></i><span>Cancel Ride</span>
                 </button>
             </div>
 
@@ -112,16 +117,19 @@
             <h2 class="section-title">System Architecture</h2>
             <div class="tech-grid">
                 <div class="tech-card">
+                    <div class="card-glow-small"></div>
                     <i class="fa-solid fa-list-ol tech-icon"></i>
                     <h3>Queue (FIFO)</h3>
                     <p>Handles standard requests in order.</p>
                 </div>
                 <div class="tech-card highlight">
+                    <div class="card-glow-small"></div>
                     <i class="fa-solid fa-bolt tech-icon"></i>
                     <h3>Priority Queue</h3>
                     <p>Prioritizes emergency requests.</p>
                 </div>
                 <div class="tech-card">
+                    <div class="card-glow-small"></div>
                     <i class="fa-solid fa-link tech-icon"></i>
                     <h3>Linked List</h3>
                     <p>Dynamic vehicle state management.</p>
@@ -134,11 +142,13 @@
         <h2 class="section-title">Elevating Your Journey</h2>
         <div class="benefits-grid">
             <div class="benefit-premium-card">
+                <div class="card-glow-effect"></div>
                 <div class="icon-box"><i class="fa-solid fa-toilet"></i></div>
                 <h3>Mobile Restrooms</h3>
                 <p>Premium facilities for long journeys.</p>
             </div>
             <div class="benefit-premium-card red-theme">
+                <div class="card-glow-effect red-glow"></div>
                 <div class="icon-box"><i class="fa-solid fa-truck-medical"></i></div>
                 <h3>Priority Urgency</h3>
                 <p>Instant dispatch for physiological distress.</p>
