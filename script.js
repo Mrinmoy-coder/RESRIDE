@@ -15,7 +15,7 @@ const subPlaces = {
 let wallet = 5000;
 let currentFare = 0;
 let isTripActive = false;
-let receiptTimer;
+let receiptTimer; // Unified variable to match GitHub screenshot error fix
 
 function updateSubPlaces(type) {
     const citySelect = document.getElementById(`${type}-city`);
@@ -47,14 +47,9 @@ function processRide(rideType) {
         return;
     }
 
-    // --- FIX: PICKUP DIFFERENTIATION ---
-    let pickupWait = 11; // Default Standard
-    let surge = 1.2;     // Default Standard
-    
-    if (rideType === 'Emergency') {
-        pickupWait = 3;  // Emergency is much faster
-        surge = 1.5;     // Higher cost for priority
-    }
+    // --- PICKUP DIFFERENTIATION LOGIC ---
+    let pickupWait = (rideType === 'Emergency') ? 3 : 11;
+    let surge = (rideType === 'Emergency') ? 1.5 : 1.2;
 
     let distance = (startCity === endCity) ? 12 : (distanceMatrix[startCity][endCity] || 50);
     let avgSpeed = (startCity === endCity) ? 22 : 55;
@@ -68,19 +63,13 @@ function processRide(rideType) {
     document.getElementById('label-start').innerText = startSub;
     document.getElementById('label-end').innerText = endSub;
 
-    // Time Math
     let [h, m] = timeInput.split(':').map(Number);
     let totalMins = (h * 60) + m;
-    const format = (mins) => {
-        let hr = Math.floor(mins / 60) % 24;
-        let mn = mins % 60;
-        return `${hr.toString().padStart(2, '0')}:${mn.toString().padStart(2, '0')}`;
-    };
+    const format = (mins) => `${Math.floor(mins / 60) % 24}:${(mins % 60).toString().padStart(2, '0')}`;
 
-    let pckTimeStr = format(totalMins + pickupWait);
-    let arrivalTimeStr = format(totalMins + pickupWait + Math.round(distance/avgSpeed*60));
+    let pickupStr = format(totalMins + pickupWait);
+    let reachStr = format(totalMins + pickupWait + Math.round(distance/avgSpeed*60));
 
-    // Reset Animation State
     isTripActive = true;
     clearTimeout(receiptTimer);
     car.classList.remove('vehicle-moving');
@@ -92,7 +81,7 @@ function processRide(rideType) {
         car.style.transition = 'left 4s cubic-bezier(0.45, 0.05, 0.55, 0.95)';
         car.classList.add('vehicle-moving');
 
-        // Telemetry Update
+        // Telemetry Updates
         setTimeout(() => {
             log.innerHTML = `<p style="color:#aaa; font-size:0.8rem;">> LIVE TELEMETRY: Lat 22.57 / Lon 88.36 | Speed: ${avgSpeed}km/h | G-Force: 0.1g</p>` + log.innerHTML;
         }, 2000);
@@ -105,7 +94,7 @@ function processRide(rideType) {
                 <div style="margin-top:10px; padding: 10px; border: 1px dashed #27c93f; background: rgba(39, 201, 63, 0.1);">
                     <p style="color:#27c93f; font-weight:bold;">🏁 COMPLETE | Trip Summary</p>
                     <p>Fare Paid: ₹${currentFare} | Carbon Saved: ${(distance*0.1).toFixed(1)}kg</p>
-                    <p style="color:#fff; margin-top:5px;">Rate trip: <button onclick="alert('Feedback Received!')" style="background:none; border:none; color:#ffd700; cursor:pointer;">★ ★ ★ ★ ★</button></p>
+                    <p style="color:#fff; margin-top:5px;">Rate Trip: <button onclick="alert('Thanks!')" style="background:none; border:none; color:#ffd700; cursor:pointer;">★ ★ ★ ★ ★</button></p>
                 </div>` + log.innerHTML;
                 isTripActive = false;
             }
@@ -116,7 +105,7 @@ function processRide(rideType) {
     log.innerHTML = `<div style="margin-bottom:20px; border-left:3px solid ${rideType === 'Emergency' ? '#ff0055' : '#38bdf8'}; padding-left:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px;">
         <p style="color:#fff; font-weight:bold;">> ${rideType.toUpperCase()} ALLOCATED (Surge ${surge}x)</p>
         <p style="font-size:0.75rem; color:#aaa;">✨ Sanitized: ${sani} mins ago | Sterile 🚽</p>
-        <p style="color: #0ff;">> 🚗 PICKUP ETA: ${pickupWait} MINS (${pckTimeStr}) | 🏁 REACH: ${arrivalTimeStr}</p>
+        <p style="color: #0ff;">> 🚗 PICKUP ETA: ${pickupWait} MINS (${pickupStr}) | 🏁 REACH: ${reachStr}</p>
     </div>` + log.innerHTML;
 }
 
