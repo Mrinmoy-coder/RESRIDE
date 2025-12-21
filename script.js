@@ -43,14 +43,13 @@ function processRide(rideType) {
     const car = document.getElementById('vehicle-icon');
 
     if (!startSub || !endSub) {
-        alert("Please select both pickup and destination.");
+        alert("Please complete selection.");
         return;
     }
 
-    // UPDATED PICKUP TIME LOGIC
+    // Advanced logic: Speed and Pickup Variance
     const pickupWait = (rideType === 'Emergency') ? (Math.floor(Math.random() * 3) + 2) : (Math.floor(Math.random() * 5) + 8);
     const surge = (rideType === 'Emergency') ? 1.5 : (Math.random() * 0.3 + 1.1).toFixed(1);
-    
     let distance = (startCity === endCity) ? 12 : (distanceMatrix[startCity][endCity] || 50);
     let avgSpeed = (startCity === endCity) ? 22 : 55;
 
@@ -67,21 +66,24 @@ function processRide(rideType) {
     let totalMins = (h * 60) + m;
     const format = (mins) => `${Math.floor(mins / 60) % 24}:${(mins % 60).toString().padStart(2, '0')}`;
 
+    // Reset Animation State
     isTripActive = true;
     clearTimeout(receiptTimer);
     car.classList.remove('vehicle-moving');
-    car.style.transition = 'none'; car.style.left = '10%';
+    car.style.transition = 'none'; 
+    car.style.left = '10%';
     car.style.color = rideType === 'Emergency' ? '#ff0055' : '#38bdf8';
     
     setTimeout(() => {
         car.style.transition = 'left 4s cubic-bezier(0.45, 0.05, 0.55, 0.95)';
         car.classList.add('vehicle-moving');
 
+        // Telemetry Update simulation
         setTimeout(() => {
             log.innerHTML = `<p style="color:#aaa; font-size:0.8rem;">> LIVE TELEMETRY: Lat 22.57 / Lon 88.36 | Speed: ${avgSpeed}km/h | G-Force: 0.1g</p>` + log.innerHTML;
         }, 2000);
 
-        autoReceiptTimer = setTimeout(() => {
+        receiptTimer = setTimeout(() => {
             if(isTripActive) {
                 wallet -= currentFare;
                 document.getElementById('wallet-balance').innerHTML = `<i class="fas fa-wallet"></i> ₹${wallet}`;
@@ -89,6 +91,7 @@ function processRide(rideType) {
                 <div style="margin-top:10px; padding: 10px; border: 1px dashed #27c93f; background: rgba(39, 201, 63, 0.1);">
                     <p style="color:#27c93f; font-weight:bold;">🏁 COMPLETE | Trip Summary</p>
                     <p>Fare Paid: ₹${currentFare} | Carbon Saved: ${(distance*0.1).toFixed(1)}kg</p>
+                    <p style="color:#fff; margin-top:5px;">Rate trip: <button onclick="alert('Feedback Received!')" style="background:none; border:none; color:#ffd700; cursor:pointer;">★ ★ ★ ★ ★</button></p>
                 </div>` + log.innerHTML;
                 isTripActive = false;
             }
@@ -107,11 +110,13 @@ function cancelRide() {
     const log = document.getElementById('system-log');
     const car = document.getElementById('vehicle-icon');
     if (!isTripActive) { alert("No active trip."); return; }
-    isTripActive = false; clearTimeout(autoReceiptTimer);
+    isTripActive = false; 
+    clearTimeout(receiptTimer);
     const pos = window.getComputedStyle(car).getPropertyValue('left');
-    car.style.transition = 'none'; car.style.left = pos;
+    car.style.transition = 'none'; 
+    car.style.left = pos;
     const penalty = Math.round(currentFare * 0.1);
     wallet -= penalty;
     document.getElementById('wallet-balance').innerHTML = `<i class="fas fa-wallet"></i> ₹${wallet}`;
-    log.innerHTML = `<div style="margin-top:10px; padding:10px; border:1px solid #ff5f56; background:rgba(255, 95, 86, 0.1);"><p style="color:#ff5f56; font-weight:bold;">❌ CANCELLED</p><p>10% Fee Deducted: ₹${penalty}</p></div>` + log.innerHTML;
+    log.innerHTML = `<div style="margin-top:10px; padding:10px; border:1px solid #ff5f56; background: rgba(255, 95, 86, 0.1);"><p style="color:#ff5f56; font-weight:bold;">❌ CANCELLED</p><p>10% Fee Deducted: ₹${penalty}</p></div>` + log.innerHTML;
 }
