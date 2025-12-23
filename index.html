@@ -12,8 +12,13 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">RESRIDE</div>
-            <div id="wallet-balance" style="color: #38bdf8; font-family: monospace; font-weight: bold; border: 1px solid rgba(56, 189, 248, 0.3); padding: 5px 15px; border-radius: 20px;">
-                <i class="fas fa-wallet"></i> ₹5000
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div id="wallet-balance" style="color: #38bdf8; font-family: monospace; font-weight: bold; border: 1px solid rgba(56, 189, 248, 0.3); padding: 5px 15px; border-radius: 20px;">
+                    <i class="fas fa-wallet"></i> ₹5000
+                </div>
+                <button onclick="rechargeWallet()" style="background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; color: #38bdf8; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
+                </button>
             </div>
             <ul class="nav-links">
                 <li><a href="#">Home</a></li>
@@ -112,6 +117,20 @@
                     <p class="entry">> System initialized. Ready for West Bengal ops...</p>
                 </div>
             </div>
+
+            <div id="history-section" style="margin-top: 30px; border: 1px solid var(--border); border-radius: 15px; background: rgba(0,0,0,0.3); padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3 style="color: var(--neon-blue); font-size: 0.9rem; text-transform: uppercase;">
+                        <i class="fas fa-history"></i> Recent Activity
+                    </h3>
+                    <button onclick="clearHistory()" style="background: none; border: none; color: #ff5f56; cursor: pointer; font-size: 0.8rem; opacity: 0.7;" title="Clear History">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+                <div id="history-list" style="max-height: 150px; overflow-y: auto; font-family: monospace; font-size: 0.75rem;">
+                    <p style="color: #666; font-style: italic;">No records found.</p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -119,21 +138,9 @@
         <div class="container">
             <h2 class="section-title">System Architecture</h2>
             <div class="tech-grid">
-                <div class="tech-card">
-                    <i class="fa-solid fa-list-ol tech-icon"></i>
-                    <h3>Queue (FIFO)</h3>
-                    <p>Handles standard requests in order.</p>
-                </div>
-                <div class="tech-card highlight">
-                    <i class="fa-solid fa-bolt tech-icon"></i>
-                    <h3>Priority Queue</h3>
-                    <p>Prioritizes emergency requests.</p>
-                </div>
-                <div class="tech-card">
-                    <i class="fa-solid fa-link tech-icon"></i>
-                    <h3>Linked List</h3>
-                    <p>Dynamic vehicle state management.</p>
-                </div>
+                <div class="tech-card"><i class="fa-solid fa-list-ol tech-icon"></i><h3>Queue (FIFO)</h3><p>Handles standard requests in order.</p></div>
+                <div class="tech-card highlight"><i class="fa-solid fa-bolt tech-icon"></i><h3>Priority Queue</h3><p>Prioritizes emergency requests.</p></div>
+                <div class="tech-card"><i class="fa-solid fa-link tech-icon"></i><h3>Linked List</h3><p>Dynamic vehicle state management.</p></div>
             </div>
         </div>
     </section>
@@ -141,26 +148,13 @@
     <section id="benefits" class="benefits-premium">
         <h2 class="section-title">Elevating Your Journey</h2>
         <div class="benefits-grid">
-            <div class="benefit-premium-card">
-                <div class="icon-box"><i class="fa-solid fa-toilet"></i></div>
-                <h3>Mobile Restrooms</h3>
-                <p>Premium facilities for long journeys.</p>
-            </div>
-            <div class="benefit-premium-card red-theme">
-                <div class="icon-box"><i class="fa-solid fa-truck-medical"></i></div>
-                <h3>Priority Urgency</h3>
-                <p>Instant dispatch for physiological distress.</p>
-            </div>
-            <div class="benefit-premium-card">
-                <div class="icon-box"><i class="fa-solid fa-shield-virus"></i></div>
-                <h3>Hygienic Cabins</h3>
-                <p>Hospital-grade sanitization standards.</p>
-            </div>
+            <div class="benefit-premium-card"><div class="icon-box"><i class="fa-solid fa-toilet"></i></div><h3>Mobile Restrooms</h3><p>Premium facilities for long journeys.</p></div>
+            <div class="benefit-premium-card red-theme"><div class="icon-box"><i class="fa-solid fa-truck-medical"></i></div><h3>Priority Urgency</h3><p>Instant dispatch for physiological distress.</p></div>
+            <div class="benefit-premium-card"><div class="icon-box"><i class="fa-solid fa-shield-virus"></i></div><h3>Hygienic Cabins</h3><p>Hospital-grade sanitization standards.</p></div>
         </div>
     </section>
 
     <footer class="founder-note"><p>© 2025 RESRIDE | Built by Mrinmoy Maji</p></footer>
-
     <script src="script.js"></script>
 </body>
 </html>
