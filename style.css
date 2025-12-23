@@ -20,7 +20,7 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 /* HERO */
 .hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
 .logo-container-main { position: relative; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
-.logo-icon-top { font-size: 5rem; color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue); }
+.logo-icon-top { font-size: 5rem; color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue); }
 .logo-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; background: var(--neon-blue); filter: blur(60px); opacity: 0.4; z-index: -1; }
 .logo-text { font-size: 6.5rem; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 25px rgba(56, 189, 248, 0.8); letter-spacing: 8px; }
 
@@ -54,8 +54,6 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .route-line { position: absolute; height: 2px; width: 80%; background: rgba(255,255,255,0.1); left: 10%; }
 .vehicle-icon { position: absolute; left: 10%; font-size: 2rem; color: var(--neon-blue); transition: left 4s cubic-bezier(0.45, 0.05, 0.55, 0.95); z-index: 10; text-shadow: 0 0 10px var(--neon-blue); }
 .vehicle-moving { left: 85% !important; }
-.point-start { position: absolute; left: 10%; width: 12px; height: 12px; border-radius: 50%; background: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue); }
-.point-end { position: absolute; right: 10%; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 0 15px #fff; }
 
 /* ACTION BUTTONS */
 .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
@@ -72,13 +70,12 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
 .terminal-body { background: #000; color: #27c93f; height: 250px; padding: 20px; font-family: 'Courier New', monospace; overflow-y: auto; font-size: 0.95rem; }
 
-/* SYSTEM ARCHITECTURE & BENEFITS */
+/* ARCHITECTURE & BENEFITS - FULLY PRESERVED */
 .tech-stack, .benefits-premium { padding: 120px 20px; text-align: center; background: rgba(0,0,0,0.2); }
 .tech-grid, .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 60px; max-width: 1200px; margin-inline: auto; }
 .tech-card, .benefit-premium-card { position: relative; background: var(--glass); border: 1px solid var(--border); padding: 50px; border-radius: 25px; transition: 0.5s; overflow: hidden; }
 .tech-card:hover, .benefit-premium-card:hover { transform: translateY(-15px) scale(1.05); border-color: var(--neon-blue); box-shadow: 0 10px 40px rgba(56, 189, 248, 0.1); }
 .tech-icon, .icon-box { font-size: 3.5rem; color: var(--neon-blue); margin-bottom: 25px; display: block; }
-.tech-card.highlight { border: 2px solid var(--neon-blue); }
 
 .benefit-premium-card.red-theme:hover { border-color: var(--neon-red); box-shadow: 0 15px 50px rgba(255, 0, 85, 0.15); }
 .benefit-premium-card.red-theme i { color: var(--neon-red); }
