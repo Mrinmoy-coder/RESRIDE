@@ -76,7 +76,19 @@ function processRide(rideType) {
         car.classList.add('vehicle-moving');
         autoReceiptTimer = setTimeout(() => {
             if(isRideMoving) {
-                log.innerHTML = `<div style="margin-top:10px; padding:10px; border:1px dashed #27c93f; background:rgba(39, 201, 63, 0.1);"><p style="color:#27c93f; font-weight:bold;">🏁 COMPLETE: ${vClass}</p><p>Total Paid: ₹${activeFare}</p></div>` + log.innerHTML;
+                log.innerHTML = `
+                <div style="margin-top:10px; padding:10px; border:1px dashed #27c93f; background:rgba(39, 201, 63, 0.1);">
+                    <p style="color:#27c93f; font-weight:bold;">🏁 COMPLETE: ${vClass}</p>
+                    <p>Total Paid: ₹${activeFare}</p>
+                    <p style="color:#fff; margin-top:5px;">How was your experience?</p>
+                    <div style="margin-top:5px;">
+                        <button onclick="submitRating(5)" style="background:none; border:none; color:#ffd700; cursor:pointer; font-size:1.2rem;">★</button>
+                        <button onclick="submitRating(4)" style="background:none; border:none; color:#ffd700; cursor:pointer; font-size:1.2rem;">★</button>
+                        <button onclick="submitRating(3)" style="background:none; border:none; color:#ffd700; cursor:pointer; font-size:1.2rem;">★</button>
+                        <button onclick="submitRating(2)" style="background:none; border:none; color:#ffd700; cursor:pointer; font-size:1.2rem;">★</button>
+                        <button onclick="submitRating(1)" style="background:none; border:none; color:#ffd700; cursor:pointer; font-size:1.2rem;">★</button>
+                    </div>
+                </div>` + log.innerHTML;
                 isRideMoving = false;
             }
         }, 4000);
@@ -96,4 +108,9 @@ function cancelRide() {
     car.style.transition = 'none'; car.style.left = pos;
     const penalty = Math.round(activeFare * 0.1);
     log.innerHTML = `<div style="margin-top:10px; padding:10px; border:1px solid #ff5f56; background:rgba(255,95,86,0.1);"><p style="color:#ff5f56; font-weight:bold;">❌ CANCELLED</p><p>10% Fee Deducted: ₹${penalty}</p></div>` + log.innerHTML;
+}
+
+function submitRating(stars) {
+    const log = document.getElementById('system-log');
+    log.innerHTML = `<p style="color:#38bdf8; font-style:italic; margin-bottom:10px;">> Feedback received: ${stars}-Star rating submitted. Thank you for riding with RESRIDE!</p>` + log.innerHTML;
 }
