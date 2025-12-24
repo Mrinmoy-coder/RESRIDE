@@ -25,10 +25,13 @@ function updateSubPlaces(type) {
         subSelect.disabled = false;
         subPlaces[selectedCity].forEach(place => {
             let opt = document.createElement("option");
-            opt.value = place; opt.innerHTML = place;
+            opt.value = place; 
+            opt.innerHTML = place;
             subSelect.appendChild(opt);
         });
-    } else { subSelect.disabled = true; }
+    } else { 
+        subSelect.disabled = true; 
+    }
 }
 
 function processRide(rideType) {
@@ -68,8 +71,9 @@ function processRide(rideType) {
     isRideMoving = true;
     clearTimeout(autoReceiptTimer);
     car.classList.remove('vehicle-moving');
-    car.style.transition = 'none'; car.style.left = '10%';
-    car.style.color = rideType === 'Emergency' ? '#ff0055' : '#38bdf8';
+    car.style.transition = 'none'; 
+    car.style.left = '10%';
+    car.style.color = (rideType === 'Emergency') ? '#ff0055' : '#38bdf8';
     
     setTimeout(() => {
         car.style.transition = 'left 4s cubic-bezier(0.45, 0.05, 0.55, 0.95)';
@@ -102,10 +106,15 @@ function processRide(rideType) {
 function cancelRide() {
     const log = document.getElementById('system-log');
     const car = document.getElementById('vehicle-icon');
-    if (!isRideMoving) { alert("No active ride."); return; }
-    isRideMoving = false; clearTimeout(autoReceiptTimer);
+    if (!isRideMoving) { 
+        alert("No active ride."); 
+        return; 
+    }
+    isRideMoving = false; 
+    clearTimeout(autoReceiptTimer);
     const pos = window.getComputedStyle(car).getPropertyValue('left');
-    car.style.transition = 'none'; car.style.left = pos;
+    car.style.transition = 'none'; 
+    car.style.left = pos;
     const penalty = Math.round(activeFare * 0.1);
     log.innerHTML = `<div style="margin-top:10px; padding:10px; border:1px solid #ff5f56; background:rgba(255,95,86,0.1);"><p style="color:#ff5f56; font-weight:bold;">❌ CANCELLED</p><p>10% Fee Deducted: ₹${penalty}</p></div>` + log.innerHTML;
 }
