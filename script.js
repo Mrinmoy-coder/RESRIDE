@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function updateWalletUI() {
     const balEl = document.getElementById('bal-amount');
-    const ptsEl = document.getElementById('eco-pts');
+    const ptsEl = document.getElementById('eco-pts'); // This was fixed to eco-pts from pts-val
     if (balEl) balEl.innerText = wallet;
     if (ptsEl) ptsEl.innerText = points;
 }
