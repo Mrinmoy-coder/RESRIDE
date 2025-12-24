@@ -20,13 +20,14 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 .logo-icon-top { font-size: 5rem; color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue); }
 .logo-text { font-size: 6.5rem; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 25px rgba(56, 189, 248, 0.8); letter-spacing: 8px; }
 
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
 .typewriter { font-size: 1.8rem; border-right: .15em solid var(--neon-blue); white-space: nowrap; overflow: hidden; animation: typing 3.5s steps(30, end), blink-caret .75s step-end infinite; font-family: 'Courier New', monospace; }
 @keyframes typing { from { width: 0 } to { width: 100% } }
 @keyframes blink-caret { 50% { border-color: transparent } }
 
-/* HERO BUTTONS */
-.hero-btns { display: flex; gap: 20px; justify-content: center; margin-top: 30px; opacity: 0; animation: fadeIn 2s forwards; animation-delay: 3.5s; }
-@keyframes fadeIn { to { opacity: 1; } }
+/* HERO BUTTONS - PRESERVED GLOW */
+.hero-btns { display: flex; gap: 20px; justify-content: center; margin-top: 30px; }
 .btn { padding: 15px 35px; border-radius: 12px; font-weight: bold; text-decoration: none; transition: 0.4s; }
 .glow-btn-blue { background: rgba(56, 189, 248, 0.2); color: var(--neon-blue); border: 1px solid var(--neon-blue); }
 .glow-btn-blue:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); transform: translateY(-5px); }
@@ -41,9 +42,9 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 .vehicle-icon { position: absolute; left: 10%; font-size: 2rem; color: var(--neon-blue); z-index: 10; text-shadow: 0 0 10px var(--neon-blue); }
 .vehicle-moving { left: 85% !important; }
 
-/* ACTION BUTTONS - ORIGINAL STYLE */
+/* ACTION BUTTONS - ORIGINAL PREMIUM STYLE */
 .resride-btn { padding: 25px; border-radius: 20px; border: 1px solid var(--border); background: var(--glass); color: white; cursor: pointer; transition: 0.4s; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.resride-btn:hover { transform: translateY(-8px) scale(1.02); }
+.resride-btn:active { transform: scale(0.95); }
 .resride-btn.normal-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); }
 
 /* ARCHITECTURE & BENEFITS - EXACT RESTORED SCALE-UP */
