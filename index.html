@@ -1,169 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RESRIDE | Premium Mobility</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+:root {
+    --neon-blue: #38bdf8;
+    --neon-red: #ff0055;
+    --dark-navy: #0f172a;
+    --glass: rgba(255, 255, 255, 0.05);
+    --border: rgba(255, 255, 255, 0.1);
+}
 
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">RESRIDE</div>
-            <ul class="nav-links">
-                <li><a href="#">Home</a></li>
-                <li><a href="#request">Engine</a></li>
-                <li><a href="#architecture">Architecture</a></li>
-                <li><a href="#benefits">Benefits</a></li>
-            </ul>
-        </div>
-    </nav>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x: hidden; }
 
-    <header class="hero">
-        <div class="hero-content">
-            <div class="logo-container-main">
-                <i class="fa-solid fa-car-side logo-icon-top"></i>
-                <div class="logo-glow"></div>
-            </div>
-            <h1 class="logo-text">RESRIDE</h1>
-            <div class="welcome-container">
-                <p class="typewriter">Hello, Welcome to RESRIDE !!!</p>
-            </div>
-            <p class="tagline">Restroom + Ride. Mobility without compromise.</p>
-            <div class="hero-btns fade-in">
-                <a href="#request" class="btn glow-btn-blue">Smart Engine</a>
-                <a href="#benefits" class="btn glow-btn-outline">View Benefits</a>
-            </div>
-        </div>
-    </header>
+/* NAVBAR */
+.navbar { position: fixed; top: 0; width: 100%; height: 70px; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid var(--border); display: flex; align-items: center; }
+.nav-container { width: 90%; max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; }
+.nav-logo { font-weight: 900; color: var(--neon-blue); letter-spacing: 2px; }
+.nav-links { display: flex; list-style: none; gap: 30px; }
+.nav-links a { text-decoration: none; color: white; transition: 0.3s; opacity: 0.7; font-size: 0.9rem; }
+.nav-links a:hover { opacity: 1; color: var(--neon-blue); }
 
-    <section id="request" class="booking-container">
-        <div class="glass-card">
-            <h2 class="section-title">Smart Dispatch Engine</h2>
-            <div class="location-engine">
-                <div class="input-box">
-                    <label><i class="fas fa-map-marker-alt"></i> Starting City</label>
-                    <select id="start-city" onchange="updateSubPlaces('start')">
-                        <option value="">Select City</option>
-                        <option value="Kolkata">Kolkata</option>
-                        <option value="Howrah">Howrah</option>
-                        <option value="Siliguri">Siliguri</option>
-                        <option value="Durgapur">Durgapur</option>
-                    </select>
-                    <label class="sub-label">Sub-place</label>
-                    <select id="start-sub" disabled><option value="">Select Area</option></select>
-                </div>
-                <div class="input-box">
-                    <label><i class="fas fa-route"></i> Destination City</label>
-                    <select id="end-city" onchange="updateSubPlaces('end')">
-                        <option value="">Select City</option>
-                        <option value="Kolkata">Kolkata</option>
-                        <option value="Howrah">Howrah</option>
-                        <option value="Siliguri">Siliguri</option>
-                        <option value="Durgapur">Durgapur</option>
-                    </select>
-                    <label class="sub-label">Sub-place</label>
-                    <select id="end-sub" disabled><option value="">Select Area</option></select>
-                </div>
-                <div class="input-box">
-                    <label><i class="fas fa-star"></i> Restroom Quality</label>
-                    <select id="washroom-quality">
-                        <option value="3">Standard (3-Star)</option>
-                        <option value="4">Deluxe (4-Star)</option>
-                        <option value="5">Luxury (5-Star)</option>
-                    </select>
-                    <label class="sub-label"><i class="fas fa-clock"></i> Booking Time</label>
-                    <input type="time" id="booking-time" value="07:00">
-                </div>
-            </div>
+/* HERO SECTION */
+.hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
+.logo-container-main { position: relative; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
+.logo-icon-top { font-size: 5rem; color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue); }
+.logo-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; background: var(--neon-blue); filter: blur(60px); opacity: 0.4; z-index: -1; }
+.logo-text { font-size: 6.5rem; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 25px rgba(56, 189, 248, 0.8); letter-spacing: 8px; }
 
-            <div class="map-simulation">
-                <span id="label-start" style="position:absolute; left:10%; bottom:5px; font-size:0.7rem; color:#38bdf8; font-weight:bold; z-index:5;"></span>
-                <div class="route-line"></div>
-                <div id="vehicle-icon" class="vehicle-icon"><i class="fa-solid fa-car-side"></i></div>
-                <div class="point-start"></div>
-                <div class="point-end"></div>
-                <span id="label-end" style="position:absolute; right:10%; bottom:5px; font-size:0.7rem; color:#fff; font-weight:bold; z-index:5;"></span>
-            </div>
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-            <div class="action-grid">
-                <button class="resride-btn normal-btn" onclick="processRide('Normal')">
-                    <i class="fas fa-car"></i><span>Standard Ride</span>
-                </button>
-                <button class="resride-btn emergency-btn" onclick="processRide('Emergency')">
-                    <i class="fas fa-biohazard"></i><span>Emergency Ride</span>
-                </button>
-                <button class="resride-btn cancel-btn" onclick="cancelRide()" style="border-color: #64748b; color: #94a3b8;">
-                    <i class="fas fa-times-circle"></i><span>Cancel Ride</span>
-                </button>
-            </div>
+/* TYPEWRITER */
+.welcome-container { display: flex; justify-content: center; margin: 10px 0; }
+.typewriter { font-size: 1.8rem; border-right: .15em solid var(--neon-blue); white-space: nowrap; overflow: hidden; animation: typing 3.5s steps(30, end), blink-caret .75s step-end infinite; font-family: 'Courier New', monospace; }
+@keyframes typing { from { width: 0 } to { width: 100% } }
+@keyframes blink-caret { 50% { border-color: transparent } }
 
-            <div class="terminal-container">
-                <div class="terminal-header">
-                    <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-                    <span class="title">RESRIDE_CORE_LOG</span>
-                </div>
-                <div id="system-log" class="terminal-body">
-                    <p class="entry">> System initialized. Ready for West Bengal ops...</p>
-                </div>
-            </div>
-        </div>
-    </section>
+.tagline { opacity: 0.8; font-size: 1.1rem; margin-bottom: 20px; }
 
-    <section id="architecture" class="tech-stack">
-        <div class="container">
-            <h2 class="section-title">System Architecture</h2>
-            <div class="tech-grid">
-                <div class="tech-card">
-                    <div class="card-glow-small"></div>
-                    <i class="fa-solid fa-list-ol tech-icon"></i>
-                    <h3>Queue (FIFO)</h3>
-                    <p>Handles standard requests in order.</p>
-                </div>
-                <div class="tech-card highlight">
-                    <div class="card-glow-small"></div>
-                    <i class="fa-solid fa-bolt tech-icon"></i>
-                    <h3>Priority Queue</h3>
-                    <p>Prioritizes emergency requests.</p>
-                </div>
-                <div class="tech-card">
-                    <div class="card-glow-small"></div>
-                    <i class="fa-solid fa-link tech-icon"></i>
-                    <h3>Linked List</h3>
-                    <p>Dynamic vehicle state management.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+/* HERO BUTTONS */
+.hero-btns { display: flex; gap: 20px; justify-content: center; margin-top: 30px; opacity: 0; animation: fadeIn 2s forwards; animation-delay: 3.5s; }
+@keyframes fadeIn { to { opacity: 1; } }
+.btn { padding: 15px 35px; border-radius: 12px; font-weight: bold; text-decoration: none; transition: 0.4s; border: 1px solid transparent; }
+.glow-btn-blue { background: rgba(56, 189, 248, 0.2); color: var(--neon-blue); border-color: var(--neon-blue); }
+.glow-btn-blue:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); transform: translateY(-5px); }
+.glow-btn-outline { border: 2px solid var(--neon-blue); color: var(--neon-blue); }
+.glow-btn-outline:hover { background: rgba(56, 189, 248, 0.1); box-shadow: 0 0 20px var(--neon-blue); transform: translateY(-5px); }
 
-    <section id="benefits" class="benefits-premium">
-        <h2 class="section-title">Elevating Your Journey</h2>
-        <div class="benefits-grid">
-            <div class="benefit-premium-card">
-                <div class="card-glow-effect"></div>
-                <div class="icon-box"><i class="fa-solid fa-toilet"></i></div>
-                <h3>Mobile Restrooms</h3>
-                <p>Premium facilities for long journeys.</p>
-            </div>
-            <div class="benefit-premium-card red-theme">
-                <div class="card-glow-effect red-glow"></div>
-                <div class="icon-box"><i class="fa-solid fa-truck-medical"></i></div>
-                <h3>Priority Urgency</h3>
-                <p>Instant dispatch for physiological distress.</p>
-            </div>
-            <div class="benefit-premium-card">
-                <div class="card-glow-effect"></div>
-                <div class="icon-box"><i class="fa-solid fa-shield-virus"></i></div>
-                <h3>Hygienic Cabins</h3>
-                <p>Hospital-grade sanitization standards.</p>
-            </div>
-        </div>
-    </section>
+/* ENGINE & MAP */
+.booking-container { padding: 120px 20px; display: flex; justify-content: center; }
+.glass-card { background: var(--glass); border: 1px solid var(--border); border-radius: 30px; padding: 50px; width: 100%; max-width: 1000px; backdrop-filter: blur(20px); }
+.section-title { font-size: 2.8rem; margin-bottom: 40px; color: var(--neon-blue); text-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
 
-    <footer class="founder-note"><p>© 2025 RESRIDE | Built by Mrinmoy Maji</p></footer>
+.location-engine { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+.input-box { text-align: left; }
+.input-box label { color: var(--neon-blue); font-size: 0.85rem; display: block; margin-bottom: 8px; font-weight: bold; }
+select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; border-radius: 10px; outline: none; }
 
-    <script src="script.js"></script>
-</body>
-</html>
+.map-simulation { position: relative; width: 100%; height: 120px; background: rgba(0,0,0,0.4); border-radius: 15px; margin: 40px 0; display: flex; align-items: center; overflow: hidden; border: 1px solid var(--border); }
+.route-line { position: absolute; height: 2px; width: 80%; background: rgba(255,255,255,0.1); left: 10%; }
+.vehicle-icon { position: absolute; left: 10%; font-size: 2rem; color: var(--neon-blue); transition: left 4s ease-in-out; z-index: 10; text-shadow: 0 0 10px var(--neon-blue); }
+.vehicle-moving { left: 85% !important; }
+.point-start { position: absolute; left: 10%; width: 12px; height: 12px; border-radius: 50%; background: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue); }
+.point-end { position: absolute; right: 10%; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 0 15px #fff; }
+
+/* DISPATCH BUTTONS */
+.action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.resride-btn { padding: 25px; border-radius: 20px; border: 1px solid var(--border); background: var(--glass); color: white; cursor: pointer; transition: 0.4s; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 0.9rem; }
+.resride-btn i { font-size: 1.8rem; }
+.resride-btn:hover { transform: translateY(-8px); }
+.resride-btn.normal-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); }
+.resride-btn.emergency-btn:hover { background: var(--neon-red); color: #fff; box-shadow: 0 0 30px var(--neon-red); }
+
+/* TERMINAL */
+.terminal-container { background: #000; border-radius: 15px; border: 1px solid #333; overflow: hidden; margin-top: 40px; text-align: left; }
+.terminal-header { background: #222; padding: 12px; display: flex; gap: 8px; align-items: center; }
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
+.terminal-body { background: #000; color: #27c93f; height: 250px; padding: 20px; font-family: 'Courier New', monospace; overflow-y: auto; font-size: 0.95rem; }
+
+/* ARCHITECTURE SECTION */
+.tech-stack { padding: 120px 20px; text-align: center; background: rgba(0,0,0,0.2); }
+.tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 60px; max-width: 1200px; margin-inline: auto; }
+.tech-card { position: relative; background: var(--glass); border: 1px solid var(--border); padding: 50px; border-radius: 25px; transition: 0.6s; overflow: hidden; }
+.tech-card:hover { transform: translateY(-15px); border-color: var(--neon-blue); box-shadow: 0 10px 40px rgba(56, 189, 248, 0.1); }
+.tech-icon { font-size: 3.5rem; color: var(--neon-blue); margin-bottom: 25px; display: block; }
+.tech-card.highlight { border: 2px solid var(--neon-blue); }
+.card-glow-small { position: absolute; width: 100px; height: 100px; background: var(--neon-blue); filter: blur(70px); opacity: 0; transition: 0.5s; top: -20px; left: -20px; }
+.tech-card:hover .card-glow-small { opacity: 0.2; }
+
+/* BENEFITS SECTION */
+.benefits-premium { padding: 120px 5%; text-align: center; background: #020617; }
+.benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; margin-top: 60px; max-width: 1300px; margin-inline: auto; }
+.benefit-premium-card { position: relative; background: var(--glass); border: 1px solid var(--border); padding: 60px 40px; border-radius: 30px; transition: 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); overflow: hidden; }
+.benefit-premium-card:hover { transform: translateY(-20px) scale(1.05); border-color: var(--neon-blue); box-shadow: 0 15px 50px rgba(56, 189, 248, 0.15); }
+.benefit-premium-card.red-theme:hover { border-color: var(--neon-red); box-shadow: 0 15px 50px rgba(255, 0, 85, 0.15); }
+
+.benefit-premium-card.red-theme i { color: var(--neon-red); }
+.icon-box { font-size: 4rem; color: var(--neon-blue); margin-bottom: 30px; }
+.benefit-premium-card h3 { font-size: 1.6rem; margin-bottom: 15px; }
+.card-glow-effect { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.08), transparent); opacity: 0; transition: 0.5s; }
+.red-glow { background: radial-gradient(circle at 20% 20%, rgba(255, 0, 85, 0.08), transparent); }
+.benefit-premium-card:hover .card-glow-effect { opacity: 1; }
+
+.founder-note { padding: 60px; opacity: 0.6; font-size: 0.85rem; text-align: center; border-top: 1px solid var(--border); }
