@@ -13,11 +13,9 @@
         <div class="nav-container">
             <div class="nav-logo">RESRIDE</div>
             <div style="display: flex; align-items: center; gap: 10px;">
-                <div id="wallet-balance" style="color: #38bdf8; font-family: monospace; font-weight: bold; border: 1px solid rgba(56, 189, 248, 0.3); padding: 5px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
+                <div id="wallet-balance" style="color: #38bdf8; font-family: monospace; font-weight: bold; border: 1px solid rgba(56, 189, 248, 0.3); padding: 5px 15px; border-radius: 20px; display: flex; align-items: center;">
                     <i class="fas fa-wallet"></i> ₹<span id="bal-amount">5000</span>
-                    <span id="eco-pts-tag" style="font-size: 0.6rem; color: #27c93f; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 8px;">
-                        <i class="fas fa-leaf"></i> <span id="pts-val">0</span>
-                    </span>
+                    <span id="pts-display" style="font-size: 0.6rem; color: #27c93f; border-left: 1px solid #333; padding-left: 5px; margin-left: 5px;"><i class="fas fa-leaf"></i> <span id="pts-val">0</span></span>
                 </div>
                 <button onclick="rechargeWallet()" style="background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; color: #38bdf8; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                     <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
@@ -39,7 +37,9 @@
                 <div class="logo-glow"></div>
             </div>
             <h1 class="logo-text">RESRIDE</h1>
-            <div class="welcome-container"><p class="typewriter">Hello, Welcome to RESRIDE !!!</p></div>
+            <div class="welcome-container">
+                <p class="typewriter">Hello, Welcome to RESRIDE !!!</p>
+            </div>
             <p class="tagline">Restroom + Ride. Mobility without compromise.</p>
             <div class="hero-btns fade-in">
                 <a href="#request" class="btn glow-btn-blue">Smart Engine</a>
@@ -83,19 +83,19 @@
                         <option value="4">Deluxe (4-Star)</option>
                         <option value="5">Luxury (5-Star)</option>
                     </select>
-                    <label class="sub-label">AI Demand Context</label>
+                    <label class="sub-label">AI Demand Prediction</label>
                     <select id="ai-context">
                         <option value="1.0">Normal</option>
-                        <option value="1.5">Monsoon Surge</option>
-                        <option value="1.8">Festival Peak</option>
+                        <option value="1.4">Heavy Rain</option>
+                        <option value="1.8">Festival Rush</option>
                     </select>
                 </div>
             </div>
 
-            <div class="map-simulation" id="map-3d-view">
+            <div class="map-simulation" id="viewport-sim">
                 <span id="label-start" style="position:absolute; left:10%; bottom:5px; font-size:0.7rem; color:#38bdf8; font-weight:bold; z-index:5;"></span>
                 <div class="route-line" id="spatial-grid"></div>
-                <div id="ar-hud" style="position:absolute; top:10px; right:20px; font-family:monospace; font-size:0.6rem; color:#38bdf8; background:rgba(0,0,0,0.5); padding:2px 8px; border-radius:4px; display:none; z-index:10;"><i class="fas fa-satellite"></i> AR_TRACKING_LOCKED</div>
+                <div id="ar-hud" style="position:absolute; top:10px; right:15px; font-family:monospace; font-size:0.6rem; color:#38bdf8; background:rgba(0,0,0,0.5); padding:2px 8px; border-radius:4px; display:none; z-index:10;"><i class="fas fa-expand"></i> AR_LOCKED</div>
                 <div id="vehicle-icon" class="vehicle-icon"><i class="fa-solid fa-car-side"></i></div>
                 <div class="point-start"></div>
                 <div class="point-end"></div>
@@ -117,10 +117,10 @@
             <div class="terminal-container">
                 <div class="terminal-header">
                     <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-                    <span class="title" id="traffic-monitor">RESRIDE_CORE_LOG_v2025</span>
+                    <span class="title" id="traffic-title">RESRIDE_CORE_LOG</span>
                 </div>
                 <div id="system-log" class="terminal-body">
-                    <p class="entry">> AI Engine Online. Calibrating spatial nodes...</p>
+                    <p class="entry">> System initialized. Ready for operations...</p>
                 </div>
             </div>
 
@@ -129,14 +129,16 @@
                     <h3 style="color: var(--neon-blue); font-size: 0.9rem; text-transform: uppercase;">
                         <i class="fas fa-history"></i> Recent Activity
                     </h3>
-                    <button onclick="clearHistory()" style="background: none; border: none; color: #ff5f56; cursor: pointer;"><i class="fas fa-trash-alt"></i></button>
+                    <button onclick="clearHistory()" style="background: none; border: none; color: #ff5f56; cursor: pointer; font-size: 0.8rem; opacity: 0.7;" title="Clear History">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 </div>
-                <div id="history-list" style="max-height: 150px; overflow-y: auto; font-family: monospace; font-size: 0.75rem;"></div>
+                <div id="history-list" style="max-height: 150px; overflow-y: auto; font-family: monospace; font-size: 0.75rem;">
+                    <p style="color: #666; font-style: italic;">No records found.</p>
+                </div>
             </div>
-            
             <div id="safety-shield" style="display:none; margin-top:15px; padding:10px; border:1px solid #27c93f; border-radius:10px; background:rgba(39,201,63,0.05); font-size:0.7rem; color:#27c93f;">
-                <i class="fas fa-shield-alt"></i> SAFETY SHIELD: Verified Driver & AI Anomaly detection active.
-                <button onclick="alert('SOS SENT TO AUTHORITIES')" style="float:right; background:#ff0055; border:none; color:white; border-radius:4px; padding:2px 8px; cursor:pointer; font-size: 0.6rem;">SOS</button>
+                <i class="fas fa-shield-alt"></i> SAFETY SHIELD: Verified Driver & AI anomaly detection active.
             </div>
         </div>
     </section>
