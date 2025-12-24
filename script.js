@@ -25,15 +25,18 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function updateUI() {
-    const balEl = document.getElementById('bal-amount');
-    const ptsEl = document.getElementById('pts-val');
-    if(balEl) balEl.innerText = wallet;
-    if(ptsEl) ptsEl.innerText = points;
+    document.getElementById('bal-amount').innerText = wallet;
+    document.getElementById('pts-val').innerText = points;
 }
 
-// DRIVER MATCHING HEURISTIC Logic
-function findBestHeuristicDriver() {
-    const fleet = [{ name: "Suman K.", rating: 4.9 }, { name: "Rahul D.", rating: 4.7 }];
+// 1. DRIVER MATCHING HEURISTIC Logic
+function findHeuristicBestDriver() {
+    const fleet = [
+        { name: "Rahul S.", rating: 4.9, eff: 0.98 },
+        { name: "Anita R.", rating: 4.7, eff: 0.94 },
+        { name: "S. Murmu", rating: 4.5, eff: 0.91 }
+    ];
+    // Internal algorithm: Sort by highest rating first
     return fleet.sort((a,b) => b.rating - a.rating)[0];
 }
 
@@ -55,57 +58,57 @@ function processRide(rideType) {
     const car = document.getElementById('vehicle-icon');
     const log = document.getElementById('system-log');
 
-    if (!startSub || !endSub) { alert("Please complete selection."); return; }
+    if (!startSub || !endSub) { alert("Select route!"); return; }
 
-    // LIVE TRAFFIC & AI PRICING
+    // 2. LIVE TRAFFIC & ETA SIMULATION (Real-world API logic)
     const trafficSeed = Math.random();
-    let trafficTag = trafficSeed > 0.7 ? "HEAVY" : "CLEAR";
-    document.getElementById('traffic-title').innerText = `TRAFFIC: ${trafficTag}`;
+    let trafficTag = trafficSeed > 0.7 ? "HEAVY TRAFFIC (ETA++ )" : "CLEAR ROADS";
+    document.getElementById('traffic-title').innerText = `LIVE_TRAFFIC: ${trafficTag}`;
     
+    // 3. AI PREDICTIVE PRICING Logic
+    let pWait = (rideType === 'Emergency') ? 3 : Math.round(11 * (1 + trafficSeed));
     let aiSurge = ((rideType === 'Emergency' ? 1.5 : 1.1) * aiCtx * (1 + trafficSeed * 0.4)).toFixed(2);
+    
     currentFare = Math.round((250 * aiSurge) + (quality * 75));
-
     if(wallet < currentFare) { alert("Low Balance!"); return; }
 
-    const driver = findBestHeuristicDriver();
+    const driver = findHeuristicBestDriver();
 
-    // 3D & AR SIMULATION TRIGGERS
+    // 4. 3D & AR SIMULATION TRIGGERS
     isTripActive = true;
     clearTimeout(receiptTimer);
     
-    // Reset Car Position and Transition
+    // Reset car with transition lock
     car.classList.remove('vehicle-moving');
     car.style.transition = 'none'; 
     car.style.left = '10%';
     car.style.color = (rideType === 'Emergency') ? '#ff0055' : '#38bdf8';
     
-    // Perspective Change for 3D logic
-    document.getElementById('viewport-sim').classList.add('spatial-perspective');
+    // Visual Spatial Trigger
+    document.getElementById('viewport-sim').style.transform = "rotateX(30deg)";
     document.getElementById('ar-hud').style.display = 'block';
     document.getElementById('safety-shield').style.display = 'block';
     
     setTimeout(() => {
-        // Trigger smooth 4s movement
+        // Trigger smooth movement (Original Graphics)
         car.style.transition = 'left 4s cubic-bezier(0.45, 0.05, 0.55, 0.95)';
         car.classList.add('vehicle-moving');
 
         receiptTimer = setTimeout(() => {
             if(isTripActive) {
                 wallet -= currentFare;
-                points += 50; // GAMIFICATION Reward
+                points += 50; // Gamification Points
                 localStorage.setItem('resrideWallet', wallet);
                 localStorage.setItem('resridePoints', points);
                 updateUI();
-                
                 log.innerHTML = `
                 <div style="margin-top:10px; padding: 10px; border: 1px dashed #27c93f; background: rgba(39, 201, 63, 0.1);">
-                    <p style="color:#27c93f; font-weight:bold;">🏁 ARRIVED | AI METRICS</p>
-                    <p>Driver: ${driver.name} | Surge: ${aiSurge}x</p>
-                    <p>Eco-Reward: +50 Points earned!</p>
+                    <p style="color:#27c93f; font-weight:bold;">🏁 ARRIVED | Driver: ${driver.name}</p>
+                    <p>Fare: ₹${currentFare} | Eco-Reward: +50 Points</p>
                     <button onclick="submitRating()" style="background:none; border:none; color:#ffd700; cursor:pointer;">★ ★ ★ ★ ★</button>
                 </div>` + log.innerHTML;
                 isTripActive = false;
-                document.getElementById('viewport-sim').classList.remove('spatial-perspective');
+                document.getElementById('viewport-sim').style.transform = "none";
                 document.getElementById('ar-hud').style.display = 'none';
             }
         }, 4000);
@@ -113,14 +116,14 @@ function processRide(rideType) {
 
     log.innerHTML = `<div style="margin-bottom:20px; border-left:3px solid ${rideType === 'Emergency' ? '#ff0055' : '#38bdf8'}; padding-left:10px;">
         <p style="color:#fff; font-weight:bold;">> MATCHING DISPATCH: ${driver.name}</p>
-        <p style="font-size:0.75rem; color:#aaa;">📍 AR View: Path Calibrated | Traffic: ${trafficTag}</p>
-        <p style="color: #0ff;">> Surge: ${aiSurge}x Applied</p>
+        <p style="font-size:0.75rem; color:#aaa;">📍 AR HUD: Path Calibrated | Traffic: ${trafficTag}</p>
+        <p style="color: #0ff;">> ETA: ${pWait} MINS | AI Surge Applied</p>
     </div>` + log.innerHTML;
 }
 
 function renderHistory() {
     const list = document.getElementById('history-list');
-    list.innerHTML = rideHistory.map(ride => `<div style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; display: flex; justify-content: space-between;"><span>${ride.time} | ${ride.from} → ${ride.to}</span><span>₹${ride.fare}</span></div>`).join('');
+    list.innerHTML = rideHistory.map(ride => `<div style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; display: flex; justify-content: space-between;"><span>${ride.time} | Ride Completed</span><span>₹${ride.fare}</span></div>`).join('');
 }
 function submitRating() {
     rideHistory.unshift({ time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), fare: currentFare });
