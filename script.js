@@ -13,20 +13,28 @@ const subPlaces = {
 };
 
 let wallet = parseInt(localStorage.getItem('resrideWallet')) || 5000;
-let ridePoints = parseInt(localStorage.getItem('resridePoints')) || 0;
+let points = parseInt(localStorage.getItem('resridePoints')) || 0;
 let rideHistory = JSON.parse(localStorage.getItem('resrideHistory')) || [];
 let currentFare = 0;
 let isTripActive = false;
 let receiptTimer;
 
 document.addEventListener('DOMContentLoaded', () => {
-    updateWalletUI();
+    updateUI();
     renderHistory();
 });
 
-function updateWalletUI() {
-    document.getElementById('bal-amount').innerText = wallet;
-    document.getElementById('eco-pts').innerText = ridePoints;
+function updateUI() {
+    const balEl = document.getElementById('bal-amount');
+    const ptsEl = document.getElementById('pts-val');
+    if(balEl) balEl.innerText = wallet;
+    if(ptsEl) ptsEl.innerText = points;
+}
+
+// DRIVER MATCHING HEURISTIC Logic
+function findBestHeuristicDriver() {
+    const fleet = [{ name: "Suman K.", rating: 4.9 }, { name: "Rahul D.", rating: 4.7 }];
+    return fleet.sort((a,b) => b.rating - a.rating)[0];
 }
 
 function updateSubPlaces(type) {
@@ -36,18 +44,7 @@ function updateSubPlaces(type) {
     if (city && subPlaces[city]) {
         sub.disabled = false;
         subPlaces[city].forEach(p => sub.innerHTML += `<option value="${p}">${p}</option>`);
-    } else { sub.disabled = true; }
-}
-
-// 1. ADVANCED FEATURE: DRIVER MATCHING HEURISTIC
-function matchHeuristicDriver() {
-    const drivers = [
-        { name: "Rahul S.", rating: 4.9, eff: 0.98 },
-        { name: "Anita R.", rating: 4.7, eff: 0.94 },
-        { name: "S. Murmu", rating: 4.4, eff: 0.91 }
-    ];
-    // Return best rated driver based on internal heuristic score
-    return drivers.sort((a,b) => b.rating - a.rating)[0];
+    } else sub.disabled = true;
 }
 
 function processRide(rideType) {
@@ -60,21 +57,19 @@ function processRide(rideType) {
 
     if (!startSub || !endSub) { alert("Please complete selection."); return; }
 
-    // 2. ADVANCED FEATURE: LIVE TRAFFIC & ETA SIMULATION
+    // LIVE TRAFFIC & AI PRICING
     const trafficSeed = Math.random();
-    let trafficTag = trafficSeed > 0.7 ? "HEAVY TRAFFIC" : "CLEAR";
-    document.getElementById('terminal-status').innerText = `TRAFFIC: ${trafficTag}`;
+    let trafficTag = trafficSeed > 0.7 ? "HEAVY" : "CLEAR";
+    document.getElementById('traffic-title').innerText = `TRAFFIC: ${trafficTag}`;
     
-    // 3. ADVANCED FEATURE: AI PREDICTIVE PRICING
-    let pWait = (rideType === 'Emergency') ? 3 : Math.round(11 * (1 + trafficSeed));
     let aiSurge = ((rideType === 'Emergency' ? 1.5 : 1.1) * aiCtx * (1 + trafficSeed * 0.4)).toFixed(2);
-    
     currentFare = Math.round((250 * aiSurge) + (quality * 75));
-    if(wallet < currentFare) { alert("Low balance!"); return; }
 
-    const driver = matchHeuristicDriver();
+    if(wallet < currentFare) { alert("Low Balance!"); return; }
 
-    // SPATIAL & AR SIMULATION TRIGGERS
+    const driver = findBestHeuristicDriver();
+
+    // 3D & AR SIMULATION TRIGGERS
     isTripActive = true;
     clearTimeout(receiptTimer);
     
@@ -84,60 +79,54 @@ function processRide(rideType) {
     car.style.left = '10%';
     car.style.color = (rideType === 'Emergency') ? '#ff0055' : '#38bdf8';
     
-    // 4. 3D IMMERSIVE Viewport Trigger
-    document.getElementById('viewport-map').style.transform = "rotateX(30deg)";
+    // Perspective Change for 3D logic
+    document.getElementById('viewport-sim').classList.add('spatial-perspective');
     document.getElementById('ar-hud').style.display = 'block';
     document.getElementById('safety-shield').style.display = 'block';
     
     setTimeout(() => {
-        // FIXED MOVEMENT: Apply transition then move
+        // Trigger smooth 4s movement
         car.style.transition = 'left 4s cubic-bezier(0.45, 0.05, 0.55, 0.95)';
         car.classList.add('vehicle-moving');
 
         receiptTimer = setTimeout(() => {
             if(isTripActive) {
                 wallet -= currentFare;
-                ridePoints += 50; // 5. GAMIFICATION Reward
+                points += 50; // GAMIFICATION Reward
                 localStorage.setItem('resrideWallet', wallet);
-                localStorage.setItem('resridePoints', ridePoints);
-                updateWalletUI();
+                localStorage.setItem('resridePoints', points);
+                updateUI();
                 
                 log.innerHTML = `
                 <div style="margin-top:10px; padding: 10px; border: 1px dashed #27c93f; background: rgba(39, 201, 63, 0.1);">
-                    <p style="color:#27c93f; font-weight:bold;">🏁 COMPLETE | Driver: ${driver.name}</p>
-                    <p>Fare: ₹${currentFare} | Eco-Reward: +50 Points earned!</p>
-                    <button onclick="submitRating(5, '${startSub}', '${endSub}', '${rideType}')" style="background:none; border:none; color:#ffd700; cursor:pointer;">★ ★ ★ ★ ★</button>
+                    <p style="color:#27c93f; font-weight:bold;">🏁 ARRIVED | AI METRICS</p>
+                    <p>Driver: ${driver.name} | Surge: ${aiSurge}x</p>
+                    <p>Eco-Reward: +50 Points earned!</p>
+                    <button onclick="submitRating()" style="background:none; border:none; color:#ffd700; cursor:pointer;">★ ★ ★ ★ ★</button>
                 </div>` + log.innerHTML;
                 isTripActive = false;
-                document.getElementById('viewport-map').style.transform = "none";
+                document.getElementById('viewport-sim').classList.remove('spatial-perspective');
                 document.getElementById('ar-hud').style.display = 'none';
             }
         }, 4000);
     }, 50);
 
     log.innerHTML = `<div style="margin-bottom:20px; border-left:3px solid ${rideType === 'Emergency' ? '#ff0055' : '#38bdf8'}; padding-left:10px;">
-        <p style="color:#fff; font-weight:bold;">> MATCHING DISPATCH: ${driver.name} (Best Rated)</p>
+        <p style="color:#fff; font-weight:bold;">> MATCHING DISPATCH: ${driver.name}</p>
         <p style="font-size:0.75rem; color:#aaa;">📍 AR View: Path Calibrated | Traffic: ${trafficTag}</p>
-        <p style="color: #0ff;">> ETA: ${pWait} MINS | AI Surge: ${aiSurge}x</p>
+        <p style="color: #0ff;">> Surge: ${aiSurge}x Applied</p>
     </div>` + log.innerHTML;
 }
 
 function renderHistory() {
     const list = document.getElementById('history-list');
-    list.innerHTML = rideHistory.map(ride => `
-        <div style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; display: flex; justify-content: space-between; font-family:monospace; font-size:0.75rem;">
-            <span style="color: ${ride.type === 'Emergency' ? '#ff0055' : '#38bdf8'};">${ride.time} | ${ride.from} → ${ride.to}</span>
-            <span style="color: #fff;">₹${ride.fare}</span>
-        </div>
-    `).join('');
+    list.innerHTML = rideHistory.map(ride => `<div style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; display: flex; justify-content: space-between;"><span>${ride.time} | ${ride.from} → ${ride.to}</span><span>₹${ride.fare}</span></div>`).join('');
 }
-
 function submitRating() {
     rideHistory.unshift({ time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), fare: currentFare });
     localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
     renderHistory();
 }
-
 function clearHistory() { if(confirm("Clear history?")) { rideHistory = []; localStorage.removeItem('resrideHistory'); renderHistory(); } }
-function rechargeWallet() { let amt = prompt("Amount:"); if(amt) { wallet += parseInt(amt); updateWalletUI(); } }
+function rechargeWallet() { let amt = prompt("Amount:"); if(amt) { wallet += parseInt(amt); localStorage.setItem('resrideWallet', wallet); updateUI(); } }
 function cancelRide() { isTripActive = false; clearTimeout(receiptTimer); document.getElementById('system-log').innerHTML = `<p style="color:#ff5f56;">❌ Trip Aborted.</p>` + document.getElementById('system-log').innerHTML; }
