@@ -19,9 +19,8 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 
 /* HERO SECTION */
 .hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
-.logo-container-main { position: relative; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
 
-/* LOGO FIX: mix-blend-mode makes the black background disappear */
+/* THE LOGO FIX: mix-blend-mode technically filters out the solid black background */
 .main-logo-img {
     width: 180px; 
     height: auto;
@@ -32,6 +31,7 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
     margin: 0 auto;
 }
 
+.logo-container-main { position: relative; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
 .logo-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 150px; height: 150px; background: var(--neon-blue); filter: blur(60px); opacity: 0.3; z-index: -1; }
 .logo-text { font-size: 6.5rem; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 25px rgba(56, 189, 248, 0.8); letter-spacing: 8px; }
 
@@ -47,10 +47,12 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 
 /* HERO BUTTONS */
 .hero-btns { display: flex; gap: 20px; justify-content: center; margin-top: 30px; opacity: 0; animation: fadeIn 2s forwards; animation-delay: 3.5s; }
-.btn { padding: 15px 35px; border-radius: 12px; font-weight: bold; text-decoration: none; transition: 0.4s; border: 1px solid transparent; text-align: center; }
+@keyframes fadeIn { to { opacity: 1; } }
+.btn { padding: 15px 35px; border-radius: 12px; font-weight: bold; text-decoration: none; transition: 0.4s; border: 1px solid transparent; text-align: center; display: inline-block; }
 .glow-btn-blue { background: rgba(56, 189, 248, 0.2); color: var(--neon-blue); border: 1px solid var(--neon-blue); }
 .glow-btn-blue:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); transform: translateY(-5px); }
 .glow-btn-outline { border: 2px solid var(--neon-blue); color: var(--neon-blue); }
+.glow-btn-outline:hover { background: rgba(56, 189, 248, 0.1); box-shadow: 0 0 20px var(--neon-blue); transform: translateY(-5px); }
 
 /* ENGINE & MAP */
 .booking-container { padding: 120px 20px; display: flex; justify-content: center; }
@@ -69,17 +71,12 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .point-start { position: absolute; left: 10%; width: 12px; height: 12px; border-radius: 50%; background: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue); }
 .point-end { position: absolute; right: 10%; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 0 15px #fff; }
 
-/* DISPATCH BUTTONS */
+/* TERMINAL & ACTIONS */
 .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
 .resride-btn { padding: 25px; border-radius: 20px; border: 1px solid var(--border); background: var(--glass); color: white; cursor: pointer; transition: 0.4s; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 0.9rem; }
 .resride-btn i { font-size: 1.8rem; }
 .resride-btn:hover { transform: translateY(-8px); }
-
-/* TERMINAL */
 .terminal-container { background: #000; border-radius: 15px; border: 1px solid #333; overflow: hidden; margin-top: 40px; text-align: left; }
-.terminal-header { background: #222; padding: 12px; display: flex; gap: 8px; align-items: center; }
-.dot { width: 12px; height: 12px; border-radius: 50%; }
-.red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
 .terminal-body { background: #000; color: #27c93f; height: 250px; padding: 20px; font-family: 'Courier New', monospace; overflow-y: auto; font-size: 0.95rem; }
 
 /* ARCHITECTURE & BENEFITS */
@@ -94,14 +91,19 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .benefit-premium-card { position: relative; background: var(--glass); border: 1px solid var(--border); padding: 60px 40px; border-radius: 30px; transition: 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); overflow: hidden; }
 .benefit-premium-card:hover { transform: translateY(-20px) scale(1.05); border-color: var(--neon-blue); }
 
-/* MODALS */
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 9999; justify-content: center; align-items: center; }
+/* MODAL STYLING */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 9999; justify-content: center; align-items: center; }
 .modal-content { max-width: 450px; width: 90%; position: relative; padding: 30px; background: #0f172a; border: 1px solid var(--neon-blue); border-radius: 30px; }
+.close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; color: #fff; cursor: pointer; }
+.about-btn-nav { background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; padding: 6px 15px; border-radius: 20px; color: #38bdf8 !important; font-size: 0.8rem; transition: 0.3s all ease; text-decoration: none; }
+.about-btn-nav:hover { background: #38bdf8 !important; color: #000 !important; box-shadow: 0 0 15px #38bdf8; }
 
-/* MOBILE RESPONSIVE FIX */
+/* --- MOBILE RESPONSIVE FIX --- */
 @media screen and (max-width: 480px) {
     .hero { height: auto; min-height: 100vh; padding: 100px 20px; }
-    .logo-text { font-size: 3.2rem; letter-spacing: 4px; }
+    .logo-text { font-size: 3rem; letter-spacing: 4px; }
     .main-logo-img { width: 110px; }
     .nav-links { display: none; }
+    .navbar .nav-container { flex-direction: row; justify-content: space-between; }
+    #wallet-balance { font-size: 0.7rem; padding: 5px 10px; }
 }
