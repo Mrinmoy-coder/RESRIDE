@@ -21,10 +21,11 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 .hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
 .logo-container-main { position: relative; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
 
-/* LOGO IMAGE STYLING: mix-blend-mode "screen" makes the black part of the image transparent */
+/* LOGO FIX: Removing the black square box background from the image */
 .main-logo-img {
     width: 180px; 
     height: auto;
+    /* THIS REMOVES THE BLACK BOX */
     mix-blend-mode: screen; 
     filter: drop-shadow(0 0 20px var(--neon-blue));
     z-index: 10;
@@ -32,7 +33,7 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
     margin: 0 auto;
 }
 
-.logo-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; background: var(--neon-blue); filter: blur(60px); opacity: 0.3; z-index: -1; }
+.logo-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 150px; height: 150px; background: var(--neon-blue); filter: blur(60px); opacity: 0.3; z-index: -1; }
 .logo-text { font-size: 6.5rem; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 25px rgba(56, 189, 248, 0.8); letter-spacing: 8px; }
 
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
@@ -77,6 +78,9 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .resride-btn i { font-size: 1.8rem; }
 .resride-btn:hover { transform: translateY(-8px); }
 .terminal-container { background: #000; border-radius: 15px; border: 1px solid #333; overflow: hidden; margin-top: 40px; text-align: left; }
+.terminal-header { background: #222; padding: 12px; display: flex; gap: 8px; align-items: center; }
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
 .terminal-body { background: #000; color: #27c93f; height: 250px; padding: 20px; font-family: 'Courier New', monospace; overflow-y: auto; font-size: 0.95rem; }
 
 /* ARCHITECTURE & BENEFITS */
@@ -91,9 +95,12 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .benefit-premium-card { position: relative; background: var(--glass); border: 1px solid var(--border); padding: 60px 40px; border-radius: 30px; transition: 0.6s; overflow: hidden; }
 .benefit-premium-card:hover { transform: translateY(-20px) scale(1.05); border-color: var(--neon-blue); }
 
-/* MODALS */
+/* MODAL STYLING */
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 9999; justify-content: center; align-items: center; }
 .modal-content { max-width: 450px; width: 90%; position: relative; padding: 30px; background: #0f172a; border: 1px solid var(--neon-blue); border-radius: 30px; }
+.close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; color: #fff; cursor: pointer; }
+.about-btn-nav { background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; padding: 6px 15px; border-radius: 20px; color: #38bdf8 !important; font-size: 0.8rem; transition: 0.3s all ease; text-decoration: none; }
+.about-btn-nav:hover { background: #38bdf8 !important; color: #000 !important; box-shadow: 0 0 15px #38bdf8; }
 
 /* MOBILE RESPONSIVE FIX */
 @media screen and (max-width: 480px) {
@@ -101,4 +108,6 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
     .logo-text { font-size: 3.2rem; letter-spacing: 4px; }
     .main-logo-img { width: 110px; }
     .nav-links { display: none; }
+    .navbar .nav-container { flex-direction: row; justify-content: space-between; }
+    #wallet-balance { font-size: 0.7rem; padding: 5px 10px; }
 }
