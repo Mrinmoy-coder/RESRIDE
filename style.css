@@ -21,12 +21,16 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 .hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
 .logo-container-main { position: relative; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
 
-/* NEW LOGO IMAGE STYLING */
+/* LOGO IMAGE STYLING - TRANSPARENCY FIX */
 .main-logo-img {
-    width: 120px; 
+    width: 150px; 
     height: auto;
+    /* mix-blend-mode: screen hides the black background of the logo box */
+    mix-blend-mode: screen; 
     filter: drop-shadow(0 0 15px var(--neon-blue));
     z-index: 10;
+    display: block;
+    margin: 0 auto;
 }
 
 .logo-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; background: var(--neon-blue); filter: blur(60px); opacity: 0.4; z-index: -1; }
@@ -126,7 +130,8 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 @media screen and (max-width: 480px) {
     .hero { height: auto; min-height: 100vh; padding: 100px 20px; }
     .logo-text { font-size: 3.2rem; letter-spacing: 4px; }
-    .main-logo-img { width: 90px; }
+    /* MOBILE LOGO FIX */
+    .main-logo-img { width: 100px; }
     .typewriter { font-size: 1.1rem; white-space: normal; border-right: none; text-align: center; }
     .welcome-container { height: auto; margin-bottom: 20px; }
     .nav-links { display: none; }
