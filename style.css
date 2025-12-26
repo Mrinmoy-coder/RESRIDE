@@ -198,3 +198,31 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
     font-size: 1.8rem; color: #fff;
     cursor: pointer;
 }
+/* --- MOBILE OPTIMIZATION --- */
+@media screen and (max-width: 600px) {
+    .logo-text {
+        font-size: 3.5rem; /* Shrinks the massive RESRIDE text */
+        letter-spacing: 4px;
+    }
+    
+    .logo-icon-top {
+        font-size: 3.5rem; /* Shrinks the car icon */
+    }
+
+    .hero-content {
+        padding: 0 15px; /* Prevents text from touching edges */
+    }
+
+    .typewriter {
+        font-size: 1.1rem; /* Makes the welcome text readable on one line */
+    }
+
+    .navbar {
+        height: 60px;
+    }
+
+    /* Hide non-essential nav links on mobile to save space */
+    .nav-links {
+        display: none; 
+    }
+}
