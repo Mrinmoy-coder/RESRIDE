@@ -21,7 +21,7 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 .hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
 .logo-container-main { position: relative; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
 
-/* LOGO FIX: mix-blend-mode "screen" makes the black background of the icon image transparent */
+/* LOGO FIX: mix-blend-mode makes the black background of the image disappear */
 .main-logo-img {
     width: 180px; 
     height: auto;
@@ -48,7 +48,7 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 /* HERO BUTTONS */
 .hero-btns { display: flex; gap: 20px; justify-content: center; margin-top: 30px; opacity: 0; animation: fadeIn 2s forwards; animation-delay: 3.5s; }
 @keyframes fadeIn { to { opacity: 1; } }
-.btn { padding: 15px 35px; border-radius: 12px; font-weight: bold; text-decoration: none; transition: 0.4s; border: 1px solid transparent; text-align: center; display: inline-block; }
+.btn { padding: 15px 35px; border-radius: 12px; font-weight: bold; text-decoration: none; transition: 0.4s; border: 1px solid transparent; text-align: center; }
 .glow-btn-blue { background: rgba(56, 189, 248, 0.2); color: var(--neon-blue); border: 1px solid var(--neon-blue); }
 .glow-btn-blue:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); transform: translateY(-5px); }
 .glow-btn-outline { border: 2px solid var(--neon-blue); color: var(--neon-blue); }
@@ -71,34 +71,58 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .point-start { position: absolute; left: 10%; width: 12px; height: 12px; border-radius: 50%; background: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue); }
 .point-end { position: absolute; right: 10%; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 0 15px #fff; }
 
-/* TERMINAL & ACTIONS */
+/* DISPATCH BUTTONS */
 .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
 .resride-btn { padding: 25px; border-radius: 20px; border: 1px solid var(--border); background: var(--glass); color: white; cursor: pointer; transition: 0.4s; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 0.9rem; }
 .resride-btn i { font-size: 1.8rem; }
 .resride-btn:hover { transform: translateY(-8px); }
+.resride-btn.normal-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); }
+.resride-btn.emergency-btn:hover { background: var(--neon-red); color: #fff; box-shadow: 0 0 30px var(--neon-red); }
+
+/* TERMINAL */
 .terminal-container { background: #000; border-radius: 15px; border: 1px solid #333; overflow: hidden; margin-top: 40px; text-align: left; }
 .terminal-header { background: #222; padding: 12px; display: flex; gap: 8px; align-items: center; }
 .dot { width: 12px; height: 12px; border-radius: 50%; }
 .red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
 .terminal-body { background: #000; color: #27c93f; height: 250px; padding: 20px; font-family: 'Courier New', monospace; overflow-y: auto; font-size: 0.95rem; }
 
-/* ARCHITECTURE & BENEFITS */
+/* ARCHITECTURE SECTION */
 .tech-stack { padding: 120px 20px; text-align: center; background: rgba(0,0,0,0.2); }
 .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 60px; max-width: 1200px; margin-inline: auto; }
 .tech-card { position: relative; background: var(--glass); border: 1px solid var(--border); padding: 50px; border-radius: 25px; transition: 0.6s; overflow: hidden; }
+.tech-card:hover { transform: translateY(-15px); border-color: var(--neon-blue); box-shadow: 0 10px 40px rgba(56, 189, 248, 0.1); }
 .tech-icon { font-size: 3.5rem; color: var(--neon-blue); margin-bottom: 25px; display: block; }
 .tech-card.highlight { border: 2px solid var(--neon-blue); }
+.card-glow-small { position: absolute; width: 100px; height: 100px; background: var(--neon-blue); filter: blur(70px); opacity: 0; transition: 0.5s; top: -20px; left: -20px; }
+.tech-card:hover .card-glow-small { opacity: 0.2; }
 
+/* BENEFITS SECTION */
 .benefits-premium { padding: 120px 5%; text-align: center; background: #020617; }
 .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; margin-top: 60px; max-width: 1300px; margin-inline: auto; }
-.benefit-premium-card { position: relative; background: var(--glass); border: 1px solid var(--border); padding: 60px 40px; border-radius: 30px; transition: 0.6s; overflow: hidden; }
-.benefit-premium-card:hover { transform: translateY(-20px) scale(1.05); border-color: var(--neon-blue); }
+.benefit-premium-card { position: relative; background: var(--glass); border: 1px solid var(--border); padding: 60px 40px; border-radius: 30px; transition: 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); overflow: hidden; }
+.benefit-premium-card:hover { transform: translateY(-20px) scale(1.05); border-color: var(--neon-blue); box-shadow: 0 15px 50px rgba(56, 189, 248, 0.15); }
+.benefit-premium-card.red-theme:hover { border-color: var(--neon-red); box-shadow: 0 15px 50px rgba(255, 0, 85, 0.15); }
+
+.benefit-premium-card.red-theme i { color: var(--neon-red); }
+.icon-box { font-size: 4rem; color: var(--neon-blue); margin-bottom: 30px; }
+.benefit-premium-card h3 { font-size: 1.6rem; margin-bottom: 15px; }
+.card-glow-effect { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.08), transparent); opacity: 0; transition: 0.5s; }
+.red-glow { background: radial-gradient(circle at 20% 20%, rgba(255, 0, 85, 0.08), transparent); }
+.benefit-premium-card:hover .card-glow-effect { opacity: 1; }
+
+.founder-note { padding: 60px; opacity: 0.6; font-size: 0.85rem; text-align: center; border-top: 1px solid var(--border); }
 
 /* MODAL STYLING */
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 9999; justify-content: center; align-items: center; }
-.modal-content { max-width: 450px; width: 90%; position: relative; padding: 30px; background: #0f172a; border: 1px solid var(--neon-blue); border-radius: 30px; }
+.modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 9999; justify-content: center; align-items: center;
+}
+.modal-content {
+    max-width: 450px; width: 90%; position: relative; padding: 30px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+}
 .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; color: #fff; cursor: pointer; }
-.about-btn-nav { background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; padding: 6px 15px; border-radius: 20px; color: #38bdf8 !important; font-size: 0.8rem; transition: 0.3s all ease; text-decoration: none; }
+.about-btn-nav {
+    background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; padding: 6px 15px; border-radius: 20px; color: #38bdf8 !important; font-size: 0.8rem; transition: 0.3s all ease; text-decoration: none;
+}
 .about-btn-nav:hover { background: #38bdf8 !important; color: #000 !important; box-shadow: 0 0 15px #38bdf8; }
 
 /* --- MOBILE RESPONSIVE OVERRIDE --- */
@@ -106,7 +130,14 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
     .hero { height: auto; min-height: 100vh; padding: 100px 20px; }
     .logo-text { font-size: 3.2rem; letter-spacing: 4px; }
     .main-logo-img { width: 110px; }
+    .typewriter { font-size: 1.1rem; white-space: normal; border-right: none; text-align: center; }
+    .welcome-container { height: auto; margin-bottom: 20px; }
     .nav-links { display: none; }
     .navbar .nav-container { flex-direction: row; justify-content: space-between; }
     #wallet-balance { font-size: 0.7rem; padding: 5px 10px; }
+    .hero-btns { flex-direction: column; width: 100%; gap: 15px; }
+    .btn { width: 100%; }
+    .glass-card { padding: 25px; }
+    .section-title { font-size: 1.8rem; }
+    .terminal-body { height: 200px; font-size: 0.8rem; }
 }
