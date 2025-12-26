@@ -21,11 +21,10 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 .hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
 .logo-container-main { position: relative; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
 
-/* LOGO FIX: Removing the black square box background from the image */
+/* LOGO FIX: mix-blend-mode "screen" makes the black background of the icon image transparent */
 .main-logo-img {
     width: 180px; 
     height: auto;
-    /* THIS REMOVES THE BLACK BOX */
     mix-blend-mode: screen; 
     filter: drop-shadow(0 0 20px var(--neon-blue));
     z-index: 10;
@@ -102,7 +101,7 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .about-btn-nav { background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; padding: 6px 15px; border-radius: 20px; color: #38bdf8 !important; font-size: 0.8rem; transition: 0.3s all ease; text-decoration: none; }
 .about-btn-nav:hover { background: #38bdf8 !important; color: #000 !important; box-shadow: 0 0 15px #38bdf8; }
 
-/* MOBILE RESPONSIVE FIX */
+/* --- MOBILE RESPONSIVE OVERRIDE --- */
 @media screen and (max-width: 480px) {
     .hero { height: auto; min-height: 100vh; padding: 100px 20px; }
     .logo-text { font-size: 3.2rem; letter-spacing: 4px; }
