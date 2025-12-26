@@ -21,18 +21,19 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 .hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
 .logo-container-main { position: relative; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
 
-/* LOGO FIX: mix-blend-mode makes the black background of the image disappear */
+/* LOGO IMAGE STYLING - FULL TRANSPARENCY FIX */
 .main-logo-img {
-    width: 180px; 
+    width: 160px; 
     height: auto;
+    /* mix-blend-mode hides the square black box around the logo */
     mix-blend-mode: screen; 
-    filter: drop-shadow(0 0 20px var(--neon-blue));
+    filter: drop-shadow(0 0 15px var(--neon-blue));
     z-index: 10;
     display: block;
     margin: 0 auto;
 }
 
-.logo-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 150px; height: 150px; background: var(--neon-blue); filter: blur(60px); opacity: 0.3; z-index: -1; }
+.logo-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; background: var(--neon-blue); filter: blur(60px); opacity: 0.4; z-index: -1; }
 .logo-text { font-size: 6.5rem; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 25px rgba(56, 189, 248, 0.8); letter-spacing: 8px; }
 
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
@@ -49,7 +50,7 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 .hero-btns { display: flex; gap: 20px; justify-content: center; margin-top: 30px; opacity: 0; animation: fadeIn 2s forwards; animation-delay: 3.5s; }
 @keyframes fadeIn { to { opacity: 1; } }
 .btn { padding: 15px 35px; border-radius: 12px; font-weight: bold; text-decoration: none; transition: 0.4s; border: 1px solid transparent; text-align: center; }
-.glow-btn-blue { background: rgba(56, 189, 248, 0.2); color: var(--neon-blue); border: 1px solid var(--neon-blue); }
+.glow-btn-blue { background: rgba(56, 189, 248, 0.2); color: var(--neon-blue); border-color: var(--neon-blue); }
 .glow-btn-blue:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); transform: translateY(-5px); }
 .glow-btn-outline { border: 2px solid var(--neon-blue); color: var(--neon-blue); }
 .glow-btn-outline:hover { background: rgba(56, 189, 248, 0.1); box-shadow: 0 0 20px var(--neon-blue); transform: translateY(-5px); }
@@ -129,6 +130,7 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 @media screen and (max-width: 480px) {
     .hero { height: auto; min-height: 100vh; padding: 100px 20px; }
     .logo-text { font-size: 3.2rem; letter-spacing: 4px; }
+    /* MOBILE LOGO SCALE */
     .main-logo-img { width: 110px; }
     .typewriter { font-size: 1.1rem; white-space: normal; border-right: none; text-align: center; }
     .welcome-container { height: auto; margin-bottom: 20px; }
