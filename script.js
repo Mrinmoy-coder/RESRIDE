@@ -61,6 +61,13 @@ function processRide(rideType) {
     if(wallet < activeFare) { alert("Insufficient balance!"); return; }
 
     startRideSimulation(rideType, activeFare, startSub, endSub, timing, timeInput, quality);
+    // Inside processRide()
+    const traffic = PricingEngine.getTrafficSurge();
+    const finalFare = Math.round(fare * traffic.multiplier);
+    
+    log.innerHTML = `<p style="color:${traffic.color}; border: 1px solid ${traffic.color}; padding: 5px; border-radius: 5px; margin-bottom: 10px;">
+        📡 HUB SENSOR: ${traffic.label} Traffic detected. Adjusting dispatch priority...
+    </p>` + log.innerHTML;
 }
 
 function startRideSimulation(type, fare, start, end, timing, startTime, quality) {
