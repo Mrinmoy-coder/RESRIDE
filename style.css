@@ -110,3 +110,91 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 
 /* Micro-interaction: Ripple feedback */
 .btn-ripple:active { transform: scale(0.95); opacity: 0.8; transition: 0.1s; }
+/* Navbar Button Style */
+.about-btn-nav {
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid #38bdf8;
+    padding: 6px 15px;
+    border-radius: 20px;
+    color: #38bdf8 !important;
+    font-size: 0.8rem;
+    transition: 0.3s all ease;
+}
+
+.about-btn-nav:hover {
+    background: #38bdf8 !important;
+    color: #000 !important;
+    box-shadow: 0 0 15px #38bdf8;
+}
+
+/* Modal Styling */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    padding: 30px;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px; right: 20px;
+    font-size: 1.5rem; color: #fff;
+    cursor: pointer;
+}
+/* --- NEW CONTACT & ABOUT STYLES --- */
+.about-btn-nav {
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid #38bdf8;
+    padding: 6px 15px;
+    border-radius: 20px;
+    color: #38bdf8 !important;
+    font-size: 0.8rem;
+    transition: 0.3s all ease;
+    text-decoration: none;
+}
+
+.about-btn-nav:hover {
+    background: #38bdf8 !important;
+    color: #000 !important;
+    box-shadow: 0 0 15px #38bdf8;
+}
+
+.modal-overlay {
+    display: none; /* Keeps it hidden until clicked */
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    max-width: 450px;
+    width: 90%;
+    position: relative;
+    padding: 30px;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px; right: 20px;
+    font-size: 1.8rem; color: #fff;
+    cursor: pointer;
+}
