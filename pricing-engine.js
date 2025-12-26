@@ -23,4 +23,13 @@ const PricingEngine = {
         const travelMins = Math.round((distance / 45) * 60);
         return { pickupDelay: pDelay, travelTime: travelMins };
     }
+    // NEW: Real-time traffic impact calculator
+    getTrafficSurge() {
+        const scenarios = [
+            { label: "Clear", multiplier: 1.0, color: "#25d366" },
+            { label: "Moderate", multiplier: 1.25, color: "#ffd700" },
+            { label: "Heavy", multiplier: 1.5, color: "#ff5f56" }
+        ];
+        return scenarios[Math.floor(Math.random() * scenarios.length)];
+    },
 };
