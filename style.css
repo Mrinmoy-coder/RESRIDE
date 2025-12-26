@@ -21,11 +21,11 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 .hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
 .logo-container-main { position: relative; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
 
-/* LOGO IMAGE STYLING - FULL TRANSPARENCY FIX */
+/* LOGO IMAGE FIX: This hides the black square box background from your image */
 .main-logo-img {
-    width: 160px; 
+    width: 150px; 
     height: auto;
-    /* mix-blend-mode hides the square black box around the logo */
+    /* mix-blend-mode: screen removes the black parts of the image */
     mix-blend-mode: screen; 
     filter: drop-shadow(0 0 15px var(--neon-blue));
     z-index: 10;
