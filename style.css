@@ -11,7 +11,7 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 
 /* NAVBAR */
 .navbar { position: fixed; top: 0; width: 100%; height: 70px; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid var(--border); display: flex; align-items: center; }
-.nav-container { width: 90%; max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; }
+.nav-container { width: 90%; max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
 .nav-logo { font-weight: 900; color: var(--neon-blue); letter-spacing: 2px; }
 .nav-links { display: flex; list-style: none; gap: 30px; }
 .nav-links a { text-decoration: none; color: white; transition: 0.3s; opacity: 0.7; font-size: 0.9rem; }
@@ -20,7 +20,15 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 /* HERO SECTION */
 .hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
 .logo-container-main { position: relative; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
-.logo-icon-top { font-size: 5rem; color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue); }
+
+/* NEW LOGO IMAGE STYLING */
+.main-logo-img {
+    width: 120px; 
+    height: auto;
+    filter: drop-shadow(0 0 15px var(--neon-blue));
+    z-index: 10;
+}
+
 .logo-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; background: var(--neon-blue); filter: blur(60px); opacity: 0.4; z-index: -1; }
 .logo-text { font-size: 6.5rem; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 25px rgba(56, 189, 248, 0.8); letter-spacing: 8px; }
 
@@ -37,7 +45,7 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 /* HERO BUTTONS */
 .hero-btns { display: flex; gap: 20px; justify-content: center; margin-top: 30px; opacity: 0; animation: fadeIn 2s forwards; animation-delay: 3.5s; }
 @keyframes fadeIn { to { opacity: 1; } }
-.btn { padding: 15px 35px; border-radius: 12px; font-weight: bold; text-decoration: none; transition: 0.4s; border: 1px solid transparent; }
+.btn { padding: 15px 35px; border-radius: 12px; font-weight: bold; text-decoration: none; transition: 0.4s; border: 1px solid transparent; text-align: center; }
 .glow-btn-blue { background: rgba(56, 189, 248, 0.2); color: var(--neon-blue); border-color: var(--neon-blue); }
 .glow-btn-blue:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); transform: translateY(-5px); }
 .glow-btn-outline { border: 2px solid var(--neon-blue); color: var(--neon-blue); }
@@ -61,7 +69,7 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .point-end { position: absolute; right: 10%; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 0 15px #fff; }
 
 /* DISPATCH BUTTONS */
-.action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
 .resride-btn { padding: 25px; border-radius: 20px; border: 1px solid var(--border); background: var(--glass); color: white; cursor: pointer; transition: 0.4s; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 0.9rem; }
 .resride-btn i { font-size: 1.8rem; }
 .resride-btn:hover { transform: translateY(-8px); }
@@ -101,174 +109,32 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 
 .founder-note { padding: 60px; opacity: 0.6; font-size: 0.85rem; text-align: center; border-top: 1px solid var(--border); }
 
-/* Spatial 3D Map Perspective */
-.perspective-active { transform: rotateX(45deg); perspective: 1000px; transition: 1s transform; }
-
-/* Micro-interaction: Bounce on hover */
-.bounce-on-hover:hover { animation: carBounce 0.5s infinite; }
-@keyframes carBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-
-/* Micro-interaction: Ripple feedback */
-.btn-ripple:active { transform: scale(0.95); opacity: 0.8; transition: 0.1s; }
-/* Navbar Button Style */
-.about-btn-nav {
-    background: rgba(56, 189, 248, 0.1);
-    border: 1px solid #38bdf8;
-    padding: 6px 15px;
-    border-radius: 20px;
-    color: #38bdf8 !important;
-    font-size: 0.8rem;
-    transition: 0.3s all ease;
-}
-
-.about-btn-nav:hover {
-    background: #38bdf8 !important;
-    color: #000 !important;
-    box-shadow: 0 0 15px #38bdf8;
-}
-
-/* Modal Styling */
+/* MODAL STYLING */
 .modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 9999; justify-content: center; align-items: center;
 }
-
 .modal-content {
-    max-width: 500px;
-    width: 90%;
-    position: relative;
-    padding: 30px;
-    border: 1px solid rgba(56, 189, 248, 0.3);
+    max-width: 450px; width: 90%; position: relative; padding: 30px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
 }
-
-.close-btn {
-    position: absolute;
-    top: 15px; right: 20px;
-    font-size: 1.5rem; color: #fff;
-    cursor: pointer;
-}
-/* --- NEW CONTACT & ABOUT STYLES --- */
+.close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; color: #fff; cursor: pointer; }
 .about-btn-nav {
-    background: rgba(56, 189, 248, 0.1);
-    border: 1px solid #38bdf8;
-    padding: 6px 15px;
-    border-radius: 20px;
-    color: #38bdf8 !important;
-    font-size: 0.8rem;
-    transition: 0.3s all ease;
-    text-decoration: none;
+    background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; padding: 6px 15px; border-radius: 20px; color: #38bdf8 !important; font-size: 0.8rem; transition: 0.3s all ease; text-decoration: none;
 }
+.about-btn-nav:hover { background: #38bdf8 !important; color: #000 !important; box-shadow: 0 0 15px #38bdf8; }
 
-.about-btn-nav:hover {
-    background: #38bdf8 !important;
-    color: #000 !important;
-    box-shadow: 0 0 15px #38bdf8;
-}
-
-.modal-overlay {
-    display: none; /* Keeps it hidden until clicked */
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(8px);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    max-width: 450px;
-    width: 90%;
-    position: relative;
-    padding: 30px;
-    background: rgba(15, 23, 42, 0.9);
-    border: 1px solid rgba(56, 189, 248, 0.4);
-    box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
-}
-
-.close-btn {
-    position: absolute;
-    top: 15px; right: 20px;
-    font-size: 1.8rem; color: #fff;
-    cursor: pointer;
-}
-/* --- MOBILE OPTIMIZATION --- */
-@media screen and (max-width: 600px) {
-    .logo-text {
-        font-size: 3.5rem; /* Shrinks the massive RESRIDE text */
-        letter-spacing: 4px;
-    }
-    
-    .logo-icon-top {
-        font-size: 3.5rem; /* Shrinks the car icon */
-    }
-
-    .hero-content {
-        padding: 0 15px; /* Prevents text from touching edges */
-    }
-
-    .typewriter {
-        font-size: 1.1rem; /* Makes the welcome text readable on one line */
-    }
-
-    .navbar {
-        height: 60px;
-    }
-
-    /* Hide non-essential nav links on mobile to save space */
-    .nav-links {
-        display: none; 
-    }
-}
 /* --- MOBILE RESPONSIVE OVERRIDE --- */
 @media screen and (max-width: 480px) {
-    /* Shrinks the hero section so it doesn't overflow */
-    .hero {
-        height: 100vh;
-        padding-top: 80px;
-    }
-
-    .logo-text {
-        font-size: 2.8rem; /* Scaled down for mobile */
-        letter-spacing: 4px;
-    }
-
-    .logo-icon-top {
-        font-size: 3rem;
-    }
-
-    .typewriter {
-        font-size: 1rem;
-        white-space: normal; /* Allows text to wrap on small screens */
-    }
-
-    /* Fixes the wallet overlapping the logo */
-    .navbar .nav-container {
-        flex-direction: column;
-        height: auto;
-        padding: 10px;
-    }
-
-    #wallet-balance {
-        font-size: 0.7rem;
-        padding: 4px 10px;
-    }
-
-    /* Adjusts buttons for easy thumb tapping */
-    .hero-btns {
-        flex-direction: column;
-        gap: 10px;
-        width: 90%;
-    }
-
-    .btn {
-        width: 100%;
-        padding: 12px;
-    }
+    .hero { height: auto; min-height: 100vh; padding: 100px 20px; }
+    .logo-text { font-size: 3.2rem; letter-spacing: 4px; }
+    .main-logo-img { width: 90px; }
+    .typewriter { font-size: 1.1rem; white-space: normal; border-right: none; text-align: center; }
+    .welcome-container { height: auto; margin-bottom: 20px; }
+    .nav-links { display: none; }
+    .navbar .nav-container { flex-direction: row; justify-content: space-between; }
+    #wallet-balance { font-size: 0.7rem; padding: 5px 10px; }
+    .hero-btns { flex-direction: column; width: 100%; gap: 15px; }
+    .btn { width: 100%; }
+    .glass-card { padding: 25px; }
+    .section-title { font-size: 1.8rem; }
+    .terminal-body { height: 200px; font-size: 0.8rem; }
 }
