@@ -9,10 +9,10 @@ const distanceMatrix = {
 
 const subPlaces = {
     "Kolkata": ["Airport (CCU)", "Sealdah Stn", "Howrah Ferry Ghat", "Esplanade Bus Stand", "Babughat Stand", "Karunamoyee", "Tollygunge Metro", "New Town", "Salt Lake Sec-V"],
-    "Howrah": ["Howrah Jn (HWH)", "Santragachi Stn", "Shalimar Stn", "Nabanna", "Bally Stn", "Belur Ferry Ghat", "Andul Stn"],
-    "Siliguri": ["Bagdogra Intl Airport", "NJP Railway Stn", "Siliguri Jn", "Tenzing Norgay Bus Stand", "P.C. Mittal Stand", "Sevoke Road"],
+    "Howrah": ["Howrah Jn (HWH)", "Santragachi Stn", "Shalimar Stn", "Nabanna", "Bally Stn", "Belur Ferry Ghat"],
+    "Siliguri": ["Bagdogra Intl Airport", "NJP Railway Stn", "Siliguri Jn", "Tenzing Norgay Bus Stand", "P.C. Mittal Stand"],
     "Durgapur": ["Andal Airport", "Durgapur Stn", "City Centre SBSTC Stand", "Muchipara Bus Point"],
-    "Malda": ["Malda Town Stn", "English Bazar NBSTC Stand", "Rathbari Bus Stand"],
+    "Malda": ["Malda Town Stn", "English Bazar NBSTC Stand", "Rathbari Bus Terminus"],
     "Darjeeling": ["Darjeeling Stn (DHR)", "Chowk Bazaar Bus Stand", "Ghoom Stn", "Kurseong Stn"],
     "Murshidabad": ["Berhampore Court Stn", "Lalgola Stn", "Berhampore NBSTC Stand", "Hazarduari Area", "Jiaganj Ferry Ghat"],
     "Nadia": ["Krishnanagar City Jn", "Kalyani Stn", "Ranaghat Jn", "Shantipur Stn", "Nabadwip Dham Ferry"],
@@ -51,6 +51,7 @@ function updateSubPlaces(type) {
     } else { sub.disabled = true; }
 }
 
+/* --- MAIN APP CONTROLLER --- */
 function processRide(rideType) {
     const startCity = document.getElementById('start-city').value;
     const endCity = document.getElementById('end-city').value;
@@ -58,92 +59,37 @@ function processRide(rideType) {
     const endSub = document.getElementById('end-sub').value;
     const timeInput = document.getElementById('booking-time').value;
     const quality = parseInt(document.getElementById('washroom-quality').value);
-    const log = document.getElementById('system-log');
-    const car = document.getElementById('vehicle-icon');
     const aiCtx = parseFloat(document.getElementById('ai-context').value);
 
-    if (!startSub || !endSub) {
-        alert("Please complete the location selection.");
-        return;
-    }
+    if (!startSub || !endSub) { alert("Please complete selection."); return; }
 
+    // Using Modular Pricing Engine
+    const activeFare = PricingEngine.calculateFare(startCity, endCity, rideType, aiCtx, quality);
+    const distance = (startCity === endCity) ? 10 : (PricingEngine.distanceMatrix[startCity][endCity] || 50);
+    const timing = PricingEngine.getETA(distance, rideType);
+
+    if(wallet < activeFare) { alert("Insufficient balance!"); return; }
+
+    // Start Simulation UI
+    startRideSimulation(rideType, activeFare, startSub, endSub, timing, timeInput);
+}
+
+// Separate UI Logic from Math Logic
+function startRideSimulation(type, fare, start, end, timing, startTime) {
     const tripId = "RR-" + Math.floor(Math.random() * 8999 + 1000);
-    // FIXED 404: Using Search Params instead of a subfolder
-    lastTrip = { from: startSub, to: endSub, status: "In Progress", id: tripId, link: `${window.location.origin}${window.location.pathname}?track=${tripId}` };
+    const log = document.getElementById('system-log');
+    const car = document.getElementById('vehicle-icon');
 
-    // CALIBRATED PRICING: Standard (₹11/km) vs Emergency (₹19/km)
-    let distance = (startCity === endCity) ? 10 : (distanceMatrix[startCity][endCity] || 50);
-    let baseRate = (rideType === 'Emergency') ? 19 : 11; 
-    activeFare = Math.round((distance * baseRate * aiCtx) + quality); 
-
-    if(wallet < activeFare) {
-        alert("Insufficient balance! Please recharge.");
-        return;
-    }
-
-    let [h, m] = timeInput.split(':').map(Number);
-    const formatTime = (mins) => `${Math.floor(mins / 60) % 24}:${(mins % 60).toString().padStart(2, '0')}`;
-    const pDelay = (rideType === 'Emergency') ? 2 : 12;
-    const pckTime = formatTime((h * 60) + m + pDelay);
-    const reachTime = formatTime((h * 60) + m + pDelay + Math.round((distance / 45) * 60));
-
-    document.getElementById('label-start').innerText = startSub;
-    document.getElementById('label-end').innerText = endSub;
-    isRideMoving = true;
-    clearTimeout(autoReceiptTimer);
-
-    car.classList.remove('vehicle-moving');
-    car.style.transition = 'none'; 
-    car.style.left = '10%';
-    car.style.color = (rideType === 'Emergency') ? '#ff0055' : '#38bdf8';
-    
-    void car.offsetWidth; 
-
-    setTimeout(() => {
-        car.style.transition = 'left 5s cubic-bezier(0.45, 0.05, 0.55, 0.95)';
-        car.classList.add('vehicle-moving');
-
-        log.innerHTML = `<p style="color:#25d366; font-size:0.7rem; margin-top:5px; border: 1px solid #25d366; padding: 4px; border-radius: 4px;">🔗 LIVE TRACKING: <a href="javascript:void(0)" onclick="alert('Trip ID: ${tripId}\\nStatus: Live Tracking Active\\nDestination: ${endSub}')" style="color:#fff; text-decoration:underline;">resride.track/${tripId}</a></p>` + log.innerHTML;
-
-        autoReceiptTimer = setTimeout(() => {
-            if(isRideMoving) {
-                wallet -= activeFare;
-                points += (quality > 50 ? 100 : 50);
-                lastTrip.status = "Completed";
-                rideHistory.unshift({ time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), from: startSub, to: endSub, fare: activeFare });
-                localStorage.setItem('resrideWallet', wallet);
-                localStorage.setItem('resridePoints', points);
-                localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
-                updateWalletUI();
-                renderHistory();
-
-                log.innerHTML = `
-                <div style="margin-top:10px; padding:10px; border:1px dashed #27c93f; background:rgba(39, 201, 63, 0.1);">
-                    <p style="color:#27c93f; font-weight:bold;">🏁 ARRIVED AT HUB: ${endSub}</p>
-                    <p>Fare: ₹${activeFare} | Points Earned: +${quality > 50 ? 100 : 50}</p>
-                    <div style="display:flex; gap:6px; margin-top:10px;">
-                        ${[1,2,3,4,5].map(i => `<button onclick="submitRating(${i})" style="background:none; border:none; color:#ffd700; cursor:pointer; font-size:1.1rem;">★</button>`).join('')}
-                    </div>
-                </div>` + log.innerHTML;
-                
-                isRideMoving = false;
-            }
-        }, 5000);
-    }, 50);
-
-    log.innerHTML = `<div style="margin-bottom:15px; border-left:3px solid ${rideType === 'Emergency' ? '#ff0055' : '#38bdf8'}; padding-left:10px;">
-        <p style="color:#fff; font-weight:bold;">> ${rideType.toUpperCase()} DISPATCH: ${tripId}</p>
-        <p style="color: #0ff; font-size: 0.8rem;">> 🚗 ETA: ${pckTime} (${pDelay}m) | 🏁 REACH: ${reachTime}</p>
-    </div>` + log.innerHTML;
+    // ... (Keep your existing car movement and interval code here)
 }
 
 function shareTelemetry() {
     if (!lastTrip.from || !lastTrip.id) {
-        alert("No active trip data to share.");
+        alert("No active trip to share.");
         return;
     }
     const statusText = isRideMoving ? "🚨 LIVE TRACKING" : "✅ TRIP COMPLETED";
-    const shareText = `🚀 *RESRIDE Premium Mobility Update*\n\n` +
+    const shareText = `🚀 *RESRIDE Premium Mobility*\n\n` +
         `*Status:* ${statusText}\n` +
         `*ID:* ${lastTrip.id}\n` +
         `📍 *From:* ${lastTrip.from}\n` +
@@ -173,3 +119,48 @@ function renderHistory() {
 
 function clearHistory() { if(confirm("Clear Trip History?")) { rideHistory = []; localStorage.removeItem('resrideHistory'); renderHistory(); } }
 function rechargeWallet() { let amt = prompt("Amount (₹):"); if(amt) { wallet += parseInt(amt); localStorage.setItem('resrideWallet', wallet); updateWalletUI(); } }
+// NEW: AI Surge Notification Logic
+function showPremiumSurge() {
+    const surge = document.getElementById('ai-context').value;
+    const log = document.getElementById('system-log');
+    if (surge > 1.0) {
+        log.innerHTML = `<p style="color: #ffd700; border: 1px solid #ffd700; padding: 5px; border-radius: 5px;">
+            ⚠️ PREMIUM SURGE ACTIVE: High demand detected in Hub. Pricing adjusted by ${surge}x.
+        </p>` + log.innerHTML;
+    }
+}
+function toggleAboutModal() {
+    const modal = document.getElementById('aboutModal');
+    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+}
+
+function toggleContactModal() {
+    const modal = document.getElementById('contactModal');
+    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+}
+
+// Close modal if user clicks outside of it
+window.onclick = function(event) {
+    const about = document.getElementById('aboutModal');
+    const contact = document.getElementById('contactModal');
+    if (event.target == about) about.style.display = "none";
+    if (event.target == contact) contact.style.display = "none";
+}
+/* --- MODAL CONTROL LOGIC --- */
+function toggleAboutModal() {
+    const modal = document.getElementById('aboutModal');
+    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+}
+
+function toggleContactModal() {
+    const modal = document.getElementById('contactModal');
+    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+}
+
+// Closes the window if you click outside the glass box
+window.onclick = function(event) {
+    const about = document.getElementById('aboutModal');
+    const contact = document.getElementById('contactModal');
+    if (event.target == about) about.style.display = "none";
+    if (event.target == contact) contact.style.display = "none";
+}
