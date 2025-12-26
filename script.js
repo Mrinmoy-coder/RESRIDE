@@ -11,8 +11,8 @@ const subPlaces = {
     "Midnapore": ["Kharagpur Jn (KGP)", "Midnapore Railway Stn", "Digha Bus Stand", "Haldia Terminus", "Mecheda Stn"]
 };
 
-let wallet = parseInt(localStorage.getItem('resrideWallet')) || 5000;
-let points = parseInt(localStorage.getItem('resridePoints')) || 0;
+let wallet = parseInt(localStorage.getItem('resrideWallet')) || 7131;
+let points = parseInt(localStorage.getItem('resridePoints')) || 550;
 let rideHistory = JSON.parse(localStorage.getItem('resrideHistory')) || [];
 let isRideMoving = false;
 let autoReceiptTimer;
@@ -50,23 +50,26 @@ function processRide(rideType) {
     const timeInput = document.getElementById('booking-time').value;
     const quality = parseInt(document.getElementById('washroom-quality').value);
     const aiCtx = parseFloat(document.getElementById('ai-context').value);
+    const log = document.getElementById('system-log');
 
     if (!startSub || !endSub) { alert("Please complete selection."); return; }
 
-    // CALLING MODULAR PRICING ENGINE
-    const activeFare = PricingEngine.calculateFare(startCity, endCity, rideType, aiCtx, quality);
-    const distance = (startCity === endCity) ? 10 : (PricingEngine.distanceMatrix[startCity][endCity] || 50);
-    const timing = PricingEngine.getETA(distance, rideType);
+    // FARE CALCULATION
+    let distance = (startCity === endCity) ? 10 : 50; 
+    let baseFare = (rideType === 'Emergency') ? 19 : 11;
+    let finalFare = Math.round((distance * baseFare) * aiCtx) + quality;
 
-    if(wallet < activeFare) { alert("Insufficient balance!"); return; }
+    if(wallet < finalFare) { alert("Insufficient balance!"); return; }
 
-    startRideSimulation(rideType, activeFare, startSub, endSub, timing, timeInput, quality);
-    // Inside processRide()
-    const traffic = PricingEngine.getTrafficSurge();
-    const finalFare = Math.round(fare * traffic.multiplier);
+    // SIMULATION CONFIG
+    let timing = { pickupDelay: 3, travelTime: 12 };
     
-    log.innerHTML = `<p style="color:${traffic.color}; border: 1px solid ${traffic.color}; padding: 5px; border-radius: 5px; margin-bottom: 10px;">
-        📡 HUB SENSOR: ${traffic.label} Traffic detected. Adjusting dispatch priority...
+    // START MOVEMENT
+    startRideSimulation(rideType, finalFare, startSub, endSub, timing, timeInput, quality);
+
+    // AI NOTIFICATION
+    log.innerHTML = `<p style="color:#38bdf8; border: 1px solid #38bdf8; padding: 5px; border-radius: 5px; margin-bottom: 10px;">
+        📡 HUB SENSOR: System calibrating dispatch for ${rideType} priority...
     </p>` + log.innerHTML;
 }
 
@@ -87,13 +90,15 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
     isRideMoving = true;
     clearTimeout(autoReceiptTimer);
 
+    // RESET CAR POSITION
     car.classList.remove('vehicle-moving');
     car.style.transition = 'none'; 
     car.style.left = '10%';
     car.style.color = (type === 'Emergency') ? '#ff0055' : '#38bdf8';
     
-    void car.offsetWidth; 
+    void car.offsetWidth; // Trigger reflow
 
+    // BEGIN MOVEMENT
     setTimeout(() => {
         car.style.transition = 'left 5s cubic-bezier(0.45, 0.05, 0.55, 0.95)';
         car.classList.add('vehicle-moving');
@@ -116,9 +121,6 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
                 <div style="margin-top:10px; padding:10px; border:1px dashed #27c93f; background:rgba(39, 201, 63, 0.1);">
                     <p style="color:#27c93f; font-weight:bold;">🏁 ARRIVED AT HUB: ${end}</p>
                     <p>Fare: ₹${fare} | Points Earned: +${quality > 100 ? 100 : 50}</p>
-                    <div style="display:flex; gap:6px; margin-top:10px;">
-                        ${[1,2,3,4,5].map(i => `<button onclick="submitRating(${i})" style="background:none; border:none; color:#ffd700; cursor:pointer; font-size:1.1rem;">★</button>`).join('')}
-                    </div>
                 </div>` + log.innerHTML;
                 
                 isRideMoving = false;
@@ -154,21 +156,11 @@ function renderHistory() {
 
 function clearHistory() { if(confirm("Clear Trip History?")) { rideHistory = []; localStorage.removeItem('resrideHistory'); renderHistory(); } }
 function rechargeWallet() { let amt = prompt("Amount (₹):"); if(amt) { wallet += parseInt(amt); localStorage.setItem('resrideWallet', wallet); updateWalletUI(); } }
-function submitRating(stars) { alert(`Feedback Received: ${stars} Stars!`); }
-
 function toggleAboutModal() {
     const modal = document.getElementById('aboutModal');
     modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
 }
-
 function toggleContactModal() {
     const modal = document.getElementById('contactModal');
     modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
-}
-
-window.onclick = function(event) {
-    const about = document.getElementById('aboutModal');
-    const contact = document.getElementById('contactModal');
-    if (event.target == about) about.style.display = "none";
-    if (event.target == contact) contact.style.display = "none";
 }
