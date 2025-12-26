@@ -1,5 +1,5 @@
 const distanceMatrix = {
-    "Kolkata": { "Howrah": 15, "Siliguri": 580, "Durgapur": 170, "Malda": 330, "Midnapore": 130, "Nadia": 110, "Murshidabad": 210, "Birbhum": 190 },
+    "Kolkata": { "Howrah": 15, "Siliguri": 580, "Durgapur": 170, "Malda": 330, "Midnapore": 130, "Nadia": 110, "Murshidabad": 210 },
     "Howrah": { "Kolkata": 15, "Siliguri": 578, "Durgapur": 165, "Midnapore": 115 },
     "Siliguri": { "Kolkata": 580, "Darjeeling": 65, "Jalpaiguri": 45, "Malda": 250 },
     "Durgapur": { "Kolkata": 170, "Asansol": 40, "Bankura": 50, "Birbhum": 60 },
@@ -9,10 +9,10 @@ const distanceMatrix = {
 
 const subPlaces = {
     "Kolkata": ["Airport (CCU)", "Sealdah Stn", "Howrah Ferry Ghat", "Esplanade Bus Stand", "Babughat Stand", "Karunamoyee", "Tollygunge Metro", "New Town", "Salt Lake Sec-V"],
-    "Howrah": ["Howrah Jn (HWH)", "Santragachi Stn", "Shalimar Stn", "Nabanna", "Bally Stn", "Belur Ferry Ghat"],
-    "Siliguri": ["Bagdogra Intl Airport", "NJP Railway Stn", "Siliguri Jn", "Tenzing Norgay Bus Stand", "P.C. Mittal Stand"],
+    "Howrah": ["Howrah Jn (HWH)", "Santragachi Stn", "Shalimar Stn", "Nabanna", "Bally Stn", "Belur Ferry Ghat", "Andul Stn"],
+    "Siliguri": ["Bagdogra Intl Airport", "NJP Railway Stn", "Siliguri Jn", "Tenzing Norgay Bus Stand", "P.C. Mittal Stand", "Sevoke Road"],
     "Durgapur": ["Andal Airport", "Durgapur Stn", "City Centre SBSTC Stand", "Muchipara Bus Point"],
-    "Malda": ["Malda Town Stn", "English Bazar NBSTC Stand", "Rathbari Bus Terminus"],
+    "Malda": ["Malda Town Stn", "English Bazar NBSTC Stand", "Rathbari Bus Stand"],
     "Darjeeling": ["Darjeeling Stn (DHR)", "Chowk Bazaar Bus Stand", "Ghoom Stn", "Kurseong Stn"],
     "Murshidabad": ["Berhampore Court Stn", "Lalgola Stn", "Berhampore NBSTC Stand", "Hazarduari Area", "Jiaganj Ferry Ghat"],
     "Nadia": ["Krishnanagar City Jn", "Kalyani Stn", "Ranaghat Jn", "Shantipur Stn", "Nabadwip Dham Ferry"],
@@ -57,7 +57,7 @@ function processRide(rideType) {
     const startSub = document.getElementById('start-sub').value;
     const endSub = document.getElementById('end-sub').value;
     const timeInput = document.getElementById('booking-time').value;
-    const qualitySurcharge = 40; // Reduced sanitation fee
+    const quality = parseInt(document.getElementById('washroom-quality').value);
     const log = document.getElementById('system-log');
     const car = document.getElementById('vehicle-icon');
     const aiCtx = parseFloat(document.getElementById('ai-context').value);
@@ -68,19 +68,19 @@ function processRide(rideType) {
     }
 
     const tripId = "RR-" + Math.floor(Math.random() * 8999 + 1000);
+    // FIXED 404: Using Search Params instead of a subfolder
     lastTrip = { from: startSub, to: endSub, status: "In Progress", id: tripId, link: `${window.location.origin}${window.location.pathname}?track=${tripId}` };
 
-    // CALIBRATED PRICING: Standard (₹10/km) vs Emergency (₹18/km)
+    // CALIBRATED PRICING: Standard (₹11/km) vs Emergency (₹19/km)
     let distance = (startCity === endCity) ? 10 : (distanceMatrix[startCity][endCity] || 50);
-    let baseRate = (rideType === 'Emergency') ? 18 : 10; 
-    activeFare = Math.round((distance * baseRate * aiCtx) + qualitySurcharge); 
+    let baseRate = (rideType === 'Emergency') ? 19 : 11; 
+    activeFare = Math.round((distance * baseRate * aiCtx) + quality); 
 
     if(wallet < activeFare) {
         alert("Insufficient balance! Please recharge.");
         return;
     }
 
-    // PICKUP DIFFERENTIATION
     let [h, m] = timeInput.split(':').map(Number);
     const formatTime = (mins) => `${Math.floor(mins / 60) % 24}:${(mins % 60).toString().padStart(2, '0')}`;
     const pDelay = (rideType === 'Emergency') ? 2 : 12;
@@ -103,13 +103,12 @@ function processRide(rideType) {
         car.style.transition = 'left 5s cubic-bezier(0.45, 0.05, 0.55, 0.95)';
         car.classList.add('vehicle-moving');
 
-        // FIXED: Alert prevents neutralization loop
-        log.innerHTML = `<p style="color:#25d366; font-size:0.7rem; margin-top:5px; border: 1px solid #25d366; padding: 4px; border-radius: 4px;">🔗 LIVE TRACKING: <a href="javascript:void(0)" onclick="alert('Trip ID: ${tripId}\\nStatus: Live Tracking Active\\nLocation: En Route to ${endSub}')" style="color:#fff; text-decoration:underline;">resride.track/${tripId}</a></p>` + log.innerHTML;
+        log.innerHTML = `<p style="color:#25d366; font-size:0.7rem; margin-top:5px; border: 1px solid #25d366; padding: 4px; border-radius: 4px;">🔗 LIVE TRACKING: <a href="javascript:void(0)" onclick="alert('Trip ID: ${tripId}\\nStatus: Live Tracking Active\\nDestination: ${endSub}')" style="color:#fff; text-decoration:underline;">resride.track/${tripId}</a></p>` + log.innerHTML;
 
         autoReceiptTimer = setTimeout(() => {
             if(isRideMoving) {
                 wallet -= activeFare;
-                points += 50;
+                points += (quality > 50 ? 100 : 50);
                 lastTrip.status = "Completed";
                 rideHistory.unshift({ time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), from: startSub, to: endSub, fare: activeFare });
                 localStorage.setItem('resrideWallet', wallet);
@@ -121,7 +120,7 @@ function processRide(rideType) {
                 log.innerHTML = `
                 <div style="margin-top:10px; padding:10px; border:1px dashed #27c93f; background:rgba(39, 201, 63, 0.1);">
                     <p style="color:#27c93f; font-weight:bold;">🏁 ARRIVED AT HUB: ${endSub}</p>
-                    <p>Fare: ₹${activeFare}</p>
+                    <p>Fare: ₹${activeFare} | Points Earned: +${quality > 50 ? 100 : 50}</p>
                     <div style="display:flex; gap:6px; margin-top:10px;">
                         ${[1,2,3,4,5].map(i => `<button onclick="submitRating(${i})" style="background:none; border:none; color:#ffd700; cursor:pointer; font-size:1.1rem;">★</button>`).join('')}
                     </div>
@@ -140,16 +139,16 @@ function processRide(rideType) {
 
 function shareTelemetry() {
     if (!lastTrip.from || !lastTrip.id) {
-        alert("No active trip found.");
+        alert("No active trip data to share.");
         return;
     }
     const statusText = isRideMoving ? "🚨 LIVE TRACKING" : "✅ TRIP COMPLETED";
-    const shareText = `🚀 *RESRIDE Premium Mobility*\n\n` +
+    const shareText = `🚀 *RESRIDE Premium Mobility Update*\n\n` +
         `*Status:* ${statusText}\n` +
         `*ID:* ${lastTrip.id}\n` +
         `📍 *From:* ${lastTrip.from}\n` +
         `🏁 *To:* ${lastTrip.to}\n` +
-        `🔗 *Track:* ${lastTrip.link}\n\n` +
+        `🔗 *Track Trip:* ${lastTrip.link}\n\n` +
         `Innovation for Safe & Premium Transit 🛡️`;
 
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
