@@ -100,7 +100,6 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .benefit-premium-card:hover .card-glow-effect { opacity: 1; }
 
 .founder-note { padding: 60px; opacity: 0.6; font-size: 0.85rem; text-align: center; border-top: 1px solid var(--border); }
-/* ADD THESE TO THE BOTTOM OF style.css */
 
 /* Spatial 3D Map Perspective */
 .perspective-active { transform: rotateX(45deg); perspective: 1000px; transition: 1s transform; }
@@ -111,13 +110,3 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 
 /* Micro-interaction: Ripple feedback */
 .btn-ripple:active { transform: scale(0.95); opacity: 0.8; transition: 0.1s; }
-
-/* Inclusive Design: High Contrast Mode Support */
-@media (prefers-contrast: high) {
-    .glass-card { background: black; border: 2px solid white; }
-    .resride-btn { border: 2px solid white; }
-}
-
-/* Ensure grids are correctly side-by-side as per your screenshots */
-.action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-.tech-grid, .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
