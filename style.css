@@ -21,7 +21,7 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 .hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
 .logo-container-main { position: relative; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
 
-/* THE FIX: This property hides the black square box background */
+/* LOGO FIX: mix-blend-mode makes the black background of the image disappear */
 .main-logo-img {
     width: 180px; 
     height: auto;
@@ -48,7 +48,7 @@ body { background: var(--dark-navy); color: white; line-height: 1.6; overflow-x:
 /* HERO BUTTONS */
 .hero-btns { display: flex; gap: 20px; justify-content: center; margin-top: 30px; opacity: 0; animation: fadeIn 2s forwards; animation-delay: 3.5s; }
 @keyframes fadeIn { to { opacity: 1; } }
-.btn { padding: 15px 35px; border-radius: 12px; font-weight: bold; text-decoration: none; transition: 0.4s; border: 1px solid transparent; text-align: center; display: inline-block; }
+.btn { padding: 15px 35px; border-radius: 12px; font-weight: bold; text-decoration: none; transition: 0.4s; border: 1px solid transparent; text-align: center; }
 .glow-btn-blue { background: rgba(56, 189, 248, 0.2); color: var(--neon-blue); border: 1px solid var(--neon-blue); }
 .glow-btn-blue:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); transform: translateY(-5px); }
 .glow-btn-outline { border: 2px solid var(--neon-blue); color: var(--neon-blue); }
@@ -131,8 +131,13 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
     .logo-text { font-size: 3.2rem; letter-spacing: 4px; }
     .main-logo-img { width: 110px; }
     .typewriter { font-size: 1.1rem; white-space: normal; border-right: none; text-align: center; }
+    .welcome-container { height: auto; margin-bottom: 20px; }
     .nav-links { display: none; }
     .navbar .nav-container { flex-direction: row; justify-content: space-between; }
     #wallet-balance { font-size: 0.7rem; padding: 5px 10px; }
     .hero-btns { flex-direction: column; width: 100%; gap: 15px; }
+    .btn { width: 100%; }
+    .glass-card { padding: 25px; }
+    .section-title { font-size: 1.8rem; }
+    .terminal-body { height: 200px; font-size: 0.8rem; }
 }
