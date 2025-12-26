@@ -226,3 +226,49 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
         display: none; 
     }
 }
+/* --- MOBILE RESPONSIVE OVERRIDE --- */
+@media screen and (max-width: 480px) {
+    /* Shrinks the hero section so it doesn't overflow */
+    .hero {
+        height: 100vh;
+        padding-top: 80px;
+    }
+
+    .logo-text {
+        font-size: 2.8rem; /* Scaled down for mobile */
+        letter-spacing: 4px;
+    }
+
+    .logo-icon-top {
+        font-size: 3rem;
+    }
+
+    .typewriter {
+        font-size: 1rem;
+        white-space: normal; /* Allows text to wrap on small screens */
+    }
+
+    /* Fixes the wallet overlapping the logo */
+    .navbar .nav-container {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+    }
+
+    #wallet-balance {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+    }
+
+    /* Adjusts buttons for easy thumb tapping */
+    .hero-btns {
+        flex-direction: column;
+        gap: 10px;
+        width: 90%;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px;
+    }
+}
