@@ -66,7 +66,7 @@
                         <option value="Midnapore">Midnapore</option>
                     </select>
                     <label class="sub-label">Hub Location</label>
-                    <select id="start-sub" disabled aria-label="Start Sub Place"><option value="">Select Area</option></select>
+                    <select id="start-sub" disabled><option value="">Select Hub</option></select>
                 </div>
                 <div class="input-box">
                     <label for="end-city"><i class="fas fa-route"></i> Destination</label>
@@ -82,20 +82,20 @@
                         <option value="Midnapore">Midnapore</option>
                     </select>
                     <label class="sub-label">Hub Location</label>
-                    <select id="end-sub" disabled aria-label="End Sub Place"><option value="">Select Area</option></select>
+                    <select id="end-sub" disabled><option value="">Select Hub</option></select>
                 </div>
                 <div class="input-box">
                     <label for="washroom-quality"><i class="fas fa-star"></i> AI & Fleet</label>
                     <select id="washroom-quality">
-                        <option value="40">Standard Maintenance</option>
-                        <option value="80">EV Eco-Sanitize</option>
-                        <option value="200">XL Luxury Gold</option>
+                        <option value="50">Standard Fleet</option>
+                        <option value="150">EV Sustainable</option>
+                        <option value="300">XL Luxury Gold</option>
                     </select>
                     <label class="sub-label">Surge Logic</label>
                     <select id="ai-context">
-                        <option value="1.0">Normal Demand</option>
-                        <option value="1.5">Traffic Surge</option>
-                        <option value="1.9">Peak Festival</option>
+                        <option value="1.0">Normal</option>
+                        <option value="1.6">Heavy Traffic</option>
+                        <option value="2.2">Festival Peak</option>
                     </select>
                     <input type="time" id="booking-time" value="10:00" style="margin-top:10px;">
                 </div>
@@ -104,7 +104,7 @@
             <div class="map-simulation" id="viewport-sim">
                 <span id="label-start" style="position:absolute; left:10%; bottom:5px; font-size:0.7rem; color:#38bdf8; font-weight:bold; z-index:5;"></span>
                 <div class="route-line" id="spatial-grid"></div>
-                <div id="vehicle-icon" class="vehicle-icon bounce-on-hover"><i class="fa-solid fa-car-side" aria-hidden="true"></i></div>
+                <div id="vehicle-icon" class="vehicle-icon bounce-on-hover"><i class="fa-solid fa-car-side"></i></div>
                 <div class="point-start"></div>
                 <div class="point-end"></div>
                 <span id="label-end" style="position:absolute; right:10%; bottom:5px; font-size:0.7rem; color:#fff; font-weight:bold; z-index:5;"></span>
@@ -112,16 +112,16 @@
 
             <div class="action-grid">
                 <button class="resride-btn normal-btn btn-ripple" onclick="processRide('Normal')">
-                    <i class="fas fa-car" aria-hidden="true"></i><span>Standard</span>
+                    <i class="fas fa-car"></i><span>Standard</span>
                 </button>
                 <button class="resride-btn emergency-btn btn-ripple" onclick="processRide('Emergency')">
-                    <i class="fas fa-biohazard" aria-hidden="true"></i><span>Emergency</span>
+                    <i class="fas fa-biohazard"></i><span>Emergency</span>
                 </button>
                 <button class="resride-btn share-btn btn-ripple" onclick="shareTelemetry()" style="border-color: #25d366; color: #25d366;">
-                    <i class="fab fa-whatsapp" aria-hidden="true"></i><span>Share Trip</span>
+                    <i class="fab fa-whatsapp"></i><span>Share Trip</span>
                 </button>
                 <button class="resride-btn cancel-btn btn-ripple" onclick="cancelRide()" style="border-color: #64748b; color: #94a3b8;">
-                    <i class="fas fa-times-circle" aria-hidden="true"></i><span>Cancel</span>
+                    <i class="fas fa-times-circle"></i><span>Cancel</span>
                 </button>
             </div>
 
@@ -131,16 +131,16 @@
                     <span class="title">RESRIDE_AI_v2025_CORE</span>
                 </div>
                 <div id="system-log" class="terminal-body">
-                    <p class="entry">> AI Engine Ready. System calibrated for West Bengal Hubs...</p>
+                    <p class="entry">> AI Engine Ready. Telemetry system status: Active.</p>
                 </div>
             </div>
 
             <div id="history-section" style="margin-top: 30px; border: 1px solid var(--border); border-radius: 15px; background: rgba(0,0,0,0.3); padding: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                     <h3 style="color: var(--neon-blue); font-size: 0.9rem; text-transform: uppercase;">
-                        <i class="fas fa-history" aria-hidden="true"></i> Recent Activity
+                        <i class="fas fa-history"></i> Recent Activity
                     </h3>
-                    <button onclick="clearHistory()" style="background: none; border: none; color: #ff5f56; cursor: pointer;"><i class="fas fa-trash-alt" aria-hidden="true"></i></button>
+                    <button onclick="clearHistory()" style="background: none; border: none; color: #ff5f56; cursor: pointer;"><i class="fas fa-trash-alt"></i></button>
                 </div>
                 <div id="history-list" style="max-height: 150px; overflow-y: auto; font-family: monospace; font-size: 0.75rem;"></div>
             </div>
@@ -152,17 +152,20 @@
             <h2 class="section-title">System Architecture</h2>
             <div class="tech-grid">
                 <div class="tech-card">
-                    <i class="fa-solid fa-list-ol tech-icon" aria-hidden="true"></i>
+                    <div class="card-glow-small"></div>
+                    <i class="fa-solid fa-list-ol tech-icon"></i>
                     <h3>Queue (FIFO)</h3>
                     <p>Handles standard requests in order.</p>
                 </div>
                 <div class="tech-card highlight">
-                    <i class="fa-solid fa-bolt tech-icon" aria-hidden="true"></i>
+                    <div class="card-glow-small"></div>
+                    <i class="fa-solid fa-bolt tech-icon"></i>
                     <h3>Priority Queue</h3>
                     <p>Prioritizes emergency requests.</p>
                 </div>
                 <div class="tech-card">
-                    <i class="fa-solid fa-link tech-icon" aria-hidden="true"></i>
+                    <div class="card-glow-small"></div>
+                    <i class="fa-solid fa-link tech-icon"></i>
                     <h3>Linked List</h3>
                     <p>Dynamic vehicle state management.</p>
                 </div>
@@ -174,17 +177,20 @@
         <h2 class="section-title">Elevating Your Journey</h2>
         <div class="benefits-grid">
             <div class="benefit-premium-card">
-                <div class="icon-box"><i class="fa-solid fa-toilet" aria-hidden="true"></i></div>
+                <div class="card-glow-effect"></div>
+                <div class="icon-box"><i class="fa-solid fa-toilet"></i></div>
                 <h3>Mobile Restrooms</h3>
                 <p>Premium facilities for long journeys.</p>
             </div>
             <div class="benefit-premium-card red-theme">
-                <div class="icon-box"><i class="fa-solid fa-truck-medical" aria-hidden="true"></i></div>
+                <div class="card-glow-effect red-glow"></div>
+                <div class="icon-box"><i class="fa-solid fa-truck-medical"></i></div>
                 <h3>Priority Urgency</h3>
                 <p>Instant dispatch for physiological distress.</p>
             </div>
             <div class="benefit-premium-card">
-                <div class="icon-box"><i class="fa-solid fa-shield-virus" aria-hidden="true"></i></div>
+                <div class="card-glow-effect"></div>
+                <div class="icon-box"><i class="fa-solid fa-shield-virus"></i></div>
                 <h3>Hygienic Cabins</h3>
                 <p>Hospital-grade sanitization standards.</p>
             </div>
