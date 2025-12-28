@@ -11,18 +11,51 @@
 </head>
 <body role="main">
 
+    <div id="loginModal" class="modal-overlay" style="display: flex;">
+        <div class="glass-card modal-content" style="text-align: center;">
+            <div class="logo-container-main" style="margin-bottom: 20px;">
+                <img src="app-icon.png" alt="RESRIDE Logo" class="main-logo-img" style="width: 100px;">
+            </div>
+            <h2 id="auth-title" style="color: #38bdf8; margin-bottom: 10px;">RESRIDE Login</h2>
+            <p id="auth-desc" style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 20px;">Sign in to sync your profile across devices.</p>
+            
+            <div id="auth-form">
+                <input type="email" id="auth-email" placeholder="Email Address" style="margin-bottom: 10px; text-align: center;">
+                <input type="password" id="auth-pass" placeholder="Password" style="margin-bottom: 15px; text-align: center;">
+                
+                <div id="login-actions">
+                    <button onclick="handleAuth('login')" class="btn glow-btn-blue" style="width: 100%;">Sign In & Sync</button>
+                    <p style="margin-top: 15px; font-size: 0.75rem; display: flex; justify-content: space-between;">
+                        <a href="javascript:void(0)" onclick="toggleAuthMode()" style="color: #38bdf8; text-decoration: none;">Create Account</a>
+                        <a href="javascript:void(0)" onclick="forgotPassword()" style="color: #38bdf8; text-decoration: none; opacity: 0.6;">Forgot Password?</a>
+                    </p>
+                </div>
+                
+                <div id="register-actions" style="display: none;">
+                    <button onclick="handleAuth('register')" class="btn glow-btn-blue" style="width: 100%; border-color: #27c93f; color: #27c93f;">Register Account</button>
+                    <p style="margin-top: 15px; font-size: 0.75rem;">
+                        <a href="javascript:void(0)" onclick="toggleAuthMode()" style="color: #38bdf8; text-decoration: none;">Back to Login</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">RESRIDE</div>
             <div style="display: flex; align-items: center; gap: 10px;">
                 <div id="wallet-balance" style="color: #38bdf8; font-family: monospace; font-weight: bold; border: 1px solid rgba(56, 189, 248, 0.3); padding: 5px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-wallet" aria-hidden="true"></i> ₹<span id="bal-amount">7131</span>
+                    <i class="fas fa-wallet"></i> ₹<span id="bal-amount">0</span>
                     <span id="pts-display" style="font-size: 0.6rem; color: #27c93f; border-left: 1px solid #333; padding-left: 8px; margin-left: 8px;">
-                        <i class="fas fa-leaf" aria-hidden="true"></i> <span id="eco-pts">550</span>
+                        <i class="fas fa-leaf"></i> <span id="eco-pts">0</span>
                     </span>
                 </div>
                 <button onclick="rechargeWallet()" style="background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; color: #38bdf8; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                     <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
+                </button>
+                <button onclick="handleLogout()" style="background: rgba(255, 95, 86, 0.1); border: 1px solid #ff5f56; color: #ff5f56; border-radius: 20px; padding: 5px 12px; cursor: pointer; font-size: 0.7rem; font-weight: bold; margin-left: 10px;">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
                 </button>
             </div>
             <ul class="nav-links">
@@ -58,12 +91,11 @@
             <p style="text-align: left; line-height: 1.6; opacity: 0.9; font-size: 0.9rem;">
                 RESRIDE is West Bengal's first premium mobility service integrating 
                 <strong>High-Tech Restroom Facilities</strong> into ride-hailing. 
-                Our engine uses <strong>Priority Queues</strong> to ensure passengers 
-                in physiological distress receive immediate assistance.
+                Our engine uses <strong>Priority Queues</strong> to ensure immediate assistance.
             </p>
             <div class="tech-grid" style="grid-template-columns: 1fr 1fr; margin-top: 20px; gap: 10px;">
-                <div class="tech-card" style="padding: 10px;"><h3>₹11/km</h3><p style="font-size: 0.7rem;">Standard</p></div>
-                <div class="tech-card highlight" style="padding: 10px;"><h3>₹19/km</h3><p style="font-size: 0.7rem;">Emergency</p></div>
+                <div class="tech-card" style="padding: 10px;"><h3>₹6/km</h3><p style="font-size: 0.7rem;">Standard</p></div>
+                <div class="tech-card highlight" style="padding: 10px;"><h3>₹12/km</h3><p style="font-size: 0.7rem;">Emergency</p></div>
             </div>
         </div>
     </div>
@@ -71,7 +103,9 @@
     <div id="contactModal" class="modal-overlay">
         <div class="glass-card modal-content" style="text-align: center;">
             <span class="close-btn" onclick="toggleContactModal()">&times;</span>
-            <div class="founder-avatar" style="width: 80px; height: 80px; background: url('https://github.com/Mrinmoy-coder.png'); background-size: cover; border-radius: 50%; margin: 0 auto 15px; border: 2px solid #38bdf8;"></div>
+            <div class="founder-avatar" style="width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 15px; border: 2px solid #38bdf8; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                <img src="https://github.com/Mrinmoy-coder.png" alt="Mrinmoy Maji" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
             <h2 style="color: #38bdf8; font-size: 1.2rem;">Mrinmoy Maji</h2>
             <p style="font-size: 0.7rem; margin-bottom: 20px; opacity: 0.8;">Founder & Lead Developer</p>
             <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -144,18 +178,10 @@
             </div>
 
             <div class="action-grid">
-                <button class="resride-btn normal-btn btn-ripple" onclick="processRide('Normal')">
-                    <i class="fas fa-car"></i><span>Standard</span>
-                </button>
-                <button class="resride-btn emergency-btn btn-ripple" onclick="processRide('Emergency')">
-                    <i class="fas fa-biohazard"></i><span>Emergency</span>
-                </button>
-                <button class="resride-btn share-btn btn-ripple" onclick="shareTelemetry()" style="border-color: #25d366; color: #25d366;">
-                    <i class="fab fa-whatsapp"></i><span>Share Trip</span>
-                </button>
-                <button class="resride-btn cancel-btn btn-ripple" onclick="cancelRide()" style="border-color: #64748b; color: #94a3b8;">
-                    <i class="fas fa-times-circle"></i><span>Cancel</span>
-                </button>
+                <button class="resride-btn normal-btn btn-ripple" onclick="processRide('Normal')"><i class="fas fa-car"></i><span>Standard</span></button>
+                <button class="resride-btn emergency-btn btn-ripple" onclick="processRide('Emergency')"><i class="fas fa-biohazard"></i><span>Emergency</span></button>
+                <button class="resride-btn share-btn btn-ripple" onclick="shareTelemetry()" style="border-color: #25d366; color: #25d366;"><i class="fab fa-whatsapp"></i><span>Share Trip</span></button>
+                <button class="resride-btn cancel-btn btn-ripple" onclick="cancelRide()"><i class="fas fa-times-circle"></i><span>Cancel</span></button>
             </div>
 
             <div class="terminal-container">
@@ -232,7 +258,41 @@
 
     <footer class="founder-note"><p>© 2025 RESRIDE | Built by Mrinmoy Maji</p></footer>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAt8KtzQp3-w_dLVlRBEKX-SBkI41eONWw",
+            authDomain: "resride-7f0e5.firebaseapp.com",
+            projectId: "resride-7f0e5",
+            storageBucket: "resride-7f0e5.firebasestorage.app",
+            messagingSenderId: "658598770196",
+            appId: "1:658598770196:web:e22cb30723955dd2d69901",
+            measurementId: "G-L6086SJ7JF"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        window.auth = getAuth(app);
+        window.db = getFirestore(app);
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.sendPasswordResetEmail = sendPasswordResetEmail;
+        window.signOut = signOut;
+        window.dbRef = { doc, setDoc, getDoc, updateDoc };
+
+        onAuthStateChanged(window.auth, async (user) => {
+            if (user) {
+                document.getElementById('loginModal').style.display = 'none';
+                await window.syncUserData(user.uid);
+            } else {
+                document.getElementById('loginModal').style.display = 'flex';
+            }
+        });
+    </script>
+    
     <script src="pricing-engine.js"></script>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
