@@ -1,166 +1,298 @@
-/* --- MAIN APP CONTROLLER --- */
-const subPlaces = {
-    "Kolkata": ["Airport (CCU)", "Sealdah Stn", "Howrah Ferry Ghat", "Esplanade Bus Stand", "Babughat Stand", "Karunamoyee", "Tollygunge Metro", "New Town", "Salt Lake Sec-V"],
-    "Howrah": ["Howrah Jn (HWH)", "Santragachi Stn", "Shalimar Stn", "Nabanna", "Bally Stn", "Belur Ferry Ghat"],
-    "Siliguri": ["Bagdogra Intl Airport", "NJP Railway Stn", "Siliguri Jn", "Tenzing Norgay Bus Stand", "P.C. Mittal Stand"],
-    "Durgapur": ["Andal Airport", "Durgapur Stn", "City Centre SBSTC Stand", "Muchipara Bus Point"],
-    "Malda": ["Malda Town Stn", "English Bazar NBSTC Stand", "Rathbari Bus Terminus"],
-    "Darjeeling": ["Darjeeling Stn (DHR)", "Chowk Bazaar Bus Stand", "Ghoom Stn", "Kurseong Stn"],
-    "Murshidabad": ["Berhampore Court Stn", "Lalgola Stn", "Berhampore NBSTC Stand", "Hazarduari Area", "Jiaganj Ferry Ghat"],
-    "Nadia": ["Krishnanagar City Jn", "Kalyani Stn", "Ranaghat Jn", "Shantipur Stn", "Nabadwip Dham Ferry"],
-    "Midnapore": ["Kharagpur Jn (KGP)", "Midnapore Railway Stn", "Digha Bus Stand", "Haldia Terminus", "Mecheda Stn"]
-};
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESRIDE | Premium Mobility</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#38bdf8">
+</head>
+<body role="main">
 
-let wallet = parseInt(localStorage.getItem('resrideWallet')) || 7131;
-let points = parseInt(localStorage.getItem('resridePoints')) || 550;
-let rideHistory = JSON.parse(localStorage.getItem('resrideHistory')) || [];
-let isRideMoving = false;
-let autoReceiptTimer;
-let lastTrip = { from: "", to: "", status: "Ready", id: "", link: "" };
-
-document.addEventListener('DOMContentLoaded', () => {
-    updateWalletUI();
-    renderHistory();
-});
-
-function updateWalletUI() {
-    document.getElementById('bal-amount').innerText = wallet;
-    document.getElementById('eco-pts').innerText = points;
-}
-
-function updateSubPlaces(type) {
-    const city = document.getElementById(`${type}-city`).value;
-    const sub = document.getElementById(`${type}-sub`);
-    sub.innerHTML = '<option value="">Select Hub Location</option>';
-    if (city && subPlaces[city]) {
-        sub.disabled = false;
-        subPlaces[city].forEach(p => {
-            let opt = document.createElement("option");
-            opt.value = p; opt.innerHTML = p;
-            sub.appendChild(opt);
-        });
-    } else { sub.disabled = true; }
-}
-
-function processRide(rideType) {
-    const startCity = document.getElementById('start-city').value;
-    const endCity = document.getElementById('end-city').value;
-    const startSub = document.getElementById('start-sub').value;
-    const endSub = document.getElementById('end-sub').value;
-    const timeInput = document.getElementById('booking-time').value;
-    const quality = parseInt(document.getElementById('washroom-quality').value);
-    const aiCtx = parseFloat(document.getElementById('ai-context').value);
-    const log = document.getElementById('system-log');
-
-    if (!startSub || !endSub) { alert("Please complete selection."); return; }
-
-    // FARE CALCULATION
-    let distance = (startCity === endCity) ? 10 : 50; 
-    let baseFare = (rideType === 'Emergency') ? 19 : 11;
-    let finalFare = Math.round((distance * baseFare) * aiCtx) + quality;
-
-    if(wallet < finalFare) { alert("Insufficient balance!"); return; }
-
-    // SIMULATION CONFIG
-    let timing = { pickupDelay: 3, travelTime: 12 };
-    
-    // START MOVEMENT
-    startRideSimulation(rideType, finalFare, startSub, endSub, timing, timeInput, quality);
-
-    // AI NOTIFICATION
-    log.innerHTML = `<p style="color:#38bdf8; border: 1px solid #38bdf8; padding: 5px; border-radius: 5px; margin-bottom: 10px;">
-        📡 HUB SENSOR: System calibrating dispatch for ${rideType} priority...
-    </p>` + log.innerHTML;
-}
-
-function startRideSimulation(type, fare, start, end, timing, startTime, quality) {
-    const tripId = "RR-" + Math.floor(Math.random() * 8999 + 1000);
-    const log = document.getElementById('system-log');
-    const car = document.getElementById('vehicle-icon');
-    
-    lastTrip = { from: start, to: end, status: "In Progress", id: tripId, link: `${window.location.origin}${window.location.pathname}?track=${tripId}` };
-
-    let [h, m] = startTime.split(':').map(Number);
-    const formatTime = (mins) => `${Math.floor(mins / 60) % 24}:${(mins % 60).toString().padStart(2, '0')}`;
-    const pckTime = formatTime((h * 60) + m + timing.pickupDelay);
-    const reachTime = formatTime((h * 60) + m + timing.pickupDelay + timing.travelTime);
-
-    document.getElementById('label-start').innerText = start;
-    document.getElementById('label-end').innerText = end;
-    isRideMoving = true;
-    clearTimeout(autoReceiptTimer);
-
-    // RESET CAR POSITION
-    car.classList.remove('vehicle-moving');
-    car.style.transition = 'none'; 
-    car.style.left = '10%';
-    car.style.color = (type === 'Emergency') ? '#ff0055' : '#38bdf8';
-    
-    void car.offsetWidth; // Trigger reflow
-
-    // BEGIN MOVEMENT
-    setTimeout(() => {
-        car.style.transition = 'left 5s cubic-bezier(0.45, 0.05, 0.55, 0.95)';
-        car.classList.add('vehicle-moving');
-
-        log.innerHTML = `<p style="color:#25d366; font-size:0.7rem; margin-top:5px; border: 1px solid #25d366; padding: 4px; border-radius: 4px;">🔗 LIVE TRACKING: <a href="javascript:void(0)" onclick="alert('Trip ID: ${tripId}\\nLocation: En Route to ${end}')" style="color:#fff; text-decoration:underline;">resride.track/${tripId}</a></p>` + log.innerHTML;
-
-        autoReceiptTimer = setTimeout(() => {
-            if(isRideMoving) {
-                wallet -= fare;
-                points += (quality > 100 ? 100 : 50);
-                lastTrip.status = "Completed";
-                rideHistory.unshift({ time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), from: start, to: end, fare: fare });
-                localStorage.setItem('resrideWallet', wallet);
-                localStorage.setItem('resridePoints', points);
-                localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
-                updateWalletUI();
-                renderHistory();
-
-                log.innerHTML = `
-                <div style="margin-top:10px; padding:10px; border:1px dashed #27c93f; background:rgba(39, 201, 63, 0.1);">
-                    <p style="color:#27c93f; font-weight:bold;">🏁 ARRIVED AT HUB: ${end}</p>
-                    <p>Fare: ₹${fare} | Points Earned: +${quality > 100 ? 100 : 50}</p>
-                </div>` + log.innerHTML;
+    <div id="loginModal" class="modal-overlay" style="display: flex;">
+        <div class="glass-card modal-content" style="text-align: center;">
+            <div class="logo-container-main" style="margin-bottom: 20px;">
+                <img src="app-icon.png" alt="RESRIDE Logo" class="main-logo-img" style="width: 100px;">
+            </div>
+            <h2 id="auth-title" style="color: #38bdf8; margin-bottom: 10px;">RESRIDE Login</h2>
+            <p id="auth-desc" style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 20px;">Sign in to sync your profile across devices.</p>
+            
+            <div id="auth-form">
+                <input type="email" id="auth-email" placeholder="Email Address" style="margin-bottom: 10px; text-align: center;">
+                <input type="password" id="auth-pass" placeholder="Password" style="margin-bottom: 15px; text-align: center;">
                 
-                isRideMoving = false;
+                <div id="login-actions">
+                    <button onclick="handleAuth('login')" class="btn glow-btn-blue" style="width: 100%;">Sign In & Sync</button>
+                    <p style="margin-top: 15px; font-size: 0.75rem; display: flex; justify-content: space-between;">
+                        <a href="javascript:void(0)" onclick="toggleAuthMode()" style="color: #38bdf8; text-decoration: none;">Create Account</a>
+                        <a href="javascript:void(0)" onclick="forgotPassword()" style="color: #38bdf8; text-decoration: none; opacity: 0.6;">Forgot Password?</a>
+                    </p>
+                </div>
+                
+                <div id="register-actions" style="display: none;">
+                    <button onclick="handleAuth('register')" class="btn glow-btn-blue" style="width: 100%; border-color: #27c93f; color: #27c93f;">Register Account</button>
+                    <p style="margin-top: 15px; font-size: 0.75rem;">
+                        <a href="javascript:void(0)" onclick="toggleAuthMode()" style="color: #38bdf8; text-decoration: none;">Back to Login</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">RESRIDE</div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div id="wallet-balance" style="color: #38bdf8; font-family: monospace; font-weight: bold; border: 1px solid rgba(56, 189, 248, 0.3); padding: 5px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-wallet"></i> ₹<span id="bal-amount">0</span>
+                    <span id="pts-display" style="font-size: 0.6rem; color: #27c93f; border-left: 1px solid #333; padding-left: 8px; margin-left: 8px;">
+                        <i class="fas fa-leaf"></i> <span id="eco-pts">0</span>
+                    </span>
+                </div>
+                <button onclick="rechargeWallet()" style="background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; color: #38bdf8; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
+                </button>
+                <button onclick="handleLogout()" style="background: rgba(255, 95, 86, 0.1); border: 1px solid #ff5f56; color: #ff5f56; border-radius: 20px; padding: 5px 12px; cursor: pointer; font-size: 0.7rem; font-weight: bold; margin-left: 10px;">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </button>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#request">Engine</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#benefits">Benefits</a></li>
+                <li><a href="javascript:void(0)" onclick="toggleAboutModal()" class="about-btn-nav">About RESRIDE</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <div class="logo-container-main">
+                <img src="app-icon.png" alt="RESRIDE Logo" class="main-logo-img">
+                <div class="logo-glow"></div>
+            </div>
+            <h1 class="logo-text">RESRIDE</h1>
+            <div class="welcome-container"><p class="typewriter">Hello, Welcome to RESRIDE !!!</p></div>
+            <p class="tagline">Restroom + Ride. Mobility without compromise.</p>
+            <div class="hero-btns fade-in">
+                <a href="#request" class="btn glow-btn-blue">Smart Engine</a>
+                <a href="javascript:void(0)" onclick="toggleContactModal()" class="btn glow-btn-outline">Contact Founder</a>
+            </div>
+        </div>
+    </header>
+
+    <div id="aboutModal" class="modal-overlay">
+        <div class="glass-card modal-content">
+            <span class="close-btn" onclick="toggleAboutModal()">&times;</span>
+            <h2 class="section-title" style="font-size: 1.5rem;">The RESRIDE Mission</h2>
+            <p style="text-align: left; line-height: 1.6; opacity: 0.9; font-size: 0.9rem;">
+                RESRIDE is West Bengal's first premium mobility service integrating 
+                <strong>High-Tech Restroom Facilities</strong> into ride-hailing. 
+                Our engine uses <strong>Priority Queues</strong> to ensure immediate assistance.
+            </p>
+            <div class="tech-grid" style="grid-template-columns: 1fr 1fr; margin-top: 20px; gap: 10px;">
+                <div class="tech-card" style="padding: 10px;"><h3>₹6/km</h3><p style="font-size: 0.7rem;">Standard</p></div>
+                <div class="tech-card highlight" style="padding: 10px;"><h3>₹12/km</h3><p style="font-size: 0.7rem;">Emergency</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="contactModal" class="modal-overlay">
+        <div class="glass-card modal-content" style="text-align: center;">
+            <span class="close-btn" onclick="toggleContactModal()">&times;</span>
+            <div class="founder-avatar" style="width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 15px; border: 2px solid #38bdf8; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                <img src="https://github.com/Mrinmoy-coder.png" alt="Mrinmoy Maji" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <h2 style="color: #38bdf8; font-size: 1.2rem;">Mrinmoy Maji</h2>
+            <p style="font-size: 0.7rem; margin-bottom: 20px; opacity: 0.8;">Founder & Lead Developer</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <a href="mailto:mrinmoym407@gmail.com" class="btn glow-btn-blue" style="width: 100%; font-size: 0.8rem; padding: 10px;"><i class="fas fa-envelope"></i> Email Founder</a>
+                <a href="https://www.linkedin.com/in/mrinmoy-maji-635986322" target="_blank" class="btn glow-btn-outline" style="width: 100%; border-color: #0077b5; color: #0077b5; font-size: 0.8rem; padding: 10px;"><i class="fab fa-linkedin"></i> LinkedIn Profile</a>
+            </div>
+        </div>
+    </div>
+
+    <section id="request" class="booking-container">
+        <div class="glass-card">
+            <h2 class="section-title">Smart Dispatch Engine</h2>
+            <div class="location-engine">
+                <div class="input-box">
+                    <label for="start-city"><i class="fas fa-map-marker-alt"></i> Starting City</label>
+                    <select id="start-city" onchange="updateSubPlaces('start')">
+                        <option value="">Select City</option>
+                        <option value="Kolkata">Kolkata</option>
+                        <option value="Howrah">Howrah</option>
+                        <option value="Siliguri">Siliguri</option>
+                        <option value="Durgapur">Durgapur</option>
+                        <option value="Malda">Malda</option>
+                        <option value="Murshidabad">Murshidabad</option>
+                        <option value="Nadia">Nadia</option>
+                        <option value="Midnapore">Midnapore</option>
+                    </select>
+                    <label class="sub-label">Hub Location</label>
+                    <select id="start-sub" disabled><option value="">Select Area</option></select>
+                </div>
+                <div class="input-box">
+                    <label for="end-city"><i class="fas fa-route"></i> Destination</label>
+                    <select id="end-city" onchange="updateSubPlaces('end')">
+                        <option value="">Select City</option>
+                        <option value="Kolkata">Kolkata</option>
+                        <option value="Howrah">Howrah</option>
+                        <option value="Siliguri">Siliguri</option>
+                        <option value="Durgapur">Durgapur</option>
+                        <option value="Malda">Malda</option>
+                        <option value="Murshidabad">Murshidabad</option>
+                        <option value="Nadia">Nadia</option>
+                        <option value="Midnapore">Midnapore</option>
+                    </select>
+                    <label class="sub-label">Hub Location</label>
+                    <select id="end-sub" disabled><option value="">Select Area</option></select>
+                </div>
+                <div class="input-box">
+                    <label for="washroom-quality"><i class="fas fa-star"></i> AI & Fleet</label>
+                    <select id="washroom-quality">
+                        <option value="50">Standard Fleet</option>
+                        <option value="150">EV Sustainable</option>
+                        <option value="300">XL Luxury Gold</option>
+                    </select>
+                    <label class="sub-label">Surge Logic</label>
+                    <select id="ai-context">
+                        <option value="1.0">Normal</option>
+                        <option value="1.6">Heavy Traffic</option>
+                        <option value="2.2">Festival Peak</option>
+                    </select>
+                    <input type="time" id="booking-time" value="10:00" style="margin-top:10px;">
+                </div>
+            </div>
+
+            <div class="map-simulation" id="viewport-sim">
+                <span id="label-start" style="position:absolute; left:10%; bottom:5px; font-size:0.7rem; color:#38bdf8; font-weight:bold; z-index:5;"></span>
+                <div class="route-line" id="spatial-grid"></div>
+                <div id="vehicle-icon" class="vehicle-icon bounce-on-hover"><i class="fa-solid fa-car-side"></i></div>
+                <div class="point-start"></div>
+                <div class="point-end"></div>
+                <span id="label-end" style="position:absolute; right:10%; bottom:5px; font-size:0.7rem; color:#fff; font-weight:bold; z-index:5;"></span>
+            </div>
+
+            <div class="action-grid">
+                <button class="resride-btn normal-btn btn-ripple" onclick="processRide('Normal')"><i class="fas fa-car"></i><span>Standard</span></button>
+                <button class="resride-btn emergency-btn btn-ripple" onclick="processRide('Emergency')"><i class="fas fa-biohazard"></i><span>Emergency</span></button>
+                <button class="resride-btn share-btn btn-ripple" onclick="shareTelemetry()" style="border-color: #25d366; color: #25d366;"><i class="fab fa-whatsapp"></i><span>Share Trip</span></button>
+                <button class="resride-btn cancel-btn btn-ripple" onclick="cancelRide()"><i class="fas fa-times-circle"></i><span>Cancel</span></button>
+            </div>
+
+            <div class="terminal-container">
+                <div class="terminal-header">
+                    <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                    <span class="title">RESRIDE_AI_v2025_CORE</span>
+                </div>
+                <div id="system-log" class="terminal-body">
+                    <p class="entry">> AI Engine Ready. System calibrated for West Bengal Transit Hubs...</p>
+                </div>
+            </div>
+
+            <div id="history-section" style="margin-top: 30px; border: 1px solid var(--border); border-radius: 15px; background: rgba(0,0,0,0.3); padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3 style="color: var(--neon-blue); font-size: 0.9rem; text-transform: uppercase;">
+                        <i class="fas fa-history"></i> Recent Activity
+                    </h3>
+                    <button onclick="clearHistory()" style="background: none; border: none; color: #ff5f56; cursor: pointer;"><i class="fas fa-trash-alt"></i></button>
+                </div>
+                <div id="history-list" style="max-height: 150px; overflow-y: auto; font-family: monospace; font-size: 0.75rem;"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="architecture" class="tech-stack">
+        <div class="container">
+            <h2 class="section-title">System Architecture</h2>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="card-glow-small"></div>
+                    <i class="fa-solid fa-list-ol tech-icon"></i>
+                    <h3>Queue (FIFO)</h3>
+                    <p>Handles standard requests in order.</p>
+                </div>
+                <div class="tech-card highlight">
+                    <div class="card-glow-small"></div>
+                    <i class="fa-solid fa-bolt tech-icon"></i>
+                    <h3>Priority Queue</h3>
+                    <p>Prioritizes emergency requests.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="card-glow-small"></div>
+                    <i class="fa-solid fa-link tech-icon"></i>
+                    <h3>Linked List</h3>
+                    <p>Dynamic vehicle state management.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="benefits" class="benefits-premium">
+        <h2 class="section-title">Elevating Your Journey</h2>
+        <div class="benefits-grid">
+            <div class="benefit-premium-card">
+                <div class="card-glow-effect"></div>
+                <div class="icon-box"><i class="fa-solid fa-toilet"></i></div>
+                <h3>Mobile Restrooms</h3>
+                <p>Premium facilities for long journeys.</p>
+            </div>
+            <div class="benefit-premium-card red-theme">
+                <div class="card-glow-effect red-glow"></div>
+                <div class="icon-box"><i class="fa-solid fa-truck-medical"></i></div>
+                <h3>Priority Urgency</h3>
+                <p>Instant dispatch for physiological distress.</p>
+            </div>
+            <div class="benefit-premium-card">
+                <div class="card-glow-effect"></div>
+                <div class="icon-box"><i class="fa-solid fa-shield-virus"></i></div>
+                <h3>Hygienic Cabins</h3>
+                <p>Hospital-grade sanitization standards.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="founder-note"><p>© 2025 RESRIDE | Built by Mrinmoy Maji</p></footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAt8KtzQp3-w_dLVlRBEKX-SBkI41eONWw",
+            authDomain: "resride-7f0e5.firebaseapp.com",
+            projectId: "resride-7f0e5",
+            storageBucket: "resride-7f0e5.firebasestorage.app",
+            messagingSenderId: "658598770196",
+            appId: "1:658598770196:web:e22cb30723955dd2d69901",
+            measurementId: "G-L6086SJ7JF"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        window.auth = getAuth(app);
+        window.db = getFirestore(app);
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.sendPasswordResetEmail = sendPasswordResetEmail;
+        window.signOut = signOut;
+        window.dbRef = { doc, setDoc, getDoc, updateDoc };
+
+        onAuthStateChanged(window.auth, async (user) => {
+            if (user) {
+                document.getElementById('loginModal').style.display = 'none';
+                await window.syncUserData(user.uid);
+            } else {
+                document.getElementById('loginModal').style.display = 'flex';
             }
-        }, 5000);
-    }, 50);
-
-    log.innerHTML = `<div style="margin-bottom:15px; border-left:3px solid ${type === 'Emergency' ? '#ff0055' : '#38bdf8'}; padding-left:10px;">
-        <p style="color:#fff; font-weight:bold;">> ${type.toUpperCase()} DISPATCH: ${tripId}</p>
-        <p style="color: #0ff; font-size: 0.8rem;">> 🚗 ETA: ${pckTime} (${timing.pickupDelay}m) | 🏁 REACH: ${reachTime}</p>
-    </div>` + log.innerHTML;
-}
-
-function shareTelemetry() {
-    if (!lastTrip.from || !lastTrip.id) { alert("No active trip to share."); return; }
-    const statusText = isRideMoving ? "🚨 LIVE TRACKING" : "✅ TRIP COMPLETED";
-    const shareText = `🚀 *RESRIDE Premium Mobility*\n\n*Status:* ${statusText}\n*ID:* ${lastTrip.id}\n📍 *From:* ${lastTrip.from}\n🏁 *To:* ${lastTrip.to}\n🔗 *Track Trip:* ${lastTrip.link}\n\nInnovation for Safe & Premium Transit 🛡️`;
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
-}
-
-function cancelRide() { 
-    if (!isRideMoving) return;
-    isRideMoving = false; 
-    clearTimeout(autoReceiptTimer);
-    document.getElementById('vehicle-icon').style.transition = 'none'; 
-    document.getElementById('system-log').innerHTML = `<p style="color:#38bdf8;">✅ CANCELLED: ₹0 fee applied.</p>` + document.getElementById('system-log').innerHTML;
-}
-
-function renderHistory() {
-    const list = document.getElementById('history-list');
-    list.innerHTML = rideHistory.length ? rideHistory.map(r => `<div style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; display: flex; justify-content: space-between;"><span>${r.time} | ${r.from} → ${r.to}</span><span style="color: #38bdf8; font-weight: bold;">₹${r.fare}</span></div>`).join('') : `<p style="color: #666; font-style: italic;">No records found.</p>`;
-}
-
-function clearHistory() { if(confirm("Clear Trip History?")) { rideHistory = []; localStorage.removeItem('resrideHistory'); renderHistory(); } }
-function rechargeWallet() { let amt = prompt("Amount (₹):"); if(amt) { wallet += parseInt(amt); localStorage.setItem('resrideWallet', wallet); updateWalletUI(); } }
-function toggleAboutModal() {
-    const modal = document.getElementById('aboutModal');
-    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
-}
-function toggleContactModal() {
-    const modal = document.getElementById('contactModal');
-    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
-}
+        });
+    </script>
+    
+    <script src="pricing-engine.js"></script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
