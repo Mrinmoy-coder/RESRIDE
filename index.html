@@ -23,13 +23,19 @@
                 <input type="email" id="auth-email" placeholder="Email Address" style="margin-bottom: 10px; text-align: center;">
                 <input type="password" id="auth-pass" placeholder="Password" style="margin-bottom: 15px; text-align: center;">
                 
-                <div id="login-actions">
-                    <button onclick="handleAuth('login')" class="btn glow-btn-blue" style="width: 100%;">Sign In & Sync</button>
-                    <p style="margin-top: 15px; font-size: 0.75rem; display: flex; justify-content: space-between;">
-                        <a href="javascript:void(0)" onclick="toggleAuthMode()" style="color: #38bdf8; text-decoration: none;">Create Account</a>
-                        <a href="javascript:void(0)" onclick="forgotPassword()" style="color: #38bdf8; text-decoration: none; opacity: 0.6;">Forgot Password?</a>
-                    </p>
-                </div>
+               <div id="login-actions">
+    <button onclick="handleAuth('login')" class="btn glow-btn-blue" style="width: 100%;">Sign In & Sync</button>
+    
+    <button onclick="handleGoogleLogin()" class="btn" style="background: white; color: black; margin-top: 10px; width: 100%; border-radius: 5px; font-weight: bold; display: flex; align-items: center; justify-content: center;">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" style="margin-right: 8px;">
+        Sign in with Google
+    </button>
+
+    <p style="margin-top: 15px; font-size: 0.75rem; display: flex; justify-content: space-between;">
+        <a href="javascript:void(0)" onclick="toggleAuthMode()" style="color: #38bdf8; text-decoration: none;">Create Account</a>
+        <a href="javascript:void(0)" onclick="forgotPassword()" style="color: #38bdf8; text-decoration: none; opacity: 0.6;">Forgot Password?</a>
+    </p>
+</div>
                 
                 <div id="register-actions" style="display: none;">
                     <button onclick="handleAuth('register')" class="btn glow-btn-blue" style="width: 100%; border-color: #27c93f; color: #27c93f;">Register Account</button>
@@ -40,34 +46,40 @@
             </div>
         </div>
     </div>
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-logo">RESRIDE</div>
+        
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div id="wallet-balance" style="color: #38bdf8; font-family: monospace; font-weight: bold; border: 1px solid rgba(56, 189, 248, 0.3); padding: 5px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-wallet"></i> ₹<span id="bal-amount">0</span>
+                <span id="pts-display" style="font-size: 0.6rem; color: #27c93f; border-left: 1px solid #333; padding-left: 8px; margin-left: 8px;">
+                    <i class="fas fa-leaf"></i> <span id="eco-pts">0</span>
+                </span>
+            </div>
 
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">RESRIDE</div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div id="wallet-balance" style="color: #38bdf8; font-family: monospace; font-weight: bold; border: 1px solid rgba(56, 189, 248, 0.3); padding: 5px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-wallet"></i> ₹<span id="bal-amount">0</span>
-                    <span id="pts-display" style="font-size: 0.6rem; color: #27c93f; border-left: 1px solid #333; padding-left: 8px; margin-left: 8px;">
-                        <i class="fas fa-leaf"></i> <span id="eco-pts">0</span>
-                    </span>
-                </div>
-                <button onclick="rechargeWallet()" style="background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; color: #38bdf8; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
-                </button>
-                <button onclick="handleLogout()" style="background: rgba(255, 95, 86, 0.1); border: 1px solid #ff5f56; color: #ff5f56; border-radius: 20px; padding: 5px 12px; cursor: pointer; font-size: 0.7rem; font-weight: bold; margin-left: 10px;">
+            <button onclick="rechargeWallet()" style="background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; color: #38bdf8; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
+            </button>
+
+            <div id="user-profile" style="display: flex; align-items: center; gap: 8px; margin-left: 10px;">
+                <img id="nav-user-img" src="" style="width: 30px; height: 30px; border-radius: 50%; display: none; border: 1px solid #38bdf8; object-fit: cover;">
+                
+                <button onclick="handleLogout()" style="background: rgba(255, 95, 86, 0.1); border: 1px solid #ff5f56; color: #ff5f56; border-radius: 20px; padding: 5px 12px; cursor: pointer; font-size: 0.7rem; font-weight: bold;">
                     <i class="fas fa-sign-out-alt"></i> Log Out
                 </button>
             </div>
-            <ul class="nav-links">
-                <li><a href="#">Home</a></li>
-                <li><a href="#request">Engine</a></li>
-                <li><a href="#architecture">Architecture</a></li>
-                <li><a href="#benefits">Benefits</a></li>
-                <li><a href="javascript:void(0)" onclick="toggleAboutModal()" class="about-btn-nav">About RESRIDE</a></li>
-            </ul>
         </div>
-    </nav>
 
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#request">Engine</a></li>
+            <li><a href="#architecture">Architecture</a></li>
+            <li><a href="#benefits">Benefits</a></li>
+            <li><a href="javascript:void(0)" onclick="toggleAboutModal()" class="about-btn-nav">About RESRIDE</a></li>
+        </ul>
+    </div>
+</nav>
     <header class="hero">
         <div class="hero-content">
             <div class="logo-container-main">
@@ -258,39 +270,65 @@
 
     <footer class="founder-note"><p>© 2025 RESRIDE | Built by Mrinmoy Maji</p></footer>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAt8KtzQp3-w_dLVlRBEKX-SBkI41eONWw",
-            authDomain: "resride-7f0e5.firebaseapp.com",
-            projectId: "resride-7f0e5",
-            storageBucket: "resride-7f0e5.firebasestorage.app",
-            messagingSenderId: "658598770196",
-            appId: "1:658598770196:web:e22cb30723955dd2d69901",
-            measurementId: "G-L6086SJ7JF"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyAt8KtzQp3-w_dLVlRBEKX-SBkI41eONWw",
+        authDomain: "resride-7f0e5.firebaseapp.com",
+        projectId: "resride-7f0e5",
+        storageBucket: "resride-7f0e5.firebasestorage.app",
+        messagingSenderId: "658598770196",
+        appId: "1:658598770196:web:e22cb30723955dd2d69901",
+        measurementId: "G-L6086SJ7JF"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        window.auth = getAuth(app);
-        window.db = getFirestore(app);
-        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-        window.sendPasswordResetEmail = sendPasswordResetEmail;
-        window.signOut = signOut;
-        window.dbRef = { doc, setDoc, getDoc, updateDoc };
+    const app = initializeApp(firebaseConfig);
+    window.auth = getAuth(app);
+    window.db = getFirestore(app);
+    
+    // Auth Exports
+    window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+    window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+    window.sendPasswordResetEmail = sendPasswordResetEmail;
+    window.signOut = signOut;
+    window.googleProvider = new GoogleAuthProvider(); // Added
+    window.signInWithPopup = signInWithPopup;       // Added
+    window.dbRef = { doc, setDoc, getDoc, updateDoc };
 
-        onAuthStateChanged(window.auth, async (user) => {
-            if (user) {
-                document.getElementById('loginModal').style.display = 'none';
-                await window.syncUserData(user.uid);
-            } else {
-                document.getElementById('loginModal').style.display = 'flex';
-            }
-        });
-    </script>
+onAuthStateChanged(window.auth, async (user) => {
+    if (user) {
+        console.log("RESRIDE: User Authenticated.");
+
+        // 1. PHOTO & GLOW LOGIC
+        const userImg = document.getElementById('nav-user-img');
+        if (user.photoURL && userImg) {
+            userImg.src = user.photoURL;
+            userImg.style.display = 'block';
+            userImg.style.boxShadow = "0 0 10px #38bdf8, 0 0 5px #38bdf8";
+            userImg.style.border = "2px solid #38bdf8";
+        }
+
+        // 2. THE FIX: Hide modal FIRST so the app doesn't look stuck
+        document.getElementById('loginModal').style.display = 'none';
+        
+        // 3. SYNC DATA (This runs in background)
+        try {
+            await window.syncUserData(user.uid);
+        } catch (e) {
+            console.error("Sync failed, but user is logged in:", e);
+        }
+    } else {
+        document.getElementById('loginModal').style.display = 'flex';
+        const userImg = document.getElementById('nav-user-img');
+        if (userImg) userImg.style.display = 'none';
+        
+        
+    }
+});
+</script>
     
     <script src="pricing-engine.js"></script>
     <script type="module" src="script.js"></script>
