@@ -246,22 +246,24 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
     clearTimeout(autoReceiptTimer);
 
     // RESET CAR POSITION
-   car.style.transition = 'left 5s linear';
-car.style.left = '85%';
+   // --- THE FIX: RESET CAR TO STARTING POSITION INSTANTLY ---
+car.style.transition = 'none'; // Remove transition so it jumps back instantly
+car.style.left = '0%';         // Move back to start
+void car.offsetWidth;          // "Magic" line to force the browser to apply the 0% immediately
 
-    
-    // NEW: Dynamic color for the car icon based on ride type
-    car.style.color = (type === 'Emergency') ? '#ff0055' : '#38bdf8';
-    
-    void car.offsetWidth; // Force Reflow
+// Now apply the movement for the current ride
+car.style.transition = 'left 5s linear';
+car.style.left = '85%';
+car.style.color = (type === 'Emergency') ? '#ff0055' : '#38bdf8';
+car.classList.add('vehicle-moving');
 
     setTimeout(() => {
         
         if(!isRideMoving) return; 
 
         // --- THE CRITICAL FIX: Add a destination ---
-        car.style.transition = 'left 5s linear';
-        car.style.left = '85%'; // The car now has a place to go!
+       car.style.transition = 'left 5s linear';
+        car.style.left = '85%'; // The car now has  a place to go!
         car.classList.add('vehicle-moving');
 
         log.innerHTML = `<p style="color:#25d366; font-size:0.7rem; margin-top:5px; border: 1px solid #25d366; padding: 4px; border-radius: 4px;">🔗 LIVE TRACKING: <a href="javascript:void(0)" onclick="alert('Trip ID: ${tripId}')" style="color:#fff;">resride.track/${tripId}</a></p>` + log.innerHTML;
