@@ -367,21 +367,25 @@ window.shareTelemetry = function() {
 
 //* --- ENHANCED 2026 FEATURE LOGIC --- */
 
+// ATTACH TO WINDOW OBJECT FOR GITHUB COMPATIBILITY
 window.launchApp2026 = function() {
     const overlay = document.getElementById('ny-overlay');
-    overlay.style.opacity = '0';
+    if (overlay) {
+        overlay.style.opacity = '0';
+        overlay.style.pointerEvents = 'none'; // Prevents accidental clicks during fade
+    }
     
-    // Optional: Add a subtle 'engine start' sound feel
     console.log("RESRIDE 2026: Systems Primed.");
 
     setTimeout(() => {
-        overlay.style.display = 'none';
+        if (overlay) overlay.style.display = 'none';
+        
         const log = document.getElementById('system-log');
         if (log) {
             log.innerHTML = `
-                <div style="border-left: 3px solid #27c93f; padding-left: 10px; margin-bottom: 10px;">
-                    <p style="color: #27c93f; font-weight: bold; font-size:0.7rem;">[NEW_YEAR_SYNC_COMPLETE]</p>
-                    <p style="color: #fff; font-size: 0.65rem;">Welcome to 2026. All fleet units are now using Green-Tech protocols.</p>
+                <div style="border-left: 3px solid #27c93f; padding-left: 10px; margin-bottom: 10px; animation: fadeIn 0.5s;">
+                    <p style="color: #27c93f; font-weight: bold; font-size:0.7rem; margin:0;">[NEW_YEAR_SYNC_COMPLETE]</p>
+                    <p style="color: #fff; font-size: 0.65rem; margin:0;">Welcome to 2026. All fleet units are now using Green-Tech protocols.</p>
                 </div>
             ` + log.innerHTML;
         }
