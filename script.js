@@ -363,3 +363,157 @@ window.shareTelemetry = function() {
         '_blank'
     );
 };
+//* 🎆 NEW YEAR 2026 FIREWORK POPUP */
+(function () {
+    const year = new Date().getFullYear();
+    if (year !== 2026) return;
+    if (localStorage.getItem('resrideNY2026')) return;
+
+    const overlay = document.getElementById('newYearOverlay');
+    const canvas = document.getElementById('fireworksCanvas');
+    if (!overlay || !canvas) return;
+
+    overlay.style.display = 'flex';
+    localStorage.setItem('resrideNY2026', 'shown');
+
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let fireworks = [];
+
+    function random(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    function createFirework() {
+        const x = random(100, canvas.width - 100);
+        const y = random(100, canvas.height / 2);
+        const colors = ['#ff0055', '#38bdf8', '#27c93f', '#ffd700'];
+
+        for (let i = 0; i < 60; i++) {
+            fireworks.push({
+                x,
+                y,
+                vx: Math.cos(i) * random(2, 6),
+                vy: Math.sin(i) * random(2, 6),
+                alpha: 1,
+                color: colors[Math.floor(Math.random() * colors.length)]
+            });
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        fireworks.forEach((p, i) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha -= 0.015;
+
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.alpha;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (p.alpha <= 0) fireworks.splice(i, 1);
+        });
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(animate);
+    }
+
+    setInterval(createFirework, 800);
+    animate();
+
+    overlay.addEventListener('click', () => {
+        overlay.style.display = 'none';
+        fireworks = [];
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+})();
+/* 🎆 NEW YEAR 2026 FIREWORK POPUP */
+(function () {
+    const year = new Date().getFullYear();
+    if (year !== 2026) return;
+    if (localStorage.getItem('resrideNY2026')) return;
+
+    const overlay = document.getElementById('newYearOverlay');
+    const canvas = document.getElementById('fireworksCanvas');
+    if (!overlay || !canvas) return;
+
+    overlay.style.display = 'flex';
+    localStorage.setItem('resrideNY2026', 'shown');
+
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let fireworks = [];
+
+    function random(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    function createFirework() {
+        const x = random(100, canvas.width - 100);
+        const y = random(100, canvas.height / 2);
+        const colors = ['#ff0055', '#38bdf8', '#27c93f', '#ffd700'];
+
+        for (let i = 0; i < 60; i++) {
+            fireworks.push({
+                x,
+                y,
+                vx: Math.cos(i) * random(2, 6),
+                vy: Math.sin(i) * random(2, 6),
+                alpha: 1,
+                color: colors[Math.floor(Math.random() * colors.length)]
+            });
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        fireworks.forEach((p, i) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha -= 0.015;
+
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.alpha;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (p.alpha <= 0) fireworks.splice(i, 1);
+        });
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(animate);
+    }
+
+    setInterval(createFirework, 800);
+    animate();
+
+    overlay.addEventListener('click', () => {
+        overlay.style.display = 'none';
+        fireworks = [];
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+})();
+window.addEventListener('load', () => {
+    const overlay = document.getElementById('newYearOverlay');
+    const sound = document.getElementById('fireSound');
+
+    if(!overlay || !sound) return;
+
+    overlay.style.display = 'flex';
+    sound.play().catch(()=>{});
+
+    setTimeout(() => {
+        overlay.style.display = 'none';
+        sound.pause();
+        sound.currentTime = 0;
+    }, 7000);
+});
+
+
+
