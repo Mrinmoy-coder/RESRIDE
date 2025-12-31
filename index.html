@@ -8,55 +8,6 @@
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#38bdf8">
-    <style>
-#newYearOverlay{
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(circle, #000 40%, #020024);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 99999;
-}
-
-.celebration-box{
-    text-align: center;
-    color: white;
-    animation: zoomIn 1.5s ease;
-}
-
-.celebration-box h1{
-    font-size: 48px;
-    margin-bottom: 10px;
-}
-
-.celebration-box p{
-    font-size: 22px;
-    color: gold;
-}
-
-.crackers{
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(circle at 20% 30%, red 2px, transparent 3px),
-      radial-gradient(circle at 80% 40%, yellow 2px, transparent 3px),
-      radial-gradient(circle at 50% 70%, cyan 2px, transparent 3px),
-      radial-gradient(circle at 30% 80%, magenta 2px, transparent 3px);
-    animation: sparkle 1s infinite alternate;
-}
-
-@keyframes sparkle{
-    from{opacity:0.3;}
-    to{opacity:1;}
-}
-
-@keyframes zoomIn{
-    from{transform:scale(0.5); opacity:0;}
-    to{transform:scale(1); opacity:1;}
-}
-</style>
-
 </head>
 <body role="main">
 
@@ -376,16 +327,6 @@
     
     <script src="pricing-engine.js"></script>
     <script type="module" src="script.js"></script>
-    <!-- 🎆 NEW YEAR OVERLAY -->
-<div id="newYearOverlay">
-    <div class="celebration-box">
-        <h1>🎉 HAPPY NEW YEAR 2026 🎉</h1>
-        <p>Welcome to RESRIDE</p>
-        <div class="crackers"></div>
-    </div>
-
-    <audio id="fireSound" src="newyear.mp3"></audio>
-</div>
-
+    
 </body>
 </html>
