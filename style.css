@@ -141,3 +141,37 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
     .section-title { font-size: 1.8rem; }
     .terminal-body { height: 200px; font-size: 0.8rem; }
 }
+/* Add this at the bottom of style.css */
+
+.vehicle-moving {
+    filter: drop-shadow(0 0 15px #38bdf8); /* Blue neon glow */
+    transform: scale(1.2);               /* Slight zoom effect */
+}
+@keyframes firework {
+  0% { transform: translate(-50%, 60vh); width: 0.5vmin; opacity: 1; }
+  50% { width: 0.5vmin; opacity: 1; }
+  100% { width: 55vmin; opacity: 0; }
+}
+
+.firework, .firework::before, .firework::after {
+  --color1: #38bdf8; --color2: #27c93f; --color3: #ffffff;
+  content: ""; position: absolute; top: 40%; left: 50%;
+  transform: translate(-50%, -50%); width: 0.5vmin;
+  aspect-ratio: 1;
+  background: 
+    radial-gradient(circle, var(--color1) 0.3vmin, #0000 0) 50% 0%,
+    radial-gradient(circle, var(--color2) 0.2vmin, #0000 0) 10% 80%,
+    radial-gradient(circle, var(--color3) 0.3vmin, #0000 0) 90% 70%,
+    radial-gradient(circle, var(--color1) 0.2vmin, #0000 0) 30% 20%,
+    radial-gradient(circle, var(--color2) 0.3vmin, #0000 0) 70% 30%;
+  background-size: 0.6vmin 0.6vmin; background-repeat: no-repeat;
+  animation: firework 2s infinite;
+}
+
+/* Firework Positioning Grid */
+.firework:nth-child(1) { left: 15%; top: 20%; animation-delay: -0.2s; }
+.firework:nth-child(2) { left: 85%; top: 25%; animation-delay: -0.5s; }
+.firework:nth-child(3) { left: 50%; top: 15%; animation-delay: -1.1s; }
+.firework:nth-child(4) { left: 10%; top: 70%; animation-delay: -1.4s; }
+.firework:nth-child(5) { left: 90%; top: 75%; animation-delay: -1.7s; }
+.firework:nth-child(6) { left: 30%; top: 40%; animation-delay: -2.0s; }
