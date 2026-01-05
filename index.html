@@ -130,96 +130,116 @@
         </div>
     </div>
 
-    <section id="request" class="booking-container">
-        <div class="glass-card">
-            <h2 class="section-title">Smart Dispatch Engine</h2>
-            <div class="location-engine">
-                <div class="input-box">
-                    <label for="start-city"><i class="fas fa-map-marker-alt"></i> Starting City</label>
-                    <select id="start-city" onchange="updateSubPlaces('start')">
-                        <option value="">Select City</option>
-                        <option value="Kolkata">Kolkata</option>
-                        <option value="Howrah">Howrah</option>
-                        <option value="Siliguri">Siliguri</option>
-                        <option value="Durgapur">Durgapur</option>
-                        <option value="Malda">Malda</option>
-                        <option value="Murshidabad">Murshidabad</option>
-                        <option value="Nadia">Nadia</option>
-                        <option value="Midnapore">Midnapore</option>
-                    </select>
-                    <label class="sub-label">Hub Location</label>
-                    <select id="start-sub" disabled><option value="">Select Area</option></select>
-                </div>
-                <div class="input-box">
-                    <label for="end-city"><i class="fas fa-route"></i> Destination</label>
-                    <select id="end-city" onchange="updateSubPlaces('end')">
-                        <option value="">Select City</option>
-                        <option value="Kolkata">Kolkata</option>
-                        <option value="Howrah">Howrah</option>
-                        <option value="Siliguri">Siliguri</option>
-                        <option value="Durgapur">Durgapur</option>
-                        <option value="Malda">Malda</option>
-                        <option value="Murshidabad">Murshidabad</option>
-                        <option value="Nadia">Nadia</option>
-                        <option value="Midnapore">Midnapore</option>
-                    </select>
-                    <label class="sub-label">Hub Location</label>
-                    <select id="end-sub" disabled><option value="">Select Area</option></select>
-                </div>
-                <div class="input-box">
-                    <label for="washroom-quality"><i class="fas fa-star"></i> AI & Fleet</label>
-                    <select id="washroom-quality">
-                        <option value="50">Standard Fleet</option>
-                        <option value="150">EV Sustainable</option>
-                        <option value="300">XL Luxury Gold</option>
-                    </select>
-                    <label class="sub-label">Surge Logic</label>
-                    <select id="ai-context">
-                        <option value="1.0">Normal</option>
-                        <option value="1.6">Heavy Traffic</option>
-                        <option value="2.2">Festival Peak</option>
-                    </select>
-                    <input type="time" id="booking-time" value="10:00" style="margin-top:10px;">
-                </div>
+ <section id="request" class="booking-container">
+    <div class="glass-card">
+        <h2 class="section-title">Smart Dispatch Engine</h2>
+        
+        <div class="location-engine">
+            <div class="input-box">
+                <label for="start-city"><i class="fas fa-map-marker-alt"></i> Starting City</label>
+                <select id="start-city" onchange="updateSubPlaces('start')">
+                    <option value="">Select City</option>
+                    <option value="Kolkata">Kolkata</option>
+                    <option value="Howrah">Howrah</option>
+                    <option value="Siliguri">Siliguri</option>
+                    <option value="Durgapur">Durgapur</option>
+                    <option value="Malda">Malda</option>
+                    <option value="Murshidabad">Murshidabad</option>
+                    <option value="Nadia">Nadia</option>
+                    <option value="Midnapore">Midnapore</option>
+                </select>
+                <label class="sub-label">Hub Location</label>
+                <select id="start-sub" disabled><option value="">Select Area</option></select>
             </div>
 
-            <div class="map-simulation" id="viewport-sim">
-                <span id="label-start" style="position:absolute; left:10%; bottom:5px; font-size:0.7rem; color:#38bdf8; font-weight:bold; z-index:5;"></span>
-                <div class="route-line" id="spatial-grid"></div>
-                <div id="vehicle-icon" class="vehicle-icon bounce-on-hover"><i class="fa-solid fa-car-side"></i></div>
-                <div class="point-start"></div>
-                <div class="point-end"></div>
-                <span id="label-end" style="position:absolute; right:10%; bottom:5px; font-size:0.7rem; color:#fff; font-weight:bold; z-index:5;"></span>
+            <div class="input-box">
+                <label for="end-city"><i class="fas fa-route"></i> Destination</label>
+                <select id="end-city" onchange="updateSubPlaces('end')">
+                    <option value="">Select City</option>
+                    <option value="Kolkata">Kolkata</option>
+                    <option value="Howrah">Howrah</option>
+                    <option value="Siliguri">Siliguri</option>
+                    <option value="Durgapur">Durgapur</option>
+                    <option value="Malda">Malda</option>
+                    <option value="Murshidabad">Murshidabad</option>
+                    <option value="Nadia">Nadia</option>
+                    <option value="Midnapore">Midnapore</option>
+                </select>
+                <label class="sub-label">Hub Location</label>
+                <select id="end-sub" disabled><option value="">Select Area</option></select>
             </div>
 
-            <div class="action-grid">
-                <button class="resride-btn normal-btn btn-ripple" onclick="processRide('Normal')"><i class="fas fa-car"></i><span>Standard</span></button>
-                <button class="resride-btn emergency-btn btn-ripple" onclick="processRide('Emergency')"><i class="fas fa-biohazard"></i><span>Emergency</span></button>
-                <button class="resride-btn share-btn btn-ripple" onclick="shareTelemetry()" style="border-color: #25d366; color: #25d366;"><i class="fab fa-whatsapp"></i><span>Share Trip</span></button>
-                <button class="resride-btn cancel-btn btn-ripple" onclick="cancelRide()"><i class="fas fa-times-circle"></i><span>Cancel</span></button>
+            <div class="input-box">
+                <label for="washroom-quality"><i class="fas fa-star"></i> AI & Fleet</label>
+                <select id="washroom-quality">
+                    <option value="50">Standard Fleet</option>
+                    <option value="150">EV Sustainable</option>
+                    <option value="300">XL Luxury Gold</option>
+                </select>
+                <label class="sub-label">Surge Logic</label>
+                <select id="ai-context">
+                    <option value="1.0">Normal</option>
+                    <option value="1.6">Heavy Traffic</option>
+                    <option value="2.2">Festival Peak</option>
+                </select>
+                <input type="time" id="booking-time" value="10:00" style="margin-top:10px;">
             </div>
 
-            <div class="terminal-container">
-                <div class="terminal-header">
-                    <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-                    <span class="title">RESRIDE_AI_v2025_CORE</span>
-                </div>
-                <div id="system-log" class="terminal-body">
-                    <p class="entry">> AI Engine Ready. System calibrated for West Bengal Transit Hubs...</p>
-                </div>
-            </div>
-
-            <div id="history-section" style="margin-top: 30px; border: 1px solid var(--border); border-radius: 15px; background: rgba(0,0,0,0.3); padding: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <h3 style="color: var(--neon-blue); font-size: 0.9rem; text-transform: uppercase;">
-                        <i class="fas fa-history"></i> Recent Activity
-                    </h3>
-                    <button onclick="clearHistory()" style="background: none; border: none; color: #ff5f56; cursor: pointer;"><i class="fas fa-trash-alt"></i></button>
-                </div>
-                <div id="history-list" style="max-height: 150px; overflow-y: auto; font-family: monospace; font-size: 0.75rem;"></div>
+            <div class="input-box">
+                <label><i class="fas fa-users"></i> Family Size</label>
+                <select onchange="updatePassengers(this.value)">
+                    <option value="1">Just Me (1)</option>
+                    <option value="2">2 Members</option>
+                    <option value="3">3 Members</option>
+                    <option value="4">4 Members</option>
+                    <option value="5">Large Family (5+)</option>
+                </select>
+                <p id="pass-display" style="font-size: 0.6rem; color: #27c93f; margin-top: 5px; font-weight: bold;">
+                    Status: Single Occupancy
+                </p>
+                <p style="font-size: 0.55rem; color: #38bdf8; opacity: 0.8;">
+                    *Dual-Chamber Lounge Activated for 2+ members
+                </p>
             </div>
         </div>
-    </section>
+
+        <div class="map-simulation" id="viewport-sim">
+            <span id="label-start" style="position:absolute; left:10%; bottom:5px; font-size:0.7rem; color:#38bdf8; font-weight:bold; z-index:5;"></span>
+            <div class="route-line" id="spatial-grid"></div>
+            <div id="vehicle-icon" class="vehicle-icon bounce-on-hover"><i class="fa-solid fa-car-side"></i></div>
+            <div class="point-start"></div>
+            <div class="point-end"></div>
+            <span id="label-end" style="position:absolute; right:10%; bottom:5px; font-size:0.7rem; color:#fff; font-weight:bold; z-index:5;"></span>
+        </div>
+
+        <div class="action-grid">
+            <button class="resride-btn normal-btn btn-ripple" onclick="processRide('Normal')"><i class="fas fa-car"></i><span>Standard</span></button>
+            <button class="resride-btn emergency-btn btn-ripple" onclick="processRide('Emergency')"><i class="fas fa-biohazard"></i><span>Emergency</span></button>
+            <button class="resride-btn share-btn btn-ripple" onclick="shareTelemetry()" style="border-color: #25d366; color: #25d366;"><i class="fab fa-whatsapp"></i><span>Share Trip</span></button>
+            <button class="resride-btn cancel-btn btn-ripple" onclick="cancelRide()"><i class="fas fa-times-circle"></i><span>Cancel</span></button>
+        </div>
+
+        <div class="terminal-container">
+            <div class="terminal-header">
+                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                <span class="title">RESRIDE_AI_v2026_CORE</span>
+            </div>
+            <div id="system-log" class="terminal-body">
+                <p class="entry">> AI Engine Ready. System calibrated for Dual-Chamber Family Dispatch...</p>
+            </div>
+        </div>
+
+        <div id="history-section" style="margin-top: 30px; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; background: rgba(0,0,0,0.3); padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="color: #38bdf8; font-size: 0.9rem; text-transform: uppercase;">
+                    <i class="fas fa-history"></i> Recent Activity
+                </h3>
+                <button onclick="clearHistory()" style="background: none; border: none; color: #ff5f56; cursor: pointer;"><i class="fas fa-trash-alt"></i></button>
+            </div>
+            <div id="history-list" style="max-height: 150px; overflow-y: auto; font-family: monospace; font-size: 0.75rem;"></div>
+        </div>
+    </div>
+</section>
 
     <section id="architecture" class="tech-stack">
         <div class="container">
