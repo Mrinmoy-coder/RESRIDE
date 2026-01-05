@@ -22,13 +22,22 @@ let autoReceiptTimer;
 let lastTrip;
 
 // BACKGROUND HANDSHAKE: Automatically restores balance if the app hung during login
-const vaultRestorer = setInterval(() => {
+// --- ENHANCED VAULT HANDSHAKE ---
+// This ensures that if the internet flickers, the balance restores automatically
+const vaultRestorer = setInterval(async () => {
     if (window.auth && window.auth.currentUser) {
-        window.syncUserData(window.auth.currentUser.uid);
-        clearInterval(vaultRestorer); // Stop once money is restored
-        console.log("RESRIDE: Cloud Vault Restored.");
+        // Only pull from cloud if the vault is currently locked or balance is out of sync
+        if (isVaultLocked || (navigator.onLine && !isRideMoving)) {
+            console.log("RESRIDE_AI: Checking Cloud Vault integrity...");
+            await window.syncUserData(window.auth.currentUser.uid);
+            
+            // If sync was successful, we can slow down the check interval to save battery
+            if (!isVaultLocked) {
+                console.log("RESRIDE_AI: Sync stable. System heartbeat active.");
+            }
+        }
     }
-}, 1000); 
+}, 30000); // Checks every 30 seconds for a silent background handshake
 window.syncUserData = async function(uid) {
     
     // 1. IDENTITY CHECK: Show the User's Google Name
@@ -203,10 +212,11 @@ window.processRide = function(rideType) {
         };
         distance = matrix[`${startCity}-${endCity}`] || matrix[`${endCity}-${startCity}`] || 250;
     }
-
-    let baseFare = (rideType === 'Emergency') ? 12 : 6;
-    let finalFare = Math.round((distance * baseFare) * aiCtx) + quality;
-
+let baseFare = (rideType === 'Emergency') ? 12 : 6;
+    
+    // NEW FAMILY LOGIC: Each extra member adds 15% to the total fare
+    let familyMultiplier = 1 + ((passengerCount - 1) * 0.15); 
+    let finalFare = Math.round(((distance * baseFare) * aiCtx * familyMultiplier) + quality);
     if (wallet < finalFare) {
         alert("Insufficient balance! Please recharge.");
         return;
@@ -224,6 +234,7 @@ window.processRide = function(rideType) {
     log.innerHTML = `<p style="color:#38bdf8; border: 1px solid #38bdf8; padding: 5px; border-radius: 5px; margin-bottom: 10px;">
         📡 HUB SENSOR: System calibrating dispatch for ${rideType} priority...
     </p>` + log.innerHTML;
+    
 
 };
 
@@ -245,6 +256,13 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
     document.getElementById('label-end').innerText = end;
     isRideMoving = true;
     clearTimeout(autoReceiptTimer);
+    log.innerHTML = `
+        <div style="border: 1px solid #38bdf8; padding: 10px; border-radius: 8px; background: rgba(56, 189, 248, 0.05); margin-bottom: 10px; animation: fadeIn 0.5s;">
+            <p style="color: #38bdf8; font-weight: bold; margin: 0;">[DUAL_CHAMBER_ACTIVATED]</p>
+            <p style="font-size: 0.7rem; color: #fff; margin: 5px 0 0 0;">> Chamber 1: ${passengerCount} Members (Family Lounge)</p>
+            <p style="font-size: 0.7rem; color: #27c93f; margin: 2px 0 0 0;">> Chamber 2: Emergency User (Bio-Restroom Mode)</p>
+        </div>
+    ` + log.innerHTML;
 
     // RESET CAR POSITION
    // --- THE FIX: RESET CAR TO STARTING POSITION INSTANTLY ---
@@ -299,6 +317,7 @@ car.classList.add('vehicle-moving');
             }
         }, 5000); 
     }, 100); 
+    
 
     log.innerHTML = `<div style="margin-bottom:15px; border-left:3px solid ${type === 'Emergency' ? '#ff0055' : '#38bdf8'}; padding-left:10px;">
         <p style="color:#fff; font-weight:bold;">> ${type.toUpperCase()} DISPATCH: ${tripId}</p>
@@ -391,3 +410,15 @@ window.launchApp2026 = function() {
         }
     }, 1200);
 };
+let passengerCount = 1;
+
+window.updatePassengers = function(count) {
+    passengerCount = parseInt(count);
+    // Visual update for the user
+    document.getElementById('pass-display').innerText = `${passengerCount} Members`;
+};
+
+// --- UPDATE YOUR processRide function ---
+// Inside window.processRide, change your finalFare calculation:
+let familyMultiplier = 1 + (passengerCount * 0.15); // Each extra member adds 15% to fare
+let finalFare = Math.round(((distance * baseFare) * aiCtx * familyMultiplier) + quality);
