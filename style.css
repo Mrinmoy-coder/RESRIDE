@@ -175,3 +175,57 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .firework:nth-child(4) { left: 10%; top: 70%; animation-delay: -1.4s; }
 .firework:nth-child(5) { left: 90%; top: 75%; animation-delay: -1.7s; }
 .firework:nth-child(6) { left: 30%; top: 40%; animation-delay: -2.0s; }
+/* --- PREMIUM RAM NAVAMI FESTIVAL STYLING --- */
+
+/* 1. Divine Pulsing Background Glow */
+.divine-pulse-glow {
+    background: radial-gradient(circle at 50% 50%, rgba(255, 153, 51, 0.25), transparent 70%);
+    animation: pulseDivine 4s infinite alternate ease-in-out;
+}
+
+@keyframes pulseDivine {
+    from { opacity: 0.4; transform: scale(1); }
+    to { opacity: 0.8; transform: scale(1.1); }
+}
+
+/* 2. Saffron-Gold Gradient Text */
+#ram-navami-overlay h1 span {
+    background: linear-gradient(180deg, #FFD700 0%, #FF9933 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px rgba(255, 153, 51, 0.5));
+    font-weight: 900;
+}
+
+/* 3. Floating Animation for the Background Vector */
+#ram-navami-overlay div:first-child svg {
+    animation: divineFloat 6s infinite ease-in-out;
+}
+
+@keyframes divineFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+/* 4. Elegant Festival Button */
+#ram-navami-overlay button {
+    border: 1px solid #FF9933 !important;
+    background: rgba(255, 153, 51, 0.1) !important;
+    color: #FFD700 !important;
+    box-shadow: 0 0 20px rgba(255, 153, 51, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+#ram-navami-overlay button:hover {
+    background: #FF9933 !important;
+    color: #000 !important;
+    box-shadow: 0 0 40px #FF9933;
+    transform: translateY(-3px) scale(1.05);
+}
+
+/* 5. Divine Divider Line */
+#ram-navami-overlay div[style*="background: linear-gradient"] {
+    height: 2px !important;
+    background: linear-gradient(90deg, transparent, #FF9933, #FFD700, #FF9933, transparent) !important;
+    box-shadow: 0 0 10px #FF9933;
+}
