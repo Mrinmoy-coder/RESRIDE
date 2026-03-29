@@ -359,25 +359,27 @@
 
 <div id="ram-navami-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at center, #1a0f00 0%, #000000 100%); z-index:20000; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1); overflow:hidden;">
     
-    <div style="position: absolute; width: 350px; height: 350px; opacity: 0.08; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1;">
+    <div style="position: absolute; width: 350px; height: 350px; opacity: 0.12; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1;">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 2L9.5 7.5L4 8L8 12L7 17.5L12 15L17 17.5L16 12L20 8L14.5 7.5L12 2Z" fill="#FF9933" />
             <circle cx="12" cy="12" r="10" stroke="#FFD700" stroke-width="0.3" stroke-dasharray="2 1" />
         </svg>
     </div>
 
-    <div style="text-align:center; z-index:10; padding: 20px; position: relative;">
-        <p style="color: #FFD700; font-family: 'Inter', sans-serif; font-size: 0.9rem; letter-spacing: 8px; text-transform: uppercase; margin-bottom: 15px; font-weight: 300; animation: fadeInDown 1.5s ease;">
+    <div class="divine-pulse-glow" style="position: absolute; width: 100%; height: 100%; z-index: 2;"></div>
+
+    <div style="text-align:center; z-index:10; padding: 20px; position: relative; z-index: 3;">
+        <p style="color: #FFD700; font-family: 'Inter', sans-serif; font-size: 0.9rem; letter-spacing: 8px; text-transform: uppercase; margin-bottom: 15px; font-weight: 300;">
             RESRIDE Celebrates
         </p>
         
-        <h1 style="font-family: 'Playfair Display', serif; color: #fff; font-size: 3.5rem; font-style: italic; font-weight: 700; letter-spacing: 2px; margin: 0; line-height: 1.2; text-shadow: 0 0 30px rgba(255, 153, 51, 0.4); animation: fadeInUp 1.5s ease;">
-            Happy <br><span style="color: #FF9933; font-family: 'Playfair Display', serif; font-style: normal; font-weight: 700; font-size: 4.5rem; text-shadow: 0 0 20px rgba(255, 153, 51, 0.6);">Ram Navami</span>
+        <h1 style="font-family: 'Playfair Display', serif; color: #fff; font-size: 3.5rem; font-style: italic; font-weight: 700; letter-spacing: 2px; margin: 0; line-height: 1.2;">
+            Happy <br><span>Ram Navami</span>
         </h1>
         
-        <div style="width: 80px; height: 1px; background: linear-gradient(90deg, transparent, #FF9933, transparent); margin: 30px auto;"></div>
+        <div style="width: 100px; margin: 30px auto; background: linear-gradient(90deg, transparent, #FF9933, #FFD700, #FF9933, transparent);"></div>
         
-        <button onclick="launchFestivalApp()" style="background: rgba(255, 153, 51, 0.05); border: 1px solid rgba(255, 153, 51, 0.5); color: #FFD700; padding: 15px 45px; border-radius: 50px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.8rem; letter-spacing: 4px; transition: all 0.4s ease; text-transform: uppercase; backdrop-filter: blur(5px);">
+        <button onclick="launchFestivalApp()" style="padding: 15px 45px; border-radius: 50px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.8rem; letter-spacing: 4px; transition: all 0.4s ease; text-transform: uppercase;">
             Enter Sanctuary
         </button>
     </div>
