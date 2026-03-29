@@ -387,28 +387,23 @@ window.shareTelemetry = function() {
 //* --- ENHANCED 2026 FEATURE LOGIC --- */
 
 // ATTACH TO WINDOW OBJECT FOR GITHUB COMPATIBILITY
-window.launchApp2026 = function() {
-    const overlay = document.getElementById('ny-overlay');
+// Add this function to your JS to handle the new Ram Navami screen
+window.launchFestivalApp = function() {
+    const overlay = document.getElementById('ram-navami-overlay');
     if (overlay) {
         overlay.style.opacity = '0';
-        overlay.style.pointerEvents = 'none'; // Prevents accidental clicks during fade
+        overlay.style.pointerEvents = 'none';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            // Optional: Log a divine greeting in your system log
+            const log = document.getElementById('system-log');
+            if (log) {
+                log.innerHTML = `<p style="color:#FF9933; border: 1px solid #FF9933; padding: 5px; border-radius: 5px; margin-bottom: 10px;">
+                    🔱 DIVINE PROTOCOL: Jai Shree Ram. Systems synchronized for auspicious travel.
+                </p>` + log.innerHTML;
+            }
+        }, 1200);
     }
-    
-    console.log("RESRIDE 2026: Systems Primed.");
-
-    setTimeout(() => {
-        if (overlay) overlay.style.display = 'none';
-        
-        const log = document.getElementById('system-log');
-        if (log) {
-            log.innerHTML = `
-                <div style="border-left: 3px solid #27c93f; padding-left: 10px; margin-bottom: 10px; animation: fadeIn 0.5s;">
-                    <p style="color: #27c93f; font-weight: bold; font-size:0.7rem; margin:0;">[NEW_YEAR_SYNC_COMPLETE]</p>
-                    <p style="color: #fff; font-size: 0.65rem; margin:0;">Welcome to 2026. All fleet units are now using Green-Tech protocols.</p>
-                </div>
-            ` + log.innerHTML;
-        }
-    }, 1200);
 };
 let passengerCount = 1;
 
