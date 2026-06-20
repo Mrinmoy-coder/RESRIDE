@@ -175,7 +175,17 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .firework:nth-child(5) { left: 90%; top: 75%; animation-delay: -1.7s; }
 .firework:nth-child(6) { left: 30%; top: 40%; animation-delay: -2.0s; }
 
-/* --- HYPER-REALISTIC INTERACTIVE BALLOON CORE ENGINE --- */
+/* --- HYPER-REALISTIC INTERACTIVE BALLOON ENGINE --- */
+
+/* Royal Metallic Text Gradient */
+.gradient-bengal-title {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFF3A6 30%, #F3C63F 65%, #DAA520 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    filter: drop-shadow(0 4px 15px rgba(218, 165, 32, 0.45));
+}
+
 .interactive-balloon {
     position: absolute;
     width: 52px;
@@ -183,6 +193,7 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
     border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
     cursor: pointer;
     pointer-events: auto;
+    z-index: 20001;
     user-select: none;
     transition: transform 0.1s ease;
     bottom: -100px;
@@ -208,7 +219,7 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
     background: linear-gradient(to bottom, rgba(255,255,255,0.35), transparent);
 }
 
-/* 3.1 Translucent Shimmering Crimson Color Matrix */
+/* Translucent Shimmering Crimson Color Matrix */
 .balloon-type-crimson {
     background: 
         radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0) 25%),
@@ -218,7 +229,7 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 }
 .balloon-type-crimson::before { border-color: #ba1833 transparent transparent transparent; }
 
-/* 3.2 Translucent Shimmering Gold Color Matrix */
+/* Translucent Shimmering Gold Color Matrix */
 .balloon-type-gold {
     background: 
         radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0) 20%),
@@ -231,12 +242,12 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 /* Burst Feedback Visual State Override */
 .interactive-balloon.popped {
     animation: none !important;
-    transform: scale(1.6);
+    transform: scale(1.6) !important;
     opacity: 0 !important;
-    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.15s ease-out;
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.15s ease-out !important;
 }
 
-/* 3. Glassmorphic Shimmer Sweeping Light Effect */
+/* Glassmorphic Shimmer Sweeping Light Effect */
 .glass-sanctuary-card {
     position: relative;
     overflow: hidden;
@@ -265,7 +276,7 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
     100% { left: 160%; }
 }
 
-/* 4. Heritage Alpona Floating Background Particles */
+/* Heritage Alpona Floating Background Particles */
 .divine-float {
     animation: heritageFloat 8s infinite ease-in-out;
     filter: drop-shadow(0 0 12px rgba(218, 165, 32, 0.3));
