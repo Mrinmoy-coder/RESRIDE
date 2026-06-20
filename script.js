@@ -389,6 +389,7 @@ window.shareTelemetry = function() {
 // ATTACH TO WINDOW OBJECT FOR GITHUB COMPATIBILITY
 // Add this function to your JS to handle the new Ram Navami screen
 // ATTACH TO WINDOW OBJECT FOR JAMAI SASTHI PROTOCOL
+// ATTACH TO WINDOW OBJECT FOR JAMAI SASTHI PROTOCOL
 window.launchFestivalApp = function() {
     const overlay = document.getElementById('jamai-sasthi-overlay');
     if (overlay) {
