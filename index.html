@@ -359,17 +359,14 @@
 
 <div id="jamai-sasthi-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at center, #3A050C 0%, #050102 100%); z-index:20000; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: opacity 1.5s cubic-bezier(0.25, 1, 0.5, 1); overflow-y:auto; padding: 20px;">
     
-    <div class="festive-physics-container" style="position: absolute; width:100%; height:100%; top:0; left:0; pointer-events:none; z-index:1;">
-        <div class="divine-float topor-alpha" style="position:absolute; left:8%; top:15%; opacity:0.15; width:90px; height:90px;">
-            <svg viewBox="0 0 100 100"><path d="M50 5 L20 75 L80 75 Z M50 20 L32 68 L68 68 Z M10 80 L90 80 L50 92 Z" stroke="#FFD700" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
-        </div>
-        <div class="divine-float fan-beta" style="position:absolute; right:8%; top:50%; opacity:0.12; width:100px; height:100px;">
-            <svg viewBox="0 0 100 100"><path d="M50 90 L50 50 M50 50 A 40 40 0 0 1 90 50 A 40 40 0 0 1 50 90 Z" stroke="#FFD700" stroke-width="2" fill="none"/><path d="M50 50 L65 80 M50 50 L80 65 M50 50 L55 88" stroke="#DAA520" stroke-width="1"/></svg>
-        </div>
-        
-        <div class="gas-balloon crimson-balloon" style="position:absolute; left:20%; bottom:-10%;"></div>
-        <div class="gas-balloon gold-balloon" style="position:absolute; right:25%; bottom:-15%;"></div>
+   <div id="balloon-dynamic-aquarium" style="position: absolute; width:100%; height:100%; top:0; left:0; pointer-events:auto; z-index:1; overflow:hidden;">
+    <div class="divine-float topor-alpha" style="position:absolute; left:8%; top:15%; opacity:0.15; width:90px; height:90px;">
+        <svg viewBox="0 0 100 100"><path d="M50 5 L20 75 L80 75 Z M50 20 L32 68 L68 68 Z M10 80 L90 80 L50 92 Z" stroke="#FFD700" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
     </div>
+    <div class="divine-float fan-beta" style="position:absolute; right:8%; top:50%; opacity:0.12; width:100px; height:100px;">
+        <svg viewBox="0 0 100 100"><path d="M50 90 L50 50 M50 50 A 40 40 0 0 1 90 50 A 40 40 0 0 1 50 90 Z" stroke="#FFD700" stroke-width="2" fill="none"/><path d="M50 50 L65 80 M50 50 L80 65 M50 50 L55 88" stroke="#DAA520" stroke-width="1"/></svg>
+    </div>
+</div>
 
     <div class="glass-sanctuary-card" style="text-align:center; padding: 40px 50px; width:92%; max-width: 650px; position: relative; z-index: 3; background: rgba(15, 23, 42, 0.45); border: 1px solid rgba(258, 165, 32, 0.25); border-radius: 35px; backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); box-shadow: 0 30px 60px rgba(0,0,0,0.75);">
         <p style="color: #DAA520; font-family: 'Inter', sans-serif; font-size: 0.8rem; letter-spacing: 8px; text-transform: uppercase; margin-bottom: 15px; font-weight: 400;">
