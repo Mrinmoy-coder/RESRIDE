@@ -10,37 +10,26 @@ const subPlaces = {
     "Midnapore": ["Kharagpur Jn (KGP)", "Digha Bus Stand"]
 };
 
-
-// --- AUTH & CLOUD SYNC LOGIC ---
-// --- AUTH & CLOUD SYNC LOGIC ---
+// --- CORE APPLICATION STATES ---
 let wallet = 0; 
 let points = 0;
 let rideHistory = [];
-let isVaultLocked = true; // Safety lock to prevent 0 overwriting your real money
+let isVaultLocked = true; 
 let isRideMoving;
 let autoReceiptTimer;
 let lastTrip;
 
-// BACKGROUND HANDSHAKE: Automatically restores balance if the app hung during login
-// --- ENHANCED VAULT HANDSHAKE ---
-// This ensures that if the internet flickers, the balance restores automatically
+// --- CLOUD VAULT HANDSHAKE ---
 const vaultRestorer = setInterval(async () => {
     if (window.auth && window.auth.currentUser) {
-        // Only pull from cloud if the vault is currently locked or balance is out of sync
         if (isVaultLocked || (navigator.onLine && !isRideMoving)) {
             console.log("RESRIDE_AI: Checking Cloud Vault integrity...");
             await window.syncUserData(window.auth.currentUser.uid);
-            
-            // If sync was successful, we can slow down the check interval to save battery
-            if (!isVaultLocked) {
-                console.log("RESRIDE_AI: Sync stable. System heartbeat active.");
-            }
         }
     }
-}, 30000); // Checks every 30 seconds for a silent background handshake
+}, 30000);
+
 window.syncUserData = async function(uid) {
-    
-    // 1. IDENTITY CHECK: Show the User's Google Name
     const user = window.auth.currentUser;
     if (user) {
         const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
@@ -55,27 +44,25 @@ window.syncUserData = async function(uid) {
         }
     }
 
-    // 2. VAULT SYNC: Load the money and history
     const userRef = window.dbRef.doc(window.db, "users", uid);
     const userSnap = await window.dbRef.getDoc(userRef);
 
-   if (!userSnap.exists()) {
-    console.warn("User document not found — skipping overwrite");
-    return; // ⛔ DO NOT CREATE / DO NOT RESET
-}
+    if (!userSnap.exists()) {
+        console.warn("User document not found — skipping overwrite");
+        return;
+    }
 
-const data = userSnap.data();
-wallet = Number(data.wallet);
-points = Number(data.points);
-rideHistory = data.history || [];
+    const data = userSnap.data();
+    wallet = Number(data.wallet);
+    points = Number(data.points);
+    rideHistory = data.history || [];
 
-    isVaultLocked = false; // UNLOCK: Now it is safe to save
+    isVaultLocked = false; 
     updateWalletUI(); 
     renderHistory();
-}
+};
 
 async function saveToCloud() {
-    // DO NOT SAVE if the vault is still locked (prevents 0 overwrite)
     if (!window.auth.currentUser || isVaultLocked) return;
 
     const userRef = window.dbRef.doc(window.db, "users", window.auth.currentUser.uid);
@@ -85,23 +72,22 @@ async function saveToCloud() {
         history: rideHistory
     });
 }
+
+// --- INTERFACE DIALOG MODALS ---
 window.toggleAuthMode = function() {
     const isRegister = document.getElementById('register-actions').style.display === 'block';
     document.getElementById('register-actions').style.display = isRegister ? 'none' : 'block';
     document.getElementById('login-actions').style.display = isRegister ? 'block' : 'none';
     document.getElementById('auth-title').innerText = isRegister ? 'RESRIDE Login' : 'Create Account';
 };
-// Add 'sendEmailVerification' to your Firebase imports at the top of script.js
+
 window.handleGoogleLogin = function() {
-    // This calls the popup initialized in your index.html
     window.signInWithPopup(window.auth, window.googleProvider)
         .catch((error) => {
-            // If it fails, we MUST alert why
             alert("Google Login Failed: " + error.message);
-            // Reset the login title if it changed
             document.getElementById('auth-title').innerText = "RESRIDE Login";
         });
-}
+};
 
 window.handleAuth = function(mode) {
     const email = document.getElementById('auth-email').value;
@@ -114,43 +100,37 @@ window.handleAuth = function(mode) {
     btn.disabled = true;
     btn.innerText = "Processing...";
 
- if(mode === 'login') {
-    window.signInWithEmailAndPassword(window.auth, email, pass)
-        .then(() => {
-            // Success is handled by onAuthStateChanged in index.html
-        })
-        .catch(err => {
-            alert("Login Error: " + err.message);
-            // RESET THE BUTTON so you can try again
-            btn.disabled = false;
-            btn.innerText = originalText;
-            
-            // Red border feedback
-            document.getElementById('auth-email').style.borderColor = '#ff5f56';
-            document.getElementById('auth-pass').style.borderColor = '#ff5f56';
-            setTimeout(() => {
-                document.getElementById('auth-email').style.borderColor = '';
-                document.getElementById('auth-pass').style.borderColor = '';
-            }, 2000);
-        });
-}else {
+    if(mode === 'login') {
+        window.signInWithEmailAndPassword(window.auth, email, pass)
+            .catch(err => {
+                alert("Login Error: " + err.message);
+                btn.disabled = false;
+                btn.innerText = originalText;
+                document.getElementById('auth-email').style.borderColor = '#ff5f56';
+                document.getElementById('auth-pass').style.borderColor = '#ff5f56';
+                setTimeout(() => {
+                    document.getElementById('auth-email').style.borderColor = '';
+                    document.getElementById('auth-pass').style.borderColor = '';
+                }, 2000);
+            });
+    } else {
         window.createUserWithEmailAndPassword(window.auth, email, pass)
-.then(async (cred) => {
-    const userRef = window.dbRef.doc(window.db, "users", cred.user.uid);
-    await window.dbRef.setDoc(userRef, {
-        wallet: 0,
-        points: 0,
-        history: []
-    });
-})
-.catch(err => {
-    alert("Registration Error: " + err.message);
-    btn.disabled = false;
-    btn.innerText = originalText;
-});
-
+            .then(async (cred) => {
+                const userRef = window.dbRef.doc(window.db, "users", cred.user.uid);
+                await window.dbRef.setDoc(userRef, {
+                    wallet: 0,
+                    points: 0,
+                    history: []
+                });
+            })
+            .catch(err => {
+                alert("Registration Error: " + err.message);
+                btn.disabled = false;
+                btn.innerText = originalText;
+            });
     }
-}
+};
+
 window.forgotPassword = function() {
     const email = document.getElementById('auth-email').value;
     if (!email) { alert("Type email first."); return; }
@@ -160,11 +140,10 @@ window.forgotPassword = function() {
 
 window.handleLogout = function() {
     if (confirm("Log out?")) {
-        isVaultLocked = true; // lock saving
+        isVaultLocked = true;
         window.signOut(window.auth).then(() => location.reload());
     }
 };
-
 
 window.updateWalletUI = function() {
     document.getElementById('bal-amount').innerText = wallet;
@@ -188,6 +167,7 @@ window.updateSubPlaces = function(type) {
     }
 };
 
+// --- CORE DISPATCH CALCULATION ENGINE ---
 window.processRide = function(rideType) {
     const startCity = document.getElementById('start-city').value;
     const endCity = document.getElementById('end-city').value;
@@ -214,15 +194,11 @@ window.processRide = function(rideType) {
     }
     let baseFare = (rideType === 'Emergency') ? 12 : 6;
     
-    // Core Family Multiplier Engine Lifecycle Logic
     let familyMultiplier = 1 + ((passengerCount - 1) * 0.15); 
     let initialFare = Math.round(((distance * baseFare) * aiCtx * familyMultiplier) + quality);
     let finalFare = initialFare;
     let couponAppliedText = "";
 
-    // =========================================================================
-    // SECURE DEDUCTION CHECK: Jamai Sasthi Dynamic Voucher Matrix
-    // =========================================================================
     if (typeof requiredDistanceThreshold !== 'undefined' && typeof activeFestivalDiscount !== 'undefined' && activeFestivalDiscount > 0) {
         if (distance >= requiredDistanceThreshold) {
             finalFare = Math.max(0, initialFare - activeFestivalDiscount);
@@ -240,7 +216,6 @@ window.processRide = function(rideType) {
             `;
         }
     }
-    // =========================================================================
 
     if (wallet < finalFare) {
         alert("Insufficient balance! Please recharge.");
@@ -255,10 +230,8 @@ window.processRide = function(rideType) {
     document.getElementById('label-start').innerText = startSub;
     document.getElementById('label-end').innerText = endSub;
 
-    // Fire simulation sequence using the real mutated lower total amount
     startRideSimulation(rideType, finalFare, startSub, endSub, timing, timeInput, quality);
 
-    // Render the final output systematically to avoid async string collisions
     const receiptTemplate = `
         <div style="border: 1px solid #DAA520; padding: 12px; border-radius: 8px; background: rgba(43, 22, 0, 0.3); margin-top: 10px; color: #fff; font-family: 'Inter', sans-serif; text-align: left;">
             <p style="color: #DAA520; font-weight: bold; margin: 0 0 5px 0; font-size: 0.8rem; letter-spacing: 1px;">🎫 GATEWAY FARE AUDIT RECEIPT</p>
@@ -271,11 +244,11 @@ window.processRide = function(rideType) {
         </div>
     `;
 
-    // Prepend nicely without erasing operational background hooks
     log.innerHTML = `<p style="color:#38bdf8; border: 1px solid #38bdf8; padding: 5px; border-radius: 5px; margin-bottom: 10px;">
         📡 HUB SENSOR: System calibrating dispatch for ${rideType} priority...
     </p>` + receiptTemplate + log.innerHTML;
 };
+
 function startRideSimulation(type, fare, start, end, timing, startTime, quality) {
     const tripId = "RR-" + Math.floor(Math.random() * 8999 + 1000);
     const log = document.getElementById('system-log');
@@ -302,25 +275,20 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
         </div>
     ` + log.innerHTML;
 
-    // RESET CAR POSITION
-   // --- THE FIX: RESET CAR TO STARTING POSITION INSTANTLY ---
-car.style.transition = 'none'; // Remove transition so it jumps back instantly
-car.style.left = '0%';         // Move back to start
-void car.offsetWidth;          // "Magic" line to force the browser to apply the 0% immediately
+    car.style.transition = 'none';
+    car.style.left = '0%';
+    void car.offsetWidth;
 
-// Now apply the movement for the current ride
-car.style.transition = 'left 5s linear';
-car.style.left = '85%';
-car.style.color = (type === 'Emergency') ? '#ff0055' : '#38bdf8';
-car.classList.add('vehicle-moving');
+    car.style.transition = 'left 5s linear';
+    car.style.left = '85%';
+    car.style.color = (type === 'Emergency') ? '#ff0055' : '#38bdf8';
+    car.classList.add('vehicle-moving');
 
     setTimeout(() => {
-        
         if(!isRideMoving) return; 
 
-        // --- THE CRITICAL FIX: Add a destination ---
-       car.style.transition = 'left 5s linear';
-        car.style.left = '85%'; // The car now has  a place to go!
+        car.style.transition = 'left 5s linear';
+        car.style.left = '85%';
         car.classList.add('vehicle-moving');
 
         log.innerHTML = `<p style="color:#25d366; font-size:0.7rem; margin-top:5px; border: 1px solid #25d366; padding: 4px; border-radius: 4px;">🔗 LIVE TRACKING: <a href="javascript:void(0)" onclick="alert('Trip ID: ${tripId}')" style="color:#fff;">resride.track/${tripId}</a></p>` + log.innerHTML;
@@ -335,7 +303,6 @@ car.classList.add('vehicle-moving');
                     from: start, to: end, fare: fare 
                 });
                 
-                // Sync Local & Cloud storage
                 localStorage.setItem('resrideWallet', wallet);
                 localStorage.setItem('resridePoints', points);
                 localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
@@ -351,18 +318,16 @@ car.classList.add('vehicle-moving');
                 </div>` + log.innerHTML;
                 
                 isRideMoving = false;
-                car.classList.remove('vehicle-moving'); // Stop the animation glow
+                car.classList.remove('vehicle-moving');
             }
         }, 5000); 
     }, 100); 
-    
 
     log.innerHTML = `<div style="margin-bottom:15px; border-left:3px solid ${type === 'Emergency' ? '#ff0055' : '#38bdf8'}; padding-left:10px;">
         <p style="color:#fff; font-weight:bold;">> ${type.toUpperCase()} DISPATCH: ${tripId}</p>
         <p style="color: #0ff; font-size: 0.8rem;">> 🚗 Waiting Time: ${timing.pickupDelay}m | 🏁 Reach Time: ${reachTime}</p>
     </div>` + log.innerHTML;
 }
-
 
 window.rechargeWallet = async () => {
     let amt = prompt("Amount (₹):");
@@ -387,9 +352,7 @@ window.cancelRide = function() {
 window.renderHistory = function() {
     const list = document.getElementById('history-list');
     list.innerHTML = rideHistory.length
-        ? rideHistory.map(r =>
-            `<div>${r.time} | ${r.from} → ${r.to} | ₹${r.fare}</div>`
-        ).join('')
+        ? rideHistory.map(r => `<div>${r.time} | ${r.from} → ${r.to} | ₹${r.fare}</div>`).join('')
         : "No activity found.";
 };
 
@@ -401,48 +364,28 @@ window.clearHistory = async () => {
     }
 };
 
-window.toggleAboutModal = () =>
-    document.getElementById('aboutModal').style.display =
-        document.getElementById('aboutModal').style.display === 'flex' ? 'none' : 'flex';
+window.toggleAboutModal = () => document.getElementById('aboutModal').style.display = document.getElementById('aboutModal').style.display === 'flex' ? 'none' : 'flex';
+window.toggleContactModal = () => document.getElementById('contactModal').style.display = document.getElementById('contactModal').style.display === 'flex' ? 'none' : 'flex';
 
-window.toggleContactModal = () =>
-    document.getElementById('contactModal').style.display =
-        document.getElementById('contactModal').style.display === 'flex' ? 'none' : 'flex';
-
-/* ✅ TELEMETRY SHARE — UNOMITTED */
 window.shareTelemetry = function() {
     if (!lastTrip.from || !lastTrip.id) {
         alert("No active trip.");
         return;
     }
     const shareText = `🚀 *RESRIDE Premium Mobility*\n📍 *From:* ${lastTrip.from}\n🏁 *To:* ${lastTrip.to}\nID: ${lastTrip.id}`;
-    window.open(
-        `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`,
-        '_blank'
-    );
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
 };
 
-//* --- ENHANCED 2026 FEATURE LOGIC --- */
-
-// ATTACH TO WINDOW OBJECT FOR GITHUB COMPATIBILITY
-// Add this function to your JS to handle the new Ram Navami screen
-// ATTACH TO WINDOW OBJECT FOR JAMAI SASTHI PROTOCOL
-// ATTACH TO WINDOW OBJECT FOR JAMAI SASTHI PROTOCOL
-// Global Festival State Tracking variables
+// --- DYNAMIC DISCOUNTS STATE MATRIX ---
 let activeFestivalDiscount = 0;
 let requiredDistanceThreshold = 0;
 
-// Dynamic Voucher Selection Engine
 window.claimFestivalPack = function(discountAmount, distanceLimit) {
     activeFestivalDiscount = discountAmount;
     requiredDistanceThreshold = distanceLimit;
-    
     alert(`Success: ₹${discountAmount} Discount Pack loaded. This discount requires a distance threshold of ${distanceLimit}km to activate processing calculations.`);
 };
 
-// Application Bootstrap Interface Lifecycle
-// UPDATE: Make the initial alert block read the variable dynamically
-// UPDATE: Make the initial alert block read the variable dynamically
 window.launchFestivalApp = function() {
     const overlay = document.getElementById('jamai-sasthi-overlay');
     if (overlay) {
@@ -450,7 +393,6 @@ window.launchFestivalApp = function() {
         overlay.style.pointerEvents = 'none';
         setTimeout(() => {
             overlay.style.display = 'none';
-            
             const log = document.getElementById('system-log');
             if (log) {
                 log.innerHTML = `
@@ -463,13 +405,16 @@ window.launchFestivalApp = function() {
         }, 1200);
     }
 };
-let passengerCount = 1;
 
+let passengerCount = 1;
 window.updatePassengers = function(count) {
     passengerCount = parseInt(count);
-    // Visual update for the user
     document.getElementById('pass-display').innerText = `${passengerCount} Members`;
 };
+
+// =========================================================================
+// INTERACTIVE PARTICLES: Asynchronous Procedural Spawning Framework
+// =========================================================================
 let balloonSpawnerInterval;
 
 function initializePremiumBalloons() {
@@ -543,100 +488,4 @@ function triggerPopEffect(element) {
     }, 150);
 }
 
-// This line executes right here to start the loop!
 initializePremiumBalloons();
-// --- UPDATE YOUR processRide function ---
-// Inside window.processRide, change your finalFare calculation:
-let familyMultiplier = 1 + (passengerCount * 0.15); // Each extra member adds 15% to fare
-let finalFare = Math.round(((distance * baseFare) * aiCtx * familyMultiplier) + quality);
-// =========================================================================
-// INTERACTIVE PARTICLES: Asynchronous Procedural Spawning Framework
-// =========================================================================
-let balloonSpawnerInterval;
-
-function initializePremiumBalloons() {
-    const layerContainer = document.getElementById('balloon-dynamic-aquarium');
-    if (!layerContainer) return;
-
-    // Clear any previous interval instances safely
-    clearInterval(balloonSpawnerInterval);
-
-    // Spawns new balloons rapidly every 1.5 seconds for higher visual density
-    balloonSpawnerInterval = setInterval(() => {
-        // Enforce safety constraint: Stop processing spikes if the overlay is hidden
-        const overlay = document.getElementById('jamai-sasthi-overlay');
-        if (overlay && overlay.style.display === 'none') {
-            clearInterval(balloonSpawnerInterval);
-            return;
-        }
-
-        createSingleGasBalloon(layerContainer);
-    }, 1500);
-}
-
-function createSingleGasBalloon(container) {
-    const balloon = document.createElement('div');
-    const isGold = Math.random() > 0.5;
-    
-    balloon.className = `interactive-balloon ${isGold ? 'balloon-type-gold' : 'balloon-type-crimson'}`;
-    
-    // Set completely randomized horizontal spawn coordinates across width
-    const startingX = Math.random() * 90; // 0% to 90%
-    balloon.style.left = `${startingX}%`;
-    
-    // Randomize travel velocities and horizontal swaying scales for realism
-    const ascendingVelocity = 1.8 + Math.random() * 2.2; // Speed multiplier
-    const swingMagnitude = 20 + Math.random() * 30;     // Sway pixel width
-    const rotationMax = 5 + Math.random() * 10;          // Max angle
-    
-    let currentYPosition = -100; // Start below display viewport
-    let cycleAngleTracker = Math.random() * 100;
-    
-    // Unified Frame-by-Frame Render Execution loop
-    function animateFrame() {
-        if (balloon.classList.contains('popped')) return;
-
-        currentYPosition += ascendingVelocity;
-        cycleAngleTracker += 0.04;
-        
-        // Calculate organic trigonometric sway offsets
-        const calculatedSwayX = Math.sin(cycleAngleTracker) * swingMagnitude;
-        const calculatedRotate = Math.cos(cycleAngleTracker) * rotationMax;
-        
-        balloon.style.transform = `translate3d(${calculatedSwayX}px, -${currentYPosition}px, 0) rotate(${calculatedRotate}deg)`;
-        
-        // Natural Top Burst Logic: If it escapes the ceiling boundary, pop it automatically
-        if (currentYPosition > window.innerHeight + 150) {
-            triggerPopEffect(balloon);
-        } else {
-            requestAnimationFrame(animateFrame);
-        }
-    }
-
-    // Touch Burst Mechanism: Execute instant popping behavior upon user contact
-    balloon.addEventListener('mousedown', (event) => {
-        event.stopPropagation();
-        triggerPopEffect(balloon);
-    });
-
-    container.appendChild(balloon);
-    requestAnimationFrame(animateFrame);
-}
-
-function triggerPopEffect(element) {
-    if (element.classList.contains('popped')) return;
-    
-    element.classList.add('popped');
-    
-    // Automatically clean up DOM architecture variables to optimize device battery life
-    setTimeout(() => {
-        if (element.parentNode) {
-            element.parentNode.removeChild(element);
-        }
-    }, 150);
-}
-
-// Automatically mount and activate the engine on initial window compilation loops
-document.addEventListener('DOMContentLoaded', () => {
-    initializePremiumBalloons();
-});
