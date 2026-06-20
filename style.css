@@ -177,61 +177,116 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .firework:nth-child(6) { left: 30%; top: 40%; animation-delay: -2.0s; }
 /* --- VISIONARY JAMAI SASTHI GRAPHICS ENGINE --- */
 
-/* Royal Luxury Gold Gradient Typography */
+/* --- HYPER-REALISTIC JAMAI SASTHI GRAPHICS ENGINE --- */
+
+/* 1. Royal Metallic Text Gradient */
 .gradient-bengal-title {
-    background: linear-gradient(180deg, #FFFFFF 0%, #F3C63F 45%, #DAA520 100%);
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFF3A6 30%, #F3C63F 65%, #DAA520 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 4px 15px rgba(218, 165, 32, 0.45));
+    filter: drop-shadow(0 8px 25px rgba(218, 165, 32, 0.5));
 }
 
-/* Procedural Float Physics */
+/* 2. Hyper-Realistic 3D Balloons with Light Specular Highlights & Strings */
+.gas-balloon {
+    width: 55px;
+    height: 72px;
+    border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+    position: absolute;
+    animation: realisticAscent 15s infinite linear;
+}
+
+/* Base tail knot and string for balloons */
+.gas-balloon::before {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 5px 0 5px;
+    border-style: solid;
+}
+.gas-balloon::after {
+    content: "";
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    width: 1px;
+    height: 45px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+}
+
+.crimson-balloon {
+    /* Multi-layered light projection to simulate 3D latex curvature */
+    background: 
+        radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 25%),
+        radial-gradient(circle at 30% 35%, #ff4d6d 0%, #ba1833 55%, #4a0511 100%);
+    border-left: 1px solid rgba(255, 100, 120, 0.3);
+    box-shadow: inset -6px -6px 15px rgba(0,0,0,0.85), 0 10px 25px rgba(158, 27, 50, 0.4);
+    animation-duration: 18s;
+    left: 15%;
+}
+.crimson-balloon::before { border-color: #9E1B32 transparent transparent transparent; }
+
+.gold-balloon {
+    background: 
+        radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 20%),
+        radial-gradient(circle at 30% 35%, #FFEFA6 0%, #e0ab16 60%, #523605 100%);
+    border-left: 1px solid rgba(255, 235, 160, 0.4);
+    box-shadow: inset -6px -6px 15px rgba(0,0,0,0.85), 0 10px 25px rgba(218, 165, 32, 0.35);
+    animation-duration: 13s;
+    animation-delay: 3s;
+    right: 18%;
+}
+.gold-balloon::before { border-color: #DAA520 transparent transparent transparent; }
+
+@keyframes realisticAscent {
+    0% { bottom: -15%; opacity: 0; transform: translateX(0) scale(0.85) rotate(0deg); }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.8; }
+    100% { bottom: 115%; opacity: 0; transform: translateX(50px) scale(1.05) rotate(12deg); }
+}
+
+/* 3. Glassmorphic Shimmer Sweeping Light Effect */
+.glass-sanctuary-card {
+    position: relative;
+    overflow: hidden;
+}
+.glass-sanctuary-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 30%;
+    height: 200%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.13) 50%,
+        rgba(255, 255, 255, 0) 100__
+    );
+    transform: rotate(25deg);
+    animation: glassShimmer 5s infinite cubic-bezier(0.43, 0.15, 0.57, 0.85);
+    z-index: 4;
+    pointer-events: none;
+}
+
+@keyframes glassShimmer {
+    0% { left: -60%; }
+    100% { left: 160%; }
+}
+
+/* 4. Heritage Alpona Floating Background Particles */
 .divine-float {
-    animation: proceduralFloat 6s infinite ease-in-out;
+    animation: heritageFloat 8s infinite ease-in-out;
+    filter: drop-shadow(0 0 12px rgba(218, 165, 32, 0.3));
 }
 .fan-beta {
-    animation-delay: -3s;
-    animation-duration: 8s;
+    animation-delay: -4s;
+    animation-duration: 10s;
 }
 
-@keyframes proceduralFloat {
-    0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
-    50% { transform: translateY(-22px) rotate(4deg) scale(1.04); }
-}
-
-/* Gas Balloons 3D Rendering & Physics */
-.gas-balloon {
-    width: 45px;
-    height: 60px;
-    border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-    animation: gasAscent 14s infinite linear;
-    opacity: 0;
-}
-.crimson-balloon {
-    background: radial-gradient(circle at 30% 30%, #ff4d6d, #9E1B32, #4A0511);
-    box-shadow: inset -4px -4px 12px rgba(0,0,0,0.7), 0 0 20px rgba(158, 27, 50, 0.4);
-    animation-duration: 16s;
-    animation-delay: 0.5s;
-}
-.gold-balloon {
-    background: radial-gradient(circle at 30% 30%, #FFEFA6, #DAA520, #61460B);
-    box-shadow: inset -4px -4px 12px rgba(0,0,0,0.7), 0 0 20px rgba(218, 165, 32, 0.4);
-    animation-duration: 12s;
-    animation-delay: 3.5s;
-}
-
-@keyframes gasAscent {
-    0% { bottom: -12%; opacity: 0; transform: translateX(0) scale(0.9); }
-    15% { opacity: 0.65; }
-    85% { opacity: 0.65; }
-    100% { bottom: 112%; opacity: 0; transform: translateX(40px) scale(1.05); }
-}
-
-/* Interactive Conversions Trigger */
-.premium-enter-trigger:hover {
-    background: #DAA520 !important;
-    color: #050102 !important;
-    font-weight: bold;
-    box-shadow: 0 0 30px #DAA520;
-    transform: translateY(-3px);
+@keyframes heritageFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.12; }
+    50% { transform: translateY(-30px) rotate(8deg) scale(1.06); opacity: 0.22; }
 }
