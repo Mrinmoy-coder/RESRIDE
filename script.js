@@ -388,21 +388,27 @@ window.shareTelemetry = function() {
 
 // ATTACH TO WINDOW OBJECT FOR GITHUB COMPATIBILITY
 // Add this function to your JS to handle the new Ram Navami screen
+// ATTACH TO WINDOW OBJECT FOR JAMAI SASTHI PROTOCOL
 window.launchFestivalApp = function() {
-    const overlay = document.getElementById('ram-navami-overlay');
+    const overlay = document.getElementById('jamai-sasthi-overlay');
     if (overlay) {
         overlay.style.opacity = '0';
         overlay.style.pointerEvents = 'none';
+        
         setTimeout(() => {
             overlay.style.display = 'none';
-            // Optional: Log a divine greeting in your system log
+            
+            // Push structured system metrics log onto the Core Dispatch UI
             const log = document.getElementById('system-log');
             if (log) {
-                log.innerHTML = `<p style="color:#FF9933; border: 1px solid #FF9933; padding: 5px; border-radius: 5px; margin-bottom: 10px;">
-                    🔱 DIVINE PROTOCOL: Jai Shree Ram. Systems synchronized for auspicious travel.
-                </p>` + log.innerHTML;
+                log.innerHTML = `
+                    <div style="border-left: 3px solid #DAA520; padding-left: 10px; margin-bottom: 12px; background: rgba(218, 165, 32, 0.05); padding: 8px 12px; border-radius: 4px; animation: fadeIn 0.6s step-end;">
+                        <p style="color: #DAA520; font-weight: bold; font-size:0.75rem; margin:0;">[BENGAL_FESTIVAL_PROTOCOL_ENGAGED]</p>
+                        <p style="color: #fff; font-size: 0.65rem; margin:4px 0 0 0;">Shubho Jamai Sasthi. Fleet parameters optimized with cultural premium scaling multipliers.</p>
+                    </div>
+                ` + log.innerHTML;
             }
-        }, 1200);
+        }, 1500);
     }
 };
 let passengerCount = 1;
