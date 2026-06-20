@@ -141,7 +141,6 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
     .section-title { font-size: 1.8rem; }
     .terminal-body { height: 200px; font-size: 0.8rem; }
 }
-/* Add this at the bottom of style.css */
 
 .vehicle-moving {
     filter: drop-shadow(0 0 15px #38bdf8); /* Blue neon glow */
@@ -175,20 +174,8 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .firework:nth-child(4) { left: 10%; top: 70%; animation-delay: -1.4s; }
 .firework:nth-child(5) { left: 90%; top: 75%; animation-delay: -1.7s; }
 .firework:nth-child(6) { left: 30%; top: 40%; animation-delay: -2.0s; }
-/* --- VISIONARY JAMAI SASTHI GRAPHICS ENGINE --- */
-
-/* --- HYPER-REALISTIC JAMAI SASTHI GRAPHICS ENGINE --- */
-
-/* 1. Royal Metallic Text Gradient */
-.gradient-bengal-title {
-    background: linear-gradient(180deg, #FFFFFF 0%, #FFF3A6 30%, #F3C63F 65%, #DAA520 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 8px 25px rgba(218, 165, 32, 0.5));
-}
 
 /* --- HYPER-REALISTIC INTERACTIVE BALLOON CORE ENGINE --- */
-
 .interactive-balloon {
     position: absolute;
     width: 52px;
@@ -265,7 +252,7 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
         to right,
         rgba(255, 255, 255, 0) 0%,
         rgba(255, 255, 255, 0.13) 50%,
-        rgba(255, 255, 255, 0) 100__
+        rgba(255, 255, 255, 0) 100%
     );
     transform: rotate(25deg);
     animation: glassShimmer 5s infinite cubic-bezier(0.43, 0.15, 0.57, 0.85);
