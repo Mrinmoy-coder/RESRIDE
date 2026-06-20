@@ -470,7 +470,81 @@ window.updatePassengers = function(count) {
     // Visual update for the user
     document.getElementById('pass-display').innerText = `${passengerCount} Members`;
 };
+let balloonSpawnerInterval;
 
+function initializePremiumBalloons() {
+    const layerContainer = document.getElementById('balloon-dynamic-aquarium');
+    if (!layerContainer) return;
+
+    clearInterval(balloonSpawnerInterval);
+
+    balloonSpawnerInterval = setInterval(() => {
+        const overlay = document.getElementById('jamai-sasthi-overlay');
+        if (overlay && overlay.style.display === 'none') {
+            clearInterval(balloonSpawnerInterval);
+            return;
+        }
+        createSingleGasBalloon(layerContainer);
+    }, 900);
+}
+
+function createSingleGasBalloon(container) {
+    const balloon = document.createElement('div');
+    const isGold = Math.random() > 0.5;
+    
+    balloon.className = `interactive-balloon ${isGold ? 'balloon-type-gold' : 'balloon-type-crimson'}`;
+    
+    const startingX = Math.random() * 90; 
+    balloon.style.left = `${startingX}%`;
+    
+    const ascendingVelocity = 2.0 + Math.random() * 2.5; 
+    const swingMagnitude = 15 + Math.random() * 25;     
+    const rotationMax = 8 + Math.random() * 8;          
+    
+    let currentYPosition = 0; 
+    let cycleAngleTracker = Math.random() * 100;
+    
+    function animateFrame() {
+        if (balloon.classList.contains('popped')) return;
+
+        currentYPosition += ascendingVelocity;
+        cycleAngleTracker += 0.03;
+        
+        const calculatedSwayX = Math.sin(cycleAngleTracker) * swingMagnitude;
+        const calculatedRotate = Math.cos(cycleAngleTracker) * rotationMax;
+        
+        balloon.style.transform = `translate3d(${calculatedSwayX}px, -${currentYPosition}px, 0) rotate(${calculatedRotate}deg)`;
+        
+        if (currentYPosition > window.innerHeight + 150) {
+            triggerPopEffect(balloon);
+        } else {
+            requestAnimationFrame(animateFrame);
+        }
+    }
+
+    balloon.addEventListener('mousedown', (event) => {
+        event.stopPropagation();
+        triggerPopEffect(balloon);
+    });
+
+    container.appendChild(balloon);
+    requestAnimationFrame(animateFrame);
+}
+
+function triggerPopEffect(element) {
+    if (element.classList.contains('popped')) return;
+    
+    element.classList.add('popped');
+    
+    setTimeout(() => {
+        if (element.parentNode) {
+            element.parentNode.removeChild(element);
+        }
+    }, 150);
+}
+
+// This line executes right here to start the loop!
+initializePremiumBalloons();
 // --- UPDATE YOUR processRide function ---
 // Inside window.processRide, change your finalFare calculation:
 let familyMultiplier = 1 + (passengerCount * 0.15); // Each extra member adds 15% to fare
