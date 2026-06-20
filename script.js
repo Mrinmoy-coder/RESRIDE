@@ -212,11 +212,23 @@ window.processRide = function(rideType) {
         };
         distance = matrix[`${startCity}-${endCity}`] || matrix[`${endCity}-${startCity}`] || 250;
     }
-let baseFare = (rideType === 'Emergency') ? 12 : 6;
+    let baseFare = (rideType === 'Emergency') ? 12 : 6;
     
     // NEW FAMILY LOGIC: Each extra member adds 15% to the total fare
     let familyMultiplier = 1 + ((passengerCount - 1) * 0.15); 
     let finalFare = Math.round(((distance * baseFare) * aiCtx * familyMultiplier) + quality);
+
+    // =========================================================================
+    // VISIONARY INTEGRATION: Jamai Sasthi Dynamic Voucher Deduction Engine
+    // Automatically applies the ₹10 or ₹20 discount pack if distance prerequisites are met
+    // =========================================================================
+    if (typeof requiredDistanceThreshold !== 'undefined' && typeof activeFestivalDiscount !== 'undefined') {
+        if (distance >= requiredDistanceThreshold) {
+            finalFare = Math.max(0, finalFare - activeFestivalDiscount);
+        }
+    }
+    // =========================================================================
+
     if (wallet < finalFare) {
         alert("Insufficient balance! Please recharge.");
         return;
@@ -226,7 +238,7 @@ let baseFare = (rideType === 'Emergency') ? 12 : 6;
     let timing = (rideType === 'Emergency')
         ? { pickupDelay: 5, travelTime: travelMins }
         : { pickupDelay: 15, travelTime: travelMins };
-           document.getElementById('label-start').innerText = startSub;
+    document.getElementById('label-start').innerText = startSub;
     document.getElementById('label-end').innerText = endSub;
 
     startRideSimulation(rideType, finalFare, startSub, endSub, timing, timeInput, quality);
@@ -234,7 +246,6 @@ let baseFare = (rideType === 'Emergency') ? 12 : 6;
     log.innerHTML = `<p style="color:#38bdf8; border: 1px solid #38bdf8; padding: 5px; border-radius: 5px; margin-bottom: 10px;">
         📡 HUB SENSOR: System calibrating dispatch for ${rideType} priority...
     </p>` + log.innerHTML;
-    
 
 };
 
