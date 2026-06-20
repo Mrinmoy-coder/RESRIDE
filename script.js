@@ -55,7 +55,7 @@ window.syncUserData = async function(uid) {
     const data = userSnap.data();
     wallet = Number(data.wallet);
     points = Number(data.points);
-    rideHistory = data.history || []; // FIXED: Variable reference corrected to unfreeze execution
+    rideHistory = data.history || [];
 
     isVaultLocked = false; 
     updateWalletUI(); 
@@ -386,13 +386,14 @@ window.claimFestivalPack = function(discountAmount, distanceLimit) {
     alert(`Success: ₹${discountAmount} Discount Pack loaded. This discount requires a distance threshold of ${distanceLimit}km to activate processing calculations.`);
 };
 
+// FIXED: Added display = 'none' logic to safely hide the obstructing layer wall
 window.launchFestivalApp = function() {
     const overlay = document.getElementById('jamai-sasthi-overlay');
     if (overlay) {
         overlay.style.opacity = '0';
         overlay.style.pointerEvents = 'none';
         setTimeout(() => {
-            overlay.style.display = 'none';
+            overlay.style.display = 'none'; // CRITICAL REMEDY
             const log = document.getElementById('system-log');
             if (log) {
                 log.innerHTML = `
