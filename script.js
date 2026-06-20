@@ -475,3 +475,94 @@ window.updatePassengers = function(count) {
 // Inside window.processRide, change your finalFare calculation:
 let familyMultiplier = 1 + (passengerCount * 0.15); // Each extra member adds 15% to fare
 let finalFare = Math.round(((distance * baseFare) * aiCtx * familyMultiplier) + quality);
+// =========================================================================
+// INTERACTIVE PARTICLES: Asynchronous Procedural Spawning Framework
+// =========================================================================
+let balloonSpawnerInterval;
+
+function initializePremiumBalloons() {
+    const layerContainer = document.getElementById('balloon-dynamic-aquarium');
+    if (!layerContainer) return;
+
+    // Clear any previous interval instances safely
+    clearInterval(balloonSpawnerInterval);
+
+    // Spawns new balloons rapidly every 1.5 seconds for higher visual density
+    balloonSpawnerInterval = setInterval(() => {
+        // Enforce safety constraint: Stop processing spikes if the overlay is hidden
+        const overlay = document.getElementById('jamai-sasthi-overlay');
+        if (overlay && overlay.style.display === 'none') {
+            clearInterval(balloonSpawnerInterval);
+            return;
+        }
+
+        createSingleGasBalloon(layerContainer);
+    }, 1500);
+}
+
+function createSingleGasBalloon(container) {
+    const balloon = document.createElement('div');
+    const isGold = Math.random() > 0.5;
+    
+    balloon.className = `interactive-balloon ${isGold ? 'balloon-type-gold' : 'balloon-type-crimson'}`;
+    
+    // Set completely randomized horizontal spawn coordinates across width
+    const startingX = Math.random() * 90; // 0% to 90%
+    balloon.style.left = `${startingX}%`;
+    
+    // Randomize travel velocities and horizontal swaying scales for realism
+    const ascendingVelocity = 1.8 + Math.random() * 2.2; // Speed multiplier
+    const swingMagnitude = 20 + Math.random() * 30;     // Sway pixel width
+    const rotationMax = 5 + Math.random() * 10;          // Max angle
+    
+    let currentYPosition = -100; // Start below display viewport
+    let cycleAngleTracker = Math.random() * 100;
+    
+    // Unified Frame-by-Frame Render Execution loop
+    function animateFrame() {
+        if (balloon.classList.contains('popped')) return;
+
+        currentYPosition += ascendingVelocity;
+        cycleAngleTracker += 0.04;
+        
+        // Calculate organic trigonometric sway offsets
+        const calculatedSwayX = Math.sin(cycleAngleTracker) * swingMagnitude;
+        const calculatedRotate = Math.cos(cycleAngleTracker) * rotationMax;
+        
+        balloon.style.transform = `translate3d(${calculatedSwayX}px, -${currentYPosition}px, 0) rotate(${calculatedRotate}deg)`;
+        
+        // Natural Top Burst Logic: If it escapes the ceiling boundary, pop it automatically
+        if (currentYPosition > window.innerHeight + 150) {
+            triggerPopEffect(balloon);
+        } else {
+            requestAnimationFrame(animateFrame);
+        }
+    }
+
+    // Touch Burst Mechanism: Execute instant popping behavior upon user contact
+    balloon.addEventListener('mousedown', (event) => {
+        event.stopPropagation();
+        triggerPopEffect(balloon);
+    });
+
+    container.appendChild(balloon);
+    requestAnimationFrame(animateFrame);
+}
+
+function triggerPopEffect(element) {
+    if (element.classList.contains('popped')) return;
+    
+    element.classList.add('popped');
+    
+    // Automatically clean up DOM architecture variables to optimize device battery life
+    setTimeout(() => {
+        if (element.parentNode) {
+            element.parentNode.removeChild(element);
+        }
+    }, 150);
+}
+
+// Automatically mount and activate the engine on initial window compilation loops
+document.addEventListener('DOMContentLoaded', () => {
+    initializePremiumBalloons();
+});
