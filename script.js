@@ -441,6 +441,8 @@ window.claimFestivalPack = function(discountAmount, distanceLimit) {
 };
 
 // Application Bootstrap Interface Lifecycle
+// UPDATE: Make the initial alert block read the variable dynamically
+// UPDATE: Make the initial alert block read the variable dynamically
 window.launchFestivalApp = function() {
     const overlay = document.getElementById('jamai-sasthi-overlay');
     if (overlay) {
@@ -449,7 +451,6 @@ window.launchFestivalApp = function() {
         setTimeout(() => {
             overlay.style.display = 'none';
             
-            // Push active alert notifications to the core log framework
             const log = document.getElementById('system-log');
             if (log) {
                 log.innerHTML = `
