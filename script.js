@@ -214,29 +214,28 @@ window.processRide = function(rideType) {
     }
     let baseFare = (rideType === 'Emergency') ? 12 : 6;
     
-    // NEW FAMILY LOGIC: Each extra member adds 15% to the total fare
+    // Core Family Multiplier Engine Lifecycle Logic
     let familyMultiplier = 1 + ((passengerCount - 1) * 0.15); 
     let initialFare = Math.round(((distance * baseFare) * aiCtx * familyMultiplier) + quality);
     let finalFare = initialFare;
     let couponAppliedText = "";
 
     // =========================================================================
-    // VISIONARY INTEGRATION: Jamai Sasthi Dynamic Voucher Deduction Engine
-    // Calculates and tracks if a discount was applied for the UI receipt
+    // SECURE DEDUCTION CHECK: Jamai Sasthi Dynamic Voucher Matrix
     // =========================================================================
     if (typeof requiredDistanceThreshold !== 'undefined' && typeof activeFestivalDiscount !== 'undefined' && activeFestivalDiscount > 0) {
         if (distance >= requiredDistanceThreshold) {
             finalFare = Math.max(0, initialFare - activeFestivalDiscount);
             couponAppliedText = `
-                <div style="margin: 5px 0; padding: 6px; background: rgba(39, 201, 63, 0.1); border: 1px dashed #27c93f; border-radius: 4px; font-size: 0.75rem;">
-                    <span style="color: #27c93f; font-weight: bold;">✔ FESTIVAL COUPON APPLIED:</span> Flat ₹${activeFestivalDiscount} Off on your Jamai Sasthi special pack!
-                    <br><span style="color: #ccc; font-size: 0.65rem;">Base Fare: ₹${initialFare} | Coupon Saving: -₹${activeFestivalDiscount}</span>
+                <div style="margin: 8px 0; padding: 8px; background: rgba(39, 201, 63, 0.15); border: 1px dashed #27c93f; border-radius: 6px; font-size: 0.75rem; font-family: monospace;">
+                    <span style="color: #27c93f; font-weight: bold;">✔ COUPON VERIFIED:</span> Flat ₹${activeFestivalDiscount} Deducted.
+                    <br><span style="color: rgba(255,255,255,0.6);">Gross: ₹${initialFare} | Discounted Delta: -₹${activeFestivalDiscount}</span>
                 </div>
             `;
         } else {
             couponAppliedText = `
-                <div style="margin: 5px 0; padding: 6px; background: rgba(255, 95, 86, 0.1); border: 1px dashed #ff5f56; border-radius: 4px; font-size: 0.75rem; color: #fff;">
-                    <span style="color: #ff5f56; font-weight: bold;">⚠ COUPON LOCKED:</span> Distance is ${distance}km. Selected pack requires at least ${requiredDistanceThreshold}km.
+                <div style="margin: 8px 0; padding: 8px; background: rgba(255, 95, 86, 0.1); border: 1px dashed #ff5f56; border-radius: 6px; font-size: 0.75rem; font-family: monospace; color: #fff;">
+                    <span style="color: #ff5f56; font-weight: bold;">❌ PACK LOCKED:</span> Route (${distance}km) doesn't meet the required threshold of ${requiredDistanceThreshold}km.
                 </div>
             `;
         }
@@ -252,28 +251,30 @@ window.processRide = function(rideType) {
     let timing = (rideType === 'Emergency')
         ? { pickupDelay: 5, travelTime: travelMins }
         : { pickupDelay: 15, travelTime: travelMins };
+    
     document.getElementById('label-start').innerText = startSub;
     document.getElementById('label-end').innerText = endSub;
 
+    // Fire simulation sequence using the real mutated lower total amount
     startRideSimulation(rideType, finalFare, startSub, endSub, timing, timeInput, quality);
 
-    // STRUCTURED CUSTOMER RECEIPT IN LOG SYSTEM
-    log.innerHTML = `
-        <div style="border: 1px solid #DAA520; padding: 12px; border-radius: 8px; background: rgba(43, 22, 0, 0.2); margin-bottom: 12px; color: #fff; font-family: 'Inter', sans-serif;">
-            <p style="color: #DAA520; font-weight: bold; margin: 0 0 5px 0; font-size: 0.8rem; letter-spacing: 1px;">🎫 FARE BREAKDOWN RECEIPT</p>
-            <div style="font-size: 0.75rem; line-height: 1.4; opacity: 0.9;">
-                • Route: ${startSub} → ${endSub} (${distance} km)<br>
-                • Initial Calculated Price: ₹${initialFare}<br>
+    // Render the final output systematically to avoid async string collisions
+    const receiptTemplate = `
+        <div style="border: 1px solid #DAA520; padding: 12px; border-radius: 8px; background: rgba(43, 22, 0, 0.3); margin-top: 10px; color: #fff; font-family: 'Inter', sans-serif; text-align: left;">
+            <p style="color: #DAA520; font-weight: bold; margin: 0 0 5px 0; font-size: 0.8rem; letter-spacing: 1px;">🎫 GATEWAY FARE AUDIT RECEIPT</p>
+            <div style="font-size: 0.75rem; line-height: 1.5; opacity: 0.95;">
+                • Route Trajectory: ${startSub} → ${endSub} (${distance} km)<br>
+                • Base Algorithm Fare: ₹${initialFare}<br>
                 ${couponAppliedText}
-                • <strong style="color: #FFD700; font-size: 0.85rem;">Final Fare Deducted: ₹${finalFare}</strong>
+                • <strong style="color: #FFD700; font-size: 0.85rem;">Net Ledger Settlement: ₹${finalFare}</strong>
             </div>
         </div>
-    ` + log.innerHTML;
+    `;
 
+    // Prepend nicely without erasing operational background hooks
     log.innerHTML = `<p style="color:#38bdf8; border: 1px solid #38bdf8; padding: 5px; border-radius: 5px; margin-bottom: 10px;">
         📡 HUB SENSOR: System calibrating dispatch for ${rideType} priority...
-    </p>` + log.innerHTML;
-
+    </p>` + receiptTemplate + log.innerHTML;
 };
 function startRideSimulation(type, fare, start, end, timing, startTime, quality) {
     const tripId = "RR-" + Math.floor(Math.random() * 8999 + 1000);
