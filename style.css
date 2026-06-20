@@ -175,64 +175,63 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .firework:nth-child(4) { left: 10%; top: 70%; animation-delay: -1.4s; }
 .firework:nth-child(5) { left: 90%; top: 75%; animation-delay: -1.7s; }
 .firework:nth-child(6) { left: 30%; top: 40%; animation-delay: -2.0s; }
-/* --- VISIONARY JAMAI SASTHI PREMIUM LOGIC --- */
+/* --- VISIONARY JAMAI SASTHI GRAPHICS ENGINE --- */
 
-/* Smooth Breathing Festival Aura */
-.bengal-festive-glow {
-    animation: festiveBreathe 5s infinite alternate ease-in-out;
-}
-
-@keyframes festiveBreathe {
-    from { opacity: 0.5; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1.05); }
-}
-
-/* Master Typography Gradient: Royal Bengali Gold-to-Saffron */
-.gradient-festive-title {
-    background: linear-gradient(180deg, #FFFFFF 0%, #F4C430 40%, #DAA520 100%);
+/* Royal Luxury Gold Gradient Typography */
+.gradient-bengal-title {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F3C63F 45%, #DAA520 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 4px 15px rgba(218, 165, 32, 0.4));
+    filter: drop-shadow(0 4px 15px rgba(218, 165, 32, 0.45));
 }
 
-/* Floating Headgear Physics */
-.floating-entity {
-    animation: traditionalFloat 7s infinite ease-in-out;
+/* Procedural Float Physics */
+.divine-float {
+    animation: proceduralFloat 6s infinite ease-in-out;
 }
-.topor-two {
-    animation-delay: -3.5s;
-    animation-duration: 9s;
+.fan-beta {
+    animation-delay: -3s;
+    animation-duration: 8s;
 }
 
-@keyframes traditionalFloat {
+@keyframes proceduralFloat {
     0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
-    50% { transform: translateY(-25px) rotate(4deg) scale(1.03); }
+    50% { transform: translateY(-22px) rotate(4deg) scale(1.04); }
 }
 
-/* Celebration Balloon Ascent Simulation */
-.flying-balloon {
-    animation: balloonAscent 12s infinite linear;
+/* Gas Balloons 3D Rendering & Physics */
+.gas-balloon {
+    width: 45px;
+    height: 60px;
+    border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+    animation: gasAscent 14s infinite linear;
     opacity: 0;
 }
-.balloon-crimson { left: 15%; animation-duration: 14s; animation-delay: 1s; }
-.balloon-gold { right: 20%; animation-duration: 11s; animation-delay: 4s; }
-
-@keyframes balloonAscent {
-    0% { bottom: -10%; opacity: 0; transform: translateX(0) rotate(0deg); }
-    10% { opacity: 0.6; }
-    90% { opacity: 0.6; }
-    100% { bottom: 110%; opacity: 0; transform: translateX(35px) rotate(15deg); }
+.crimson-balloon {
+    background: radial-gradient(circle at 30% 30%, #ff4d6d, #9E1B32, #4A0511);
+    box-shadow: inset -4px -4px 12px rgba(0,0,0,0.7), 0 0 20px rgba(158, 27, 50, 0.4);
+    animation-duration: 16s;
+    animation-delay: 0.5s;
+}
+.gold-balloon {
+    background: radial-gradient(circle at 30% 30%, #FFEFA6, #DAA520, #61460B);
+    box-shadow: inset -4px -4px 12px rgba(0,0,0,0.7), 0 0 20px rgba(218, 165, 32, 0.4);
+    animation-duration: 12s;
+    animation-delay: 3.5s;
 }
 
-/* Glassmorphism Interactive Hover Matrix */
-.premium-festival-trigger {
-    position: relative;
-    overflow: hidden;
+@keyframes gasAscent {
+    0% { bottom: -12%; opacity: 0; transform: translateX(0) scale(0.9); }
+    15% { opacity: 0.65; }
+    85% { opacity: 0.65; }
+    100% { bottom: 112%; opacity: 0; transform: translateX(40px) scale(1.05); }
 }
-.premium-festival-trigger:hover {
+
+/* Interactive Conversions Trigger */
+.premium-enter-trigger:hover {
     background: #DAA520 !important;
     color: #050102 !important;
-    font-weight: 800;
-    box-shadow: 0 0 35px rgba(218, 165, 32, 0.6);
-    transform: translateY(-4px) scale(1.02);
+    font-weight: bold;
+    box-shadow: 0 0 30px #DAA520;
+    transform: translateY(-3px);
 }
