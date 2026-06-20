@@ -175,57 +175,64 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
 .firework:nth-child(4) { left: 10%; top: 70%; animation-delay: -1.4s; }
 .firework:nth-child(5) { left: 90%; top: 75%; animation-delay: -1.7s; }
 .firework:nth-child(6) { left: 30%; top: 40%; animation-delay: -2.0s; }
-/* --- PREMIUM RAM NAVAMI FESTIVAL STYLING --- */
+/* --- VISIONARY JAMAI SASTHI PREMIUM LOGIC --- */
 
-/* 1. Divine Pulsing Background Glow */
-.divine-pulse-glow {
-    background: radial-gradient(circle at 50% 50%, rgba(255, 153, 51, 0.25), transparent 70%);
-    animation: pulseDivine 4s infinite alternate ease-in-out;
+/* Smooth Breathing Festival Aura */
+.bengal-festive-glow {
+    animation: festiveBreathe 5s infinite alternate ease-in-out;
 }
 
-@keyframes pulseDivine {
-    from { opacity: 0.4; transform: scale(1); }
-    to { opacity: 0.8; transform: scale(1.1); }
+@keyframes festiveBreathe {
+    from { opacity: 0.5; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1.05); }
 }
 
-/* 2. Saffron-Gold Gradient Text */
-#ram-navami-overlay h1 span {
-    background: linear-gradient(180deg, #FFD700 0%, #FF9933 100%);
+/* Master Typography Gradient: Royal Bengali Gold-to-Saffron */
+.gradient-festive-title {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F4C430 40%, #DAA520 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 15px rgba(255, 153, 51, 0.5));
-    font-weight: 900;
+    filter: drop-shadow(0 4px 15px rgba(218, 165, 32, 0.4));
 }
 
-/* 3. Floating Animation for the Background Vector */
-#ram-navami-overlay div:first-child svg {
-    animation: divineFloat 6s infinite ease-in-out;
+/* Floating Headgear Physics */
+.floating-entity {
+    animation: traditionalFloat 7s infinite ease-in-out;
+}
+.topor-two {
+    animation-delay: -3.5s;
+    animation-duration: 9s;
 }
 
-@keyframes divineFloat {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(5deg); }
+@keyframes traditionalFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+    50% { transform: translateY(-25px) rotate(4deg) scale(1.03); }
 }
 
-/* 4. Elegant Festival Button */
-#ram-navami-overlay button {
-    border: 1px solid #FF9933 !important;
-    background: rgba(255, 153, 51, 0.1) !important;
-    color: #FFD700 !important;
-    box-shadow: 0 0 20px rgba(255, 153, 51, 0.2);
-    backdrop-filter: blur(10px);
+/* Celebration Balloon Ascent Simulation */
+.flying-balloon {
+    animation: balloonAscent 12s infinite linear;
+    opacity: 0;
+}
+.balloon-crimson { left: 15%; animation-duration: 14s; animation-delay: 1s; }
+.balloon-gold { right: 20%; animation-duration: 11s; animation-delay: 4s; }
+
+@keyframes balloonAscent {
+    0% { bottom: -10%; opacity: 0; transform: translateX(0) rotate(0deg); }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { bottom: 110%; opacity: 0; transform: translateX(35px) rotate(15deg); }
 }
 
-#ram-navami-overlay button:hover {
-    background: #FF9933 !important;
-    color: #000 !important;
-    box-shadow: 0 0 40px #FF9933;
-    transform: translateY(-3px) scale(1.05);
+/* Glassmorphism Interactive Hover Matrix */
+.premium-festival-trigger {
+    position: relative;
+    overflow: hidden;
 }
-
-/* 5. Divine Divider Line */
-#ram-navami-overlay div[style*="background: linear-gradient"] {
-    height: 2px !important;
-    background: linear-gradient(90deg, transparent, #FF9933, #FFD700, #FF9933, transparent) !important;
-    box-shadow: 0 0 10px #FF9933;
+.premium-festival-trigger:hover {
+    background: #DAA520 !important;
+    color: #050102 !important;
+    font-weight: 800;
+    box-shadow: 0 0 35px rgba(218, 165, 32, 0.6);
+    transform: translateY(-4px) scale(1.02);
 }
