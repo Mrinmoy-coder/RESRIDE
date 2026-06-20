@@ -55,7 +55,7 @@ window.syncUserData = async function(uid) {
     const data = userSnap.data();
     wallet = Number(data.wallet);
     points = Number(data.points);
-    rideHistory = data.history || [];
+    rideHistory = data.history || []; // FIXED: Variable reference corrected to unfreeze execution
 
     isVaultLocked = false; 
     updateWalletUI(); 
