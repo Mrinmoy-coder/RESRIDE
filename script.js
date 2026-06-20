@@ -390,26 +390,38 @@ window.shareTelemetry = function() {
 // Add this function to your JS to handle the new Ram Navami screen
 // ATTACH TO WINDOW OBJECT FOR JAMAI SASTHI PROTOCOL
 // ATTACH TO WINDOW OBJECT FOR JAMAI SASTHI PROTOCOL
+// Global Festival State Tracking variables
+let activeFestivalDiscount = 0;
+let requiredDistanceThreshold = 0;
+
+// Dynamic Voucher Selection Engine
+window.claimFestivalPack = function(discountAmount, distanceLimit) {
+    activeFestivalDiscount = discountAmount;
+    requiredDistanceThreshold = distanceLimit;
+    
+    alert(`Success: ₹${discountAmount} Discount Pack loaded. This discount requires a distance threshold of ${distanceLimit}km to activate processing calculations.`);
+};
+
+// Application Bootstrap Interface Lifecycle
 window.launchFestivalApp = function() {
     const overlay = document.getElementById('jamai-sasthi-overlay');
     if (overlay) {
         overlay.style.opacity = '0';
         overlay.style.pointerEvents = 'none';
-        
         setTimeout(() => {
             overlay.style.display = 'none';
             
-            // Push structured system metrics log onto the Core Dispatch UI
+            // Push active alert notifications to the core log framework
             const log = document.getElementById('system-log');
             if (log) {
                 log.innerHTML = `
-                    <div style="border-left: 3px solid #DAA520; padding-left: 10px; margin-bottom: 12px; background: rgba(218, 165, 32, 0.05); padding: 8px 12px; border-radius: 4px; animation: fadeIn 0.6s step-end;">
-                        <p style="color: #DAA520; font-weight: bold; font-size:0.75rem; margin:0;">[BENGAL_FESTIVAL_PROTOCOL_ENGAGED]</p>
-                        <p style="color: #fff; font-size: 0.65rem; margin:4px 0 0 0;">Shubho Jamai Sasthi. Fleet parameters optimized with cultural premium scaling multipliers.</p>
+                    <div style="border-left: 3px solid #DAA520; padding: 6px 12px; background: rgba(218, 165, 32, 0.05); margin-bottom: 10px; animation: fadeIn 0.4s;">
+                        <p style="color: #DAA520; font-weight: bold; font-size:0.7rem; margin:0;">[JAMAI_SASTHI_DISPATCH_ACTIVE]</p>
+                        <p style="color: #fff; font-size: 0.65rem; margin:2px 0 0 0;">Auspicious commute limits activated. Current Active Multiplier Discount: ₹${activeFestivalDiscount}.</p>
                     </div>
                 ` + log.innerHTML;
             }
-        }, 1500);
+        }, 1200);
     }
 };
 let passengerCount = 1;
