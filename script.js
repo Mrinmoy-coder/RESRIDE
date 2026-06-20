@@ -216,15 +216,29 @@ window.processRide = function(rideType) {
     
     // NEW FAMILY LOGIC: Each extra member adds 15% to the total fare
     let familyMultiplier = 1 + ((passengerCount - 1) * 0.15); 
-    let finalFare = Math.round(((distance * baseFare) * aiCtx * familyMultiplier) + quality);
+    let initialFare = Math.round(((distance * baseFare) * aiCtx * familyMultiplier) + quality);
+    let finalFare = initialFare;
+    let couponAppliedText = "";
 
     // =========================================================================
     // VISIONARY INTEGRATION: Jamai Sasthi Dynamic Voucher Deduction Engine
-    // Automatically applies the ₹10 or ₹20 discount pack if distance prerequisites are met
+    // Calculates and tracks if a discount was applied for the UI receipt
     // =========================================================================
-    if (typeof requiredDistanceThreshold !== 'undefined' && typeof activeFestivalDiscount !== 'undefined') {
+    if (typeof requiredDistanceThreshold !== 'undefined' && typeof activeFestivalDiscount !== 'undefined' && activeFestivalDiscount > 0) {
         if (distance >= requiredDistanceThreshold) {
-            finalFare = Math.max(0, finalFare - activeFestivalDiscount);
+            finalFare = Math.max(0, initialFare - activeFestivalDiscount);
+            couponAppliedText = `
+                <div style="margin: 5px 0; padding: 6px; background: rgba(39, 201, 63, 0.1); border: 1px dashed #27c93f; border-radius: 4px; font-size: 0.75rem;">
+                    <span style="color: #27c93f; font-weight: bold;">✔ FESTIVAL COUPON APPLIED:</span> Flat ₹${activeFestivalDiscount} Off on your Jamai Sasthi special pack!
+                    <br><span style="color: #ccc; font-size: 0.65rem;">Base Fare: ₹${initialFare} | Coupon Saving: -₹${activeFestivalDiscount}</span>
+                </div>
+            `;
+        } else {
+            couponAppliedText = `
+                <div style="margin: 5px 0; padding: 6px; background: rgba(255, 95, 86, 0.1); border: 1px dashed #ff5f56; border-radius: 4px; font-size: 0.75rem; color: #fff;">
+                    <span style="color: #ff5f56; font-weight: bold;">⚠ COUPON LOCKED:</span> Distance is ${distance}km. Selected pack requires at least ${requiredDistanceThreshold}km.
+                </div>
+            `;
         }
     }
     // =========================================================================
@@ -243,12 +257,24 @@ window.processRide = function(rideType) {
 
     startRideSimulation(rideType, finalFare, startSub, endSub, timing, timeInput, quality);
 
+    // STRUCTURED CUSTOMER RECEIPT IN LOG SYSTEM
+    log.innerHTML = `
+        <div style="border: 1px solid #DAA520; padding: 12px; border-radius: 8px; background: rgba(43, 22, 0, 0.2); margin-bottom: 12px; color: #fff; font-family: 'Inter', sans-serif;">
+            <p style="color: #DAA520; font-weight: bold; margin: 0 0 5px 0; font-size: 0.8rem; letter-spacing: 1px;">🎫 FARE BREAKDOWN RECEIPT</p>
+            <div style="font-size: 0.75rem; line-height: 1.4; opacity: 0.9;">
+                • Route: ${startSub} → ${endSub} (${distance} km)<br>
+                • Initial Calculated Price: ₹${initialFare}<br>
+                ${couponAppliedText}
+                • <strong style="color: #FFD700; font-size: 0.85rem;">Final Fare Deducted: ₹${finalFare}</strong>
+            </div>
+        </div>
+    ` + log.innerHTML;
+
     log.innerHTML = `<p style="color:#38bdf8; border: 1px solid #38bdf8; padding: 5px; border-radius: 5px; margin-bottom: 10px;">
         📡 HUB SENSOR: System calibrating dispatch for ${rideType} priority...
     </p>` + log.innerHTML;
 
 };
-
 function startRideSimulation(type, fare, start, end, timing, startTime, quality) {
     const tripId = "RR-" + Math.floor(Math.random() * 8999 + 1000);
     const log = document.getElementById('system-log');
