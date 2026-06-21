@@ -54,7 +54,6 @@ if (ecoPtsEl) ecoPtsEl.innerText = points;
 if (typeof renderHistory === 'function' && document.getElementById('history-list')) {
     renderHistory();
 }
-
     const userRef = window.dbRef.doc(window.db, "users", uid);
     const userSnap = await window.dbRef.getDoc(userRef);
 
