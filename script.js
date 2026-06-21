@@ -74,23 +74,6 @@ window.syncUserData = async function(uid) {
     }
     // =========================================================================
 };
-    const userRef = window.dbRef.doc(window.db, "users", uid);
-    const userSnap = await window.dbRef.getDoc(userRef);
-
-    if (!userSnap.exists()) {
-        console.warn("User document not found — skipping overwrite");
-        return;
-    }
-
-    const data = userSnap.data();
-    wallet = Number(data.wallet);
-    points = Number(data.points);
-    rideHistory = data.history || [];
-
-    isVaultLocked = false; 
-    updateWalletUI(); 
-    renderHistory();
-};
 
 async function saveToCloud() {
     if (!window.auth.currentUser || isVaultLocked) return;
@@ -176,13 +159,16 @@ window.handleLogout = function() {
 };
 
 window.updateWalletUI = function() {
-    document.getElementById('bal-amount').innerText = wallet;
-    document.getElementById('eco-pts').innerText = points;
+    const balAmtEl = document.getElementById('bal-amount');
+    const ecoPtsEl = document.getElementById('eco-pts');
+    if (balAmtEl) balAmtEl.innerText = wallet;
+    if (ecoPtsEl) ecoPtsEl.innerText = points;
 };
 
 window.updateSubPlaces = function(type) {
     const city = document.getElementById(`${type}-city`).value;
     const sub = document.getElementById(`${type}-sub`);
+    if (!sub) return;
     sub.innerHTML = '<option value="">Select Hub Location</option>';
     if (city && subPlaces[city]) {
         sub.disabled = false;
@@ -274,9 +260,11 @@ window.processRide = function(rideType) {
         </div>
     `;
 
-    log.innerHTML = `<p style="color:#38bdf8; border: 1px solid #38bdf8; padding: 5px; border-radius: 5px; margin-bottom: 10px;">
-        📡 HUB SENSOR: System calibrating dispatch for ${rideType} priority...
-    </p>` + receiptTemplate + log.innerHTML;
+    if (log) {
+        log.innerHTML = `<p style="color:#38bdf8; border: 1px solid #38bdf8; padding: 5px; border-radius: 5px; margin-bottom: 10px;">
+            📡 HUB SENSOR: System calibrating dispatch for ${rideType} priority...
+        </p>` + receiptTemplate + log.innerHTML;
+    }
 };
 
 function startRideSimulation(type, fare, start, end, timing, startTime, quality) {
@@ -293,35 +281,47 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
     };
     const reachTime = formatTime((h * 60) + m + timing.pickupDelay + timing.travelTime);
 
-    document.getElementById('label-start').innerText = start;
-    document.getElementById('label-end').innerText = end;
+    const lblStart = document.getElementById('label-start');
+    const lblEnd = document.getElementById('label-end');
+    if (lblStart) lblStart.innerText = start;
+    if (lblEnd) lblEnd.innerText = end;
+
     isRideMoving = true;
     clearTimeout(autoReceiptTimer);
-    log.innerHTML = `
-        <div style="border: 1px solid #38bdf8; padding: 10px; border-radius: 8px; background: rgba(56, 189, 248, 0.05); margin-bottom: 10px; animation: fadeIn 0.5s;">
-            <p style="color: #38bdf8; font-weight: bold; margin: 0;">[DUAL_CHAMBER_ACTIVATED]</p>
-            <p style="font-size: 0.7rem; color: #fff; margin: 5px 0 0 0;">> Chamber 1: ${passengerCount} Members (Family Lounge)</p>
-            <p style="font-size: 0.7rem; color: #27c93f; margin: 2px 0 0 0;">> Chamber 2: Emergency User (Bio-Restroom Mode)</p>
-        </div>
-    ` + log.innerHTML;
 
-    car.style.transition = 'none';
-    car.style.left = '0%';
-    void car.offsetWidth;
+    if (log) {
+        log.innerHTML = `
+            <div style="border: 1px solid #38bdf8; padding: 10px; border-radius: 8px; background: rgba(56, 189, 248, 0.05); margin-bottom: 10px; animation: fadeIn 0.5s;">
+                <p style="color: #38bdf8; font-weight: bold; margin: 0;">[DUAL_CHAMBER_ACTIVATED]</p>
+                <p style="font-size: 0.7rem; color: #fff; margin: 5px 0 0 0;">> Chamber 1: ${passengerCount} Members (Family Lounge)</p>
+                <p style="font-size: 0.7rem; color: #27c93f; margin: 2px 0 0 0;">> Chamber 2: Emergency User (Bio-Restroom Mode)</p>
+            </div>
+        ` + log.innerHTML;
+    }
 
-    car.style.transition = 'left 5s linear';
-    car.style.left = '85%';
-    car.style.color = (type === 'Emergency') ? '#ff0055' : '#38bdf8';
-    car.classList.add('vehicle-moving');
+    if (car) {
+        car.style.transition = 'none';
+        car.style.left = '0%';
+        void car.offsetWidth;
+
+        car.style.transition = 'left 5s linear';
+        car.style.left = '85%';
+        car.style.color = (type === 'Emergency') ? '#ff0055' : '#38bdf8';
+        car.classList.add('vehicle-moving');
+    }
 
     setTimeout(() => {
         if(!isRideMoving) return; 
 
-        car.style.transition = 'left 5s linear';
-        car.style.left = '85%';
-        car.classList.add('vehicle-moving');
+        if (car) {
+            car.style.transition = 'left 5s linear';
+            car.style.left = '85%';
+            car.classList.add('vehicle-moving');
+        }
 
-        log.innerHTML = `<p style="color:#25d366; font-size:0.7rem; margin-top:5px; border: 1px solid #25d366; padding: 4px; border-radius: 4px;">🔗 LIVE TRACKING: <a href="javascript:void(0)" onclick="alert('Trip ID: ${tripId}')" style="color:#fff;">resride.track/${tripId}</a></p>` + log.innerHTML;
+        if (log) {
+            log.innerHTML = `<p style="color:#25d366; font-size:0.7rem; margin-top:5px; border: 1px solid #25d366; padding: 4px; border-radius: 4px;">🔗 LIVE TRACKING: <a href="javascript:void(0)" onclick="alert('Trip ID: ${tripId}')" style="color:#fff;">resride.track/${tripId}</a></p>` + log.innerHTML;
+        }
 
         autoReceiptTimer = setTimeout(() => {
             if(isRideMoving) {
@@ -341,22 +341,26 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
                 renderHistory();
                 saveToCloud(); 
 
-                log.innerHTML = `
-                <div style="margin-top:10px; padding:10px; border:1px dashed #27c93f; background:rgba(39, 201, 63, 0.1);">
-                    <p style="color:#27c93f; font-weight:bold;">🏁 ARRIVED AT HUB: ${end}</p>
-                    <p>Fare: ₹${fare} | Points Earned: +${quality > 100 ? 100 : 50}</p>
-                </div>` + log.innerHTML;
+                if (log) {
+                    log.innerHTML = `
+                    <div style="margin-top:10px; padding:10px; border:1px dashed #27c93f; background:rgba(39, 201, 63, 0.1);">
+                        <p style="color:#27c93f; font-weight:bold;">🏁 ARRIVED AT HUB: ${end}</p>
+                        <p>Fare: ₹${fare} | Points Earned: +${quality > 100 ? 100 : 50}</p>
+                    </div>` + log.innerHTML;
+                }
                 
                 isRideMoving = false;
-                car.classList.remove('vehicle-moving');
+                if (car) car.classList.remove('vehicle-moving');
             }
         }, 5000); 
     }, 100); 
 
-    log.innerHTML = `<div style="margin-bottom:15px; border-left:3px solid ${type === 'Emergency' ? '#ff0055' : '#38bdf8'}; padding-left:10px;">
-        <p style="color:#fff; font-weight:bold;">> ${type.toUpperCase()} DISPATCH: ${tripId}</p>
-        <p style="color: #0ff; font-size: 0.8rem;">> 🚗 Waiting Time: ${timing.pickupDelay}m | 🏁 Reach Time: ${reachTime}</p>
-    </div>` + log.innerHTML;
+    if (log) {
+        log.innerHTML = `<div style="margin-bottom:15px; border-left:3px solid ${type === 'Emergency' ? '#ff0055' : '#38bdf8'}; padding-left:10px;">
+            <p style="color:#fff; font-weight:bold;">> ${type.toUpperCase()} DISPATCH: ${tripId}</p>
+            <p style="color: #0ff; font-size: 0.8rem;">> 🚗 Waiting Time: ${timing.pickupDelay}m | 🏁 Reach Time: ${reachTime}</p>
+        </div>` + log.innerHTML;
+    }
 }
 
 window.rechargeWallet = async () => {
@@ -372,18 +376,25 @@ window.cancelRide = function() {
     isRideMoving = false;
     clearTimeout(autoReceiptTimer);
     const car = document.getElementById('vehicle-icon');
-    const currentPos = window.getComputedStyle(car).getPropertyValue('left');
-    car.style.transition = 'none'; car.style.left = currentPos; car.classList.remove('vehicle-moving');
-    document.getElementById('system-log').innerHTML = `<p style="color:#ff5f56; border:1px solid #ff5f56; padding:5px; border-radius:5px; margin-bottom:10px;">
-        ❌ SENSOR ALERT: Dispatch aborted. Fleet nodes resetting...
-    </p>` + document.getElementById('system-log').innerHTML;
+    const log = document.getElementById('system-log');
+    if (car) {
+        const currentPos = window.getComputedStyle(car).getPropertyValue('left');
+        car.style.transition = 'none'; car.style.left = currentPos; car.classList.remove('vehicle-moving');
+    }
+    if (log) {
+        log.innerHTML = `<p style="color:#ff5f56; border:1px solid #ff5f56; padding:5px; border-radius:5px; margin-bottom:10px;">
+            ❌ SENSOR ALERT: Dispatch aborted. Fleet nodes resetting...
+        </p>` + log.innerHTML;
+    }
 };
 
 window.renderHistory = function() {
     const list = document.getElementById('history-list');
-    list.innerHTML = rideHistory.length
-        ? rideHistory.map(r => `<div>${r.time} | ${r.from} → ${r.to} | ₹${r.fare}</div>`).join('')
-        : "No activity found.";
+    if (list) {
+        list.innerHTML = rideHistory.length
+            ? rideHistory.map(r => `<div>${r.time} | ${r.from} → ${r.to} | ₹${r.fare}</div>`).join('')
+            : "No activity found.";
+    }
 };
 
 window.clearHistory = async () => {
@@ -394,11 +405,17 @@ window.clearHistory = async () => {
     }
 };
 
-window.toggleAboutModal = () => document.getElementById('aboutModal').style.display = document.getElementById('aboutModal').style.display === 'flex' ? 'none' : 'flex';
-window.toggleContactModal = () => document.getElementById('contactModal').style.display = document.getElementById('contactModal').style.display === 'flex' ? 'none' : 'flex';
+window.toggleAboutModal = () => {
+    const modal = document.getElementById('aboutModal');
+    if (modal) modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+};
+window.toggleContactModal = () => {
+    const modal = document.getElementById('contactModal');
+    if (modal) modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+};
 
 window.shareTelemetry = function() {
-    if (!lastTrip.from || !lastTrip.id) {
+    if (!lastTrip || !lastTrip.from || !lastTrip.id) {
         alert("No active trip.");
         return;
     }
@@ -416,14 +433,13 @@ window.claimFestivalPack = function(discountAmount, distanceLimit) {
     alert(`Success: ₹${discountAmount} Discount Pack loaded. This discount requires a distance threshold of ${distanceLimit}km to activate processing calculations.`);
 };
 
-// FIXED: Added display = 'none' logic to safely hide the obstructing layer wall
 window.launchFestivalApp = function() {
     const overlay = document.getElementById('jamai-sasthi-overlay');
     if (overlay) {
         overlay.style.opacity = '0';
         overlay.style.pointerEvents = 'none';
         setTimeout(() => {
-            overlay.style.display = 'none'; // CRITICAL REMEDY
+            overlay.style.display = 'none'; 
             const log = document.getElementById('system-log');
             if (log) {
                 log.innerHTML = `
@@ -440,7 +456,8 @@ window.launchFestivalApp = function() {
 let passengerCount = 1;
 window.updatePassengers = function(count) {
     passengerCount = parseInt(count);
-    document.getElementById('pass-display').innerText = `${passengerCount} Members`;
+    const disp = document.getElementById('pass-display');
+    if (disp) disp.innerText = `${passengerCount} Members`;
 };
 
 // =========================================================================
