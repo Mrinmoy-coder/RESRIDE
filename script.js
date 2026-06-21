@@ -537,3 +537,15 @@ function triggerPopEffect(element) {
 }
 
 initializePremiumBalloons();
+// --- DYNAMIC CAREER PORTAL SELECTION MODAL SYSTEM ---
+window.toggleCareerModal = function() {
+    const modal = document.getElementById('careerModal');
+    if (modal) {
+        modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+    }
+};
+
+window.applyForRole = function(roleName) {
+    alert(`RESRIDE Core Engine: Initiating assessment matrix for [${roleName}] position. Submission portal synced successfully!`);
+    window.toggleCareerModal(); // Closes securely after application trace
+};
