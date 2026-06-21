@@ -277,3 +277,33 @@ select, input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border:
     0%, 100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.12; }
     50% { transform: translateY(-30px) rotate(8deg) scale(1.06); opacity: 0.22; }
 }
+/* Multi-Page Classy Transition Optimization Layer */
+body {
+    animation: pageRevealFade 0.5s ease-out;
+}
+
+@keyframes pageRevealFade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-links a {
+    position: relative;
+    padding: 6px 0;
+}
+
+/* Elegant underline reveal on hovering link entries */
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--neon-blue);
+    transition: width 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
