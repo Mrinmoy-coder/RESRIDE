@@ -43,17 +43,37 @@ window.syncUserData = async function(uid) {
             }
         }
     }
-    // Add these checks right inside the end of window.syncUserData
-const balAmtEl = document.getElementById('bal-amount');
-const ecoPtsEl = document.getElementById('eco-pts');
 
-if (balAmtEl) balAmtEl.innerText = wallet;
-if (ecoPtsEl) ecoPtsEl.innerText = points;
+    const userRef = window.dbRef.doc(window.db, "users", uid);
+    const userSnap = await window.dbRef.getDoc(userRef);
 
-// Prevents crashes if the user is reviewing the historical logs on another sub-page
-if (typeof renderHistory === 'function' && document.getElementById('history-list')) {
-    renderHistory();
-}
+    if (!userSnap.exists()) {
+        console.warn("User document not found — skipping overwrite");
+        return;
+    }
+
+    const data = userSnap.data();
+    wallet = Number(data.wallet);
+    points = Number(data.points);
+    rideHistory = data.history || [];
+
+    isVaultLocked = false; 
+    updateWalletUI(); 
+
+    // =========================================================================
+    // MULTI-PAGE DOM SAFEGUARDS: Clean containment to protect compiler builds
+    // =========================================================================
+    const balAmtEl = document.getElementById('bal-amount');
+    const ecoPtsEl = document.getElementById('eco-pts');
+
+    if (balAmtEl) balAmtEl.innerText = wallet;
+    if (ecoPtsEl) ecoPtsEl.innerText = points;
+
+    if (typeof renderHistory === 'function' && document.getElementById('history-list')) {
+        renderHistory();
+    }
+    // =========================================================================
+};
     const userRef = window.dbRef.doc(window.db, "users", uid);
     const userSnap = await window.dbRef.getDoc(userRef);
 
