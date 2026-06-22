@@ -537,40 +537,11 @@ function triggerPopEffect(element) {
 }
 
 initializePremiumBalloons();
+
 // --- DYNAMIC CAREER PORTAL SELECTION MODAL SYSTEM ---
 window.toggleCareerModal = function() {
     const modal = document.getElementById('careerModal');
     if (modal) {
         modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
-    }
-};
-
-window.applyForRole = async function(roleName) {
-    const user = window.auth.currentUser;
-    
-    // Safety check: ensure they are logged in so we get their data profile details
-    if (!user) {
-        alert("Authentication Required: Please sign in before submitting an application matrix.");
-        return;
-    }
-
-    try {
-        // Create a secure reference location pointer in Firestore
-        // Path: hiring_applications / {auto-generated-id}
-        const appRef = window.dbRef.doc(window.db, "hiring_applications", `${user.uid}_${Date.now()}`);
-        
-        await window.dbRef.setDoc(appRef, {
-            applicantName: user.displayName || "Anonymous Applicant",
-            applicantEmail: user.email,
-            appliedRole: roleName,
-            submissionTimestamp: new Date().toISOString()
-        });
-
-        alert(`RESRIDE Core Engine: Assessment matrix for [${roleName}] initiated. Submission portal synced successfully to the founder!`);
-        window.toggleCareerModal(); // Close the modal card view cleanly
-
-    } catch (error) {
-        console.error("Hiring Registry Error:", error);
-        alert("Network Sync Failed: Unable to transmit application matrix payload.");
     }
 };
