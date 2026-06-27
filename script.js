@@ -30,29 +30,17 @@ const vaultRestorer = setInterval(async () => {
 }, 30000);
 
 window.syncUserData = async function(uid) {
-    const user = window.auth.currentUser;
-    if (user) {
-        const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
-        const welcomeText = document.querySelector('.typewriter');
-        
-        if (welcomeText) {
-            if (isGoogle && user.displayName) {
-                welcomeText.innerHTML = `Welcome, ${user.displayName}! <span style="color: #27c93f; font-size: 0.7rem; border: 1px solid #27c93f; padding: 2px 5px; border-radius: 10px; margin-left: 10px;">Google Verified</span>`;
-            } else {
-                welcomeText.innerText = `Hello, Welcome to RESRIDE !!!`;
-            }
-        }
-    }
-
+    if (!uid) return;
+    
     const userRef = window.dbRef.doc(window.db, "users", uid);
     let userSnap = await window.dbRef.getDoc(userRef);
 
-    // If the user document doesn't exist in Firestore at all, create it
+    // If cloud document does not exist, initialize natively with current cache parameters
     if (!userSnap.exists()) {
         console.log("RESRIDE_AI: Creating fresh profile ledger map node...");
         const defaultData = {
-            wallet: 0,
-            points: 0,
+            wallet: wallet > 0 ? wallet : 0, 
+            points: points > 0 ? points : 0,
             history: []
         };
         await window.dbRef.setDoc(userRef, defaultData);
@@ -61,29 +49,44 @@ window.syncUserData = async function(uid) {
 
     const data = userSnap.data();
     
-    // CRITICAL ASSIGNMENT: Pull values STRICTLY from the Firestore cloud document
+    // STRICT ALIGNMENT: Read absolute numbers cleanly from Cloud Firebase console
     wallet = data.wallet !== undefined ? Number(data.wallet) : 0;
     points = data.points !== undefined ? Number(data.points) : 0;
     rideHistory = data.history || [];
 
-    // Immediately commit the cloud values into local memory blocks so home screen works
+    // Immediately map to local system blocks
     localStorage.setItem('resrideWallet', wallet);
     localStorage.setItem('resridePoints', points);
     localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
 
     isVaultLocked = false; 
+    window.updateWalletUI(); 
     
-    // Explicitly update the UI elements immediately with the freshly downloaded balances
-    const balAmtEl = document.getElementById('bal-amount');
-    const ecoPtsEl = document.getElementById('eco-pts');
-
-    if (balAmtEl) balAmtEl.innerText = wallet;
-    if (ecoPtsEl) ecoPtsEl.innerText = points;
-
-    if (typeof renderHistory === 'function' && document.getElementById('history-list')) {
-        renderHistory();
+    // Welcome text handling safely
+    const user = window.auth.currentUser;
+    if (user) {
+        const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
+        const welcomeText = document.querySelector('.typewriter');
+        if (welcomeText && isGoogle && user.displayName) {
+            welcomeText.innerHTML = `Welcome, ${user.displayName}! <span style="color: #27c93f; font-size: 0.7rem; border: 1px solid #27c93f; padding: 2px 5px; border-radius: 10px; margin-left: 10px;">Google Verified</span>`;
+        }
     }
 };
+
+async function saveToCloud() {
+    if (!window.auth.currentUser || isVaultLocked) return;
+    try {
+        const userRef = window.dbRef.doc(window.db, "users", window.auth.currentUser.uid);
+        await window.dbRef.updateDoc(userRef, {
+            wallet: Number(wallet),
+            points: Number(points),
+            history: rideHistory
+        });
+        console.log("RESRIDE_AI: Cloud Sync Successful ledger updated safely.");
+    } catch (e) {
+        console.error("Cloud tracking persistence layout write error:", e);
+    }
+}
 
 // --- INTERFACE DIALOG MODALS ---
 window.toggleAuthMode = function() {
@@ -96,12 +99,11 @@ window.toggleAuthMode = function() {
 window.handleGoogleLogin = function() {
     window.signInWithPopup(window.auth, window.googleProvider)
         .then(async (cred) => {
-            isVaultLocked = true; // Unlock vault guard to allow fresh incoming cloud download syncs
+            isVaultLocked = false; 
             await window.syncUserData(cred.user.uid);
         })
         .catch((error) => {
             alert("Google Login Failed: " + error.message);
-            document.getElementById('auth-title').innerText = "RESRIDE Login";
         });
 };
 
@@ -119,30 +121,20 @@ window.handleAuth = function(mode) {
     if(mode === 'login') {
         window.signInWithEmailAndPassword(window.auth, email, pass)
             .then(async (cred) => {
-                isVaultLocked = true;
+                isVaultLocked = false;
                 await window.syncUserData(cred.user.uid);
             })
             .catch(err => {
                 alert("Login Error: " + err.message);
                 btn.disabled = false;
                 btn.innerText = originalText;
-                document.getElementById('auth-email').style.borderColor = '#ff5f56';
-                document.getElementById('auth-pass').style.borderColor = '#ff5f56';
-                setTimeout(() => {
-                    document.getElementById('auth-email').style.borderColor = '';
-                    document.getElementById('auth-pass').style.borderColor = '';
-                }, 2000);
             });
     } else {
         window.createUserWithEmailAndPassword(window.auth, email, pass)
             .then(async (cred) => {
                 const userRef = window.dbRef.doc(window.db, "users", cred.user.uid);
-                await window.dbRef.setDoc(userRef, {
-                    wallet: 0,
-                    points: 0,
-                    history: []
-                });
-                isVaultLocked = true;
+                await window.dbRef.setDoc(userRef, { wallet: 0, points: 0, history: [] });
+                isVaultLocked = false;
                 await window.syncUserData(cred.user.uid);
             })
             .catch(err => {
@@ -163,8 +155,8 @@ window.forgotPassword = function() {
 window.handleLogout = function() {
     if (confirm("Log out?")) {
         isVaultLocked = true;
-        localStorage.clear(); // Clear storage fully on explicit signout
-        wallet = 0;           // Reset memory tracks completely
+        localStorage.clear(); 
+        wallet = 0;           
         points = 0;
         rideHistory = [];
         window.signOut(window.auth).then(() => location.reload());
@@ -175,11 +167,8 @@ window.updateWalletUI = function() {
     const balAmtEl = document.getElementById('bal-amount');
     const ecoPtsEl = document.getElementById('eco-pts');
     
-    const displayWallet = localStorage.getItem('resrideWallet') !== null ? localStorage.getItem('resrideWallet') : wallet;
-    const displayPoints = localStorage.getItem('resridePoints') !== null ? localStorage.getItem('resridePoints') : points;
-
-    if (balAmtEl) balAmtEl.innerText = displayWallet;
-    if (ecoPtsEl) ecoPtsEl.innerText = displayPoints;
+    if (balAmtEl) balAmtEl.innerText = wallet;
+    if (ecoPtsEl) ecoPtsEl.innerText = points;
     
     if (typeof renderHistory === 'function' && document.getElementById('history-list')) {
         renderHistory();
@@ -204,7 +193,6 @@ window.updateSubPlaces = function(type) {
     }
 };
 
-// --- CORE DISPATCH CALCULATION ENGINE ---
 window.processRide = function(rideType) {
     const startCity = document.getElementById('start-city').value;
     const endCity = document.getElementById('end-city').value;
@@ -254,8 +242,7 @@ window.processRide = function(rideType) {
         }
     }
 
-    const currentStoredWallet = Number(localStorage.getItem('resrideWallet')) || wallet;
-    if (currentStoredWallet < finalFare) {
+    if (wallet < finalFare) {
         alert("Insufficient balance! Please recharge.");
         return;
     }
@@ -347,7 +334,7 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
 
         autoReceiptTimer = setTimeout(() => {
             if(isRideMoving) {
-                wallet = (localStorage.getItem('resrideWallet') !== null ? Number(localStorage.getItem('resrideWallet')) : wallet) - fare;
+                wallet -= fare;
                 points += (quality > 100 ? 100 : 50);
                 lastTrip.status = "Completed";
                 rideHistory.unshift({ 
@@ -388,11 +375,12 @@ window.rechargeWallet = async () => {
     let amt = prompt("Amount (₹):");
     if (!amt || isNaN(amt)) return;
     
-    const currentWallet = localStorage.getItem('resrideWallet') !== null ? Number(localStorage.getItem('resrideWallet')) : wallet;
-    wallet = currentWallet + Number(amt);
-    
+    wallet += Number(amt);
     localStorage.setItem('resrideWallet', wallet);
     window.updateWalletUI();
+    
+    // Explicitly enforce vault unlocking rules to allow write access pass
+    isVaultLocked = false; 
     await saveToCloud();
 };
 
@@ -449,7 +437,6 @@ window.shareTelemetry = function() {
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
 };
 
-// --- DYNAMIC DISCOUNTS STATE MATRIX ---
 let activeFestivalDiscount = 0;
 let requiredDistanceThreshold = 0;
 
@@ -486,17 +473,11 @@ window.updatePassengers = function(count) {
     if (disp) disp.innerText = `${passengerCount} Members`;
 };
 
-// =========================================================================
-// INTERACTIVE PARTICLES: Asynchronous Procedural Spawning Framework
-// =========================================================================
 let balloonSpawnerInterval;
-
 function initializePremiumBalloons() {
     const layerContainer = document.getElementById('balloon-dynamic-aquarium');
     if (!layerContainer) return;
-
     clearInterval(balloonSpawnerInterval);
-
     balloonSpawnerInterval = setInterval(() => {
         const overlay = document.getElementById('jamai-sasthi-overlay');
         if (overlay && overlay.style.display === 'none') {
@@ -510,72 +491,50 @@ function initializePremiumBalloons() {
 function createSingleGasBalloon(container) {
     const balloon = document.createElement('div');
     const isGold = Math.random() > 0.5;
-    
     balloon.className = `interactive-balloon ${isGold ? 'balloon-type-gold' : 'balloon-type-crimson'}`;
-    
     const startingX = Math.random() * 90; 
     balloon.style.left = `${startingX}%`;
-    
     const ascendingVelocity = 2.0 + Math.random() * 2.5; 
     const swingMagnitude = 15 + Math.random() * 25;     
     const rotationMax = 8 + Math.random() * 8;          
-    
     let currentYPosition = 0; 
     let cycleAngleTracker = Math.random() * 100;
     
     function animateFrame() {
         if (balloon.classList.contains('popped')) return;
-
         currentYPosition += ascendingVelocity;
         cycleAngleTracker += 0.03;
-        
         const calculatedSwayX = Math.sin(cycleAngleTracker) * swingMagnitude;
         const calculatedRotate = Math.cos(cycleAngleTracker) * rotationMax;
-        
         balloon.style.transform = `translate3d(${calculatedSwayX}px, -${currentYPosition}px, 0) rotate(${calculatedRotate}deg)`;
-        
         if (currentYPosition > window.innerHeight + 150) {
             triggerPopEffect(balloon);
         } else {
             requestAnimationFrame(animateFrame);
         }
     }
-
     balloon.addEventListener('mousedown', (event) => {
         event.stopPropagation();
         triggerPopEffect(balloon);
     });
-
     container.appendChild(balloon);
     requestAnimationFrame(animateFrame);
 }
 
 function triggerPopEffect(element) {
     if (element.classList.contains('popped')) return;
-    
     element.classList.add('popped');
-    
-    setTimeout(() => {
-        if (element.parentNode) {
-            element.parentNode.removeChild(element);
-        }
-    }, 150);
+    setTimeout(() => { if (element.parentNode) element.parentNode.removeChild(element); }, 150);
 }
 
 initializePremiumBalloons();
 
-// --- DYNAMIC CAREER PORTAL SELECTION MODAL SYSTEM ---
 window.toggleCareerModal = function() {
     const modal = document.getElementById('careerModal');
-    if (modal) {
-        modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
-    }
+    if (modal) modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
 };
 
-// =========================================================================
-// INSTANT UI HYDRATION CORE: Prevents visual ₹0 resets during page reloads
-// =========================================================================
 (function hydrateUiImmediately() {
-    console.log("RESRIDE_CORE: Hydrating interface from secure local storage...");
+    console.log("RESRIDE_CORE: Syncing immediate storage values...");
     window.updateWalletUI();
 })();
