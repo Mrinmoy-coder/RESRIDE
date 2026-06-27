@@ -47,10 +47,11 @@ window.syncUserData = async function(uid) {
     const userRef = window.dbRef.doc(window.db, "users", uid);
     let userSnap = await window.dbRef.getDoc(userRef);
 
+    // FIX: Only initialize default data if the user explicitly DOES NOT exist in the database
     if (!userSnap.exists()) {
-        console.log("RESRIDE_AI: Initializing new cloud ledger registry node...");
+        console.log("RESRIDE_AI: Creating fresh profile ledger map node...");
         const defaultData = {
-            wallet: wallet > 0 ? wallet : 0, // Preserve local wallet state if any exists
+            wallet: wallet > 0 ? wallet : 0, 
             points: points > 0 ? points : 0,
             history: []
         };
@@ -60,7 +61,7 @@ window.syncUserData = async function(uid) {
 
     const data = userSnap.data();
     
-    // Core state assignment
+    // Core state assignment from Firestore data exclusively
     wallet = Number(data.wallet);
     points = Number(data.points);
     rideHistory = data.history || [];
@@ -95,6 +96,10 @@ window.toggleAuthMode = function() {
 
 window.handleGoogleLogin = function() {
     window.signInWithPopup(window.auth, window.googleProvider)
+        .then(async (cred) => {
+            isVaultLocked = true; // Unlock vault guard to allow fresh incoming cloud download syncs
+            await window.syncUserData(cred.user.uid);
+        })
         .catch((error) => {
             alert("Google Login Failed: " + error.message);
             document.getElementById('auth-title').innerText = "RESRIDE Login";
@@ -114,6 +119,10 @@ window.handleAuth = function(mode) {
 
     if(mode === 'login') {
         window.signInWithEmailAndPassword(window.auth, email, pass)
+            .then(async (cred) => {
+                isVaultLocked = true;
+                await window.syncUserData(cred.user.uid);
+            })
             .catch(err => {
                 alert("Login Error: " + err.message);
                 btn.disabled = false;
@@ -130,10 +139,12 @@ window.handleAuth = function(mode) {
             .then(async (cred) => {
                 const userRef = window.dbRef.doc(window.db, "users", cred.user.uid);
                 await window.dbRef.setDoc(userRef, {
-                    wallet: wallet > 0 ? wallet : 0,
-                    points: points > 0 ? points : 0,
+                    wallet: 0,
+                    points: 0,
                     history: []
                 });
+                isVaultLocked = true;
+                await window.syncUserData(cred.user.uid);
             })
             .catch(err => {
                 alert("Registration Error: " + err.message);
@@ -154,11 +165,13 @@ window.handleLogout = function() {
     if (confirm("Log out?")) {
         isVaultLocked = true;
         localStorage.clear(); // Clear storage fully on explicit signout
+        wallet = 0;           // Reset memory tracks completely
+        points = 0;
+        rideHistory = [];
         window.signOut(window.auth).then(() => location.reload());
     }
 };
 
-// CRITICAL FIX: Ensure UI always pulls from localStorage value first if global memory defaults to 0
 window.updateWalletUI = function() {
     const balAmtEl = document.getElementById('bal-amount');
     const ecoPtsEl = document.getElementById('eco-pts');
@@ -242,7 +255,6 @@ window.processRide = function(rideType) {
         }
     }
 
-    // Pull absolute verification from storage state
     const currentStoredWallet = Number(localStorage.getItem('resrideWallet')) || wallet;
     if (currentStoredWallet < finalFare) {
         alert("Insufficient balance! Please recharge.");
@@ -349,7 +361,6 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
                 localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
                 
                 window.updateWalletUI();
-                window.syncUserData(window.auth.currentUser.uid); // Pass update trace to cloud
                 saveToCloud(); 
 
                 if (log) {
