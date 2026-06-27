@@ -27,7 +27,6 @@ const vaultRestorer = setInterval(async () => {
         }
     }
 }, 30000);
-
 window.syncUserData = async function(uid) {
     const user = window.auth.currentUser;
     if (user) {
@@ -44,29 +43,37 @@ window.syncUserData = async function(uid) {
     }
 
     const userRef = window.dbRef.doc(window.db, "users", uid);
-    const userSnap = await window.dbRef.getDoc(userRef);
+    let userSnap = await window.dbRef.getDoc(userRef);
 
+    // FIX: If the cloud file doesn't exist, build it natively instead of crashing out
     if (!userSnap.exists()) {
-        console.warn("User document not found — skipping overwrite");
-        return;
+        console.log("RESRIDE_AI: Initializing new cloud ledger registry node...");
+        const defaultData = {
+            wallet: 0,
+            points: 0,
+            history: []
+        };
+        await window.dbRef.setDoc(userRef, defaultData);
+        // Re-fetch the newly generated instance pointer
+        userSnap = await window.dbRef.getDoc(userRef);
     }
 
     const data = userSnap.data();
+    
+    // Core state assignment
     wallet = Number(data.wallet);
     points = Number(data.points);
     rideHistory = data.history || [];
 
-    // Lock fetched data straight into local memory blocks to prevent zero-neutralization
+    // Force commit updates immediately to the browser cache memory state layer
     localStorage.setItem('resrideWallet', wallet);
     localStorage.setItem('resridePoints', points);
     localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
 
     isVaultLocked = false; 
-    updateWalletUI();
+    updateWalletUI(); 
 
-    // =========================================================================
-    // MULTI-PAGE DOM SAFEGUARDS: Clean containment to protect compiler builds
-    // =========================================================================
+    // Multi-page layout container protections
     const balAmtEl = document.getElementById('bal-amount');
     const ecoPtsEl = document.getElementById('eco-pts');
 
@@ -76,9 +83,7 @@ window.syncUserData = async function(uid) {
     if (typeof renderHistory === 'function' && document.getElementById('history-list')) {
         renderHistory();
     }
-    // =========================================================================
 };
-
 async function saveToCloud() {
     if (!window.auth.currentUser || isVaultLocked) return;
 
