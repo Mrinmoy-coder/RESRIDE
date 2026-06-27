@@ -10,10 +10,10 @@ const subPlaces = {
     "Midnapore": ["Kharagpur Jn (KGP)", "Digha Bus Stand"]
 };
 
-// --- CORE APPLICATION STATES (AUTO-HYDRATED TO PREVENT RESET FAULTS) ---
+// --- CORE APPLICATION STATES ---
 let wallet = Number(localStorage.getItem('resrideWallet')) || 0; 
 let points = Number(localStorage.getItem('resridePoints')) || 0;
-let rideHistory = JSON.stringify(localStorage.getItem('resrideHistory')) ? JSON.parse(localStorage.getItem('resrideHistory')) : [];
+let rideHistory = localStorage.getItem('resrideHistory') ? JSON.parse(localStorage.getItem('resrideHistory')) : [];
 let isVaultLocked = true; 
 let isRideMoving;
 let autoReceiptTimer;
@@ -546,6 +546,30 @@ function triggerPopEffect(element) {
 }
 
 initializePremiumBalloons();
+// =========================================================================
+// INSTANT UI HYDRATION CORE: Prevents visual ₹0 resets during page reloads
+// =========================================================================
+(function hydrateUiImmediately() {
+    console.log("RESRIDE_CORE: Hydrating interface from secure local storage...");
+    const cachedWallet = localStorage.getItem('resrideWallet');
+    const cachedPoints = localStorage.getItem('resridePoints');
+    
+    const balAmtEl = document.getElementById('bal-amount');
+    const ecoPtsEl = document.getElementById('eco-pts');
+    
+    if (cachedWallet !== null && balAmtEl) {
+        balAmtEl.innerText = cachedWallet;
+        wallet = Number(cachedWallet); // Align local state variable
+    }
+    if (cachedPoints !== null && ecoPtsEl) {
+        ecoPtsEl.innerText = cachedPoints;
+        points = Number(cachedPoints); // Align local state variable
+    }
+    
+    if (typeof renderHistory === 'function' && document.getElementById('history-list')) {
+        renderHistory();
+    }
+})();
 
 // --- DYNAMIC CAREER PORTAL SELECTION MODAL SYSTEM ---
 window.toggleCareerModal = function() {
