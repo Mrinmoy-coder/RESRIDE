@@ -356,9 +356,9 @@
         window.signInWithPopup = signInWithPopup;       
         window.dbRef = { doc, setDoc, getDoc, updateDoc };
 
-        onAuthStateChanged(window.auth, async (user) => {
+    onAuthStateChanged(window.auth, async (user) => {
             if (user) {
-                console.log("RESRIDE: User Authenticated.");
+                console.log("RESRIDE: User Authenticated via Cloud Secure Gateway.");
                 const userImg = document.getElementById('nav-user-img');
                 if (user.photoURL && userImg) {
                     userImg.src = user.photoURL;
@@ -367,6 +367,8 @@
                     userImg.style.border = "2px solid #38bdf8";
                 }
                 document.getElementById('loginModal').style.display = 'none';
+                
+                // Force an immediate UI synchronization pass from the cloud profile
                 try {
                     await window.syncUserData(user.uid);
                 } catch (e) {
@@ -376,6 +378,10 @@
                 document.getElementById('loginModal').style.display = 'flex';
                 const userImg = document.getElementById('nav-user-img');
                 if (userImg) userImg.style.display = 'none';
+                
+                // Reset visual indicators to safe states on complete logout
+                const balAmtEl = document.getElementById('bal-amount');
+                if (balAmtEl) balAmtEl.innerText = "0";
             }
         });
     </script>
