@@ -10,15 +10,14 @@ const subPlaces = {
     "Midnapore": ["Kharagpur Jn (KGP)", "Digha Bus Stand"]
 };
 
-// --- CORE APPLICATION STATES ---
-let wallet = 0; 
-let points = 0;
-let rideHistory = [];
+// --- CORE APPLICATION STATES (AUTO-HYDRATED TO PREVENT RESET FAULTS) ---
+let wallet = Number(localStorage.getItem('resrideWallet')) || 0; 
+let points = Number(localStorage.getItem('resridePoints')) || 0;
+let rideHistory = JSON.stringify(localStorage.getItem('resrideHistory')) ? JSON.parse(localStorage.getItem('resrideHistory')) : [];
 let isVaultLocked = true; 
 let isRideMoving;
 let autoReceiptTimer;
 let lastTrip;
-
 // --- CLOUD VAULT HANDSHAKE ---
 const vaultRestorer = setInterval(async () => {
     if (window.auth && window.auth.currentUser) {
@@ -57,8 +56,13 @@ window.syncUserData = async function(uid) {
     points = Number(data.points);
     rideHistory = data.history || [];
 
+    // Lock fetched data straight into local memory blocks to prevent zero-neutralization
+    localStorage.setItem('resrideWallet', wallet);
+    localStorage.setItem('resridePoints', points);
+    localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
+
     isVaultLocked = false; 
-    updateWalletUI(); 
+    updateWalletUI();
 
     // =========================================================================
     // MULTI-PAGE DOM SAFEGUARDS: Clean containment to protect compiler builds
