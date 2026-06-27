@@ -18,6 +18,7 @@ let isVaultLocked = true;
 let isRideMoving;
 let autoReceiptTimer;
 let lastTrip;
+
 // --- CLOUD VAULT HANDSHAKE ---
 const vaultRestorer = setInterval(async () => {
     if (window.auth && window.auth.currentUser) {
@@ -27,6 +28,7 @@ const vaultRestorer = setInterval(async () => {
         }
     }
 }, 30000);
+
 window.syncUserData = async function(uid) {
     const user = window.auth.currentUser;
     if (user) {
@@ -45,16 +47,14 @@ window.syncUserData = async function(uid) {
     const userRef = window.dbRef.doc(window.db, "users", uid);
     let userSnap = await window.dbRef.getDoc(userRef);
 
-    // FIX: If the cloud file doesn't exist, build it natively instead of crashing out
     if (!userSnap.exists()) {
         console.log("RESRIDE_AI: Initializing new cloud ledger registry node...");
         const defaultData = {
-            wallet: 0,
-            points: 0,
+            wallet: wallet > 0 ? wallet : 0, // Preserve local wallet state if any exists
+            points: points > 0 ? points : 0,
             history: []
         };
         await window.dbRef.setDoc(userRef, defaultData);
-        // Re-fetch the newly generated instance pointer
         userSnap = await window.dbRef.getDoc(userRef);
     }
 
@@ -71,19 +71,9 @@ window.syncUserData = async function(uid) {
     localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
 
     isVaultLocked = false; 
-    updateWalletUI(); 
-
-    // Multi-page layout container protections
-    const balAmtEl = document.getElementById('bal-amount');
-    const ecoPtsEl = document.getElementById('eco-pts');
-
-    if (balAmtEl) balAmtEl.innerText = wallet;
-    if (ecoPtsEl) ecoPtsEl.innerText = points;
-
-    if (typeof renderHistory === 'function' && document.getElementById('history-list')) {
-        renderHistory();
-    }
+    window.updateWalletUI(); 
 };
+
 async function saveToCloud() {
     if (!window.auth.currentUser || isVaultLocked) return;
 
@@ -140,8 +130,8 @@ window.handleAuth = function(mode) {
             .then(async (cred) => {
                 const userRef = window.dbRef.doc(window.db, "users", cred.user.uid);
                 await window.dbRef.setDoc(userRef, {
-                    wallet: 0,
-                    points: 0,
+                    wallet: wallet > 0 ? wallet : 0,
+                    points: points > 0 ? points : 0,
                     history: []
                 });
             })
@@ -163,15 +153,25 @@ window.forgotPassword = function() {
 window.handleLogout = function() {
     if (confirm("Log out?")) {
         isVaultLocked = true;
+        localStorage.clear(); // Clear storage fully on explicit signout
         window.signOut(window.auth).then(() => location.reload());
     }
 };
 
+// CRITICAL FIX: Ensure UI always pulls from localStorage value first if global memory defaults to 0
 window.updateWalletUI = function() {
     const balAmtEl = document.getElementById('bal-amount');
     const ecoPtsEl = document.getElementById('eco-pts');
-    if (balAmtEl) balAmtEl.innerText = wallet;
-    if (ecoPtsEl) ecoPtsEl.innerText = points;
+    
+    const displayWallet = localStorage.getItem('resrideWallet') !== null ? localStorage.getItem('resrideWallet') : wallet;
+    const displayPoints = localStorage.getItem('resridePoints') !== null ? localStorage.getItem('resridePoints') : points;
+
+    if (balAmtEl) balAmtEl.innerText = displayWallet;
+    if (ecoPtsEl) ecoPtsEl.innerText = displayPoints;
+    
+    if (typeof renderHistory === 'function' && document.getElementById('history-list')) {
+        renderHistory();
+    }
 };
 
 window.updateSubPlaces = function(type) {
@@ -242,7 +242,9 @@ window.processRide = function(rideType) {
         }
     }
 
-    if (wallet < finalFare) {
+    // Pull absolute verification from storage state
+    const currentStoredWallet = Number(localStorage.getItem('resrideWallet')) || wallet;
+    if (currentStoredWallet < finalFare) {
         alert("Insufficient balance! Please recharge.");
         return;
     }
@@ -334,7 +336,7 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
 
         autoReceiptTimer = setTimeout(() => {
             if(isRideMoving) {
-                wallet -= fare;
+                wallet = (localStorage.getItem('resrideWallet') !== null ? Number(localStorage.getItem('resrideWallet')) : wallet) - fare;
                 points += (quality > 100 ? 100 : 50);
                 lastTrip.status = "Completed";
                 rideHistory.unshift({ 
@@ -346,8 +348,8 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
                 localStorage.setItem('resridePoints', points);
                 localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
                 
-                updateWalletUI();
-                renderHistory();
+                window.updateWalletUI();
+                window.syncUserData(window.auth.currentUser.uid); // Pass update trace to cloud
                 saveToCloud(); 
 
                 if (log) {
@@ -375,8 +377,12 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
 window.rechargeWallet = async () => {
     let amt = prompt("Amount (₹):");
     if (!amt || isNaN(amt)) return;
-    wallet += Number(amt);
-    updateWalletUI();
+    
+    const currentWallet = localStorage.getItem('resrideWallet') !== null ? Number(localStorage.getItem('resrideWallet')) : wallet;
+    wallet = currentWallet + Number(amt);
+    
+    localStorage.setItem('resrideWallet', wallet);
+    window.updateWalletUI();
     await saveToCloud();
 };
 
@@ -409,6 +415,7 @@ window.renderHistory = function() {
 window.clearHistory = async () => {
     if (confirm("Clear history?")) {
         rideHistory = [];
+        localStorage.setItem('resrideHistory', JSON.stringify([]));
         await saveToCloud();
         renderHistory();
     }
@@ -546,30 +553,6 @@ function triggerPopEffect(element) {
 }
 
 initializePremiumBalloons();
-// =========================================================================
-// INSTANT UI HYDRATION CORE: Prevents visual ₹0 resets during page reloads
-// =========================================================================
-(function hydrateUiImmediately() {
-    console.log("RESRIDE_CORE: Hydrating interface from secure local storage...");
-    const cachedWallet = localStorage.getItem('resrideWallet');
-    const cachedPoints = localStorage.getItem('resridePoints');
-    
-    const balAmtEl = document.getElementById('bal-amount');
-    const ecoPtsEl = document.getElementById('eco-pts');
-    
-    if (cachedWallet !== null && balAmtEl) {
-        balAmtEl.innerText = cachedWallet;
-        wallet = Number(cachedWallet); // Align local state variable
-    }
-    if (cachedPoints !== null && ecoPtsEl) {
-        ecoPtsEl.innerText = cachedPoints;
-        points = Number(cachedPoints); // Align local state variable
-    }
-    
-    if (typeof renderHistory === 'function' && document.getElementById('history-list')) {
-        renderHistory();
-    }
-})();
 
 // --- DYNAMIC CAREER PORTAL SELECTION MODAL SYSTEM ---
 window.toggleCareerModal = function() {
@@ -578,3 +561,11 @@ window.toggleCareerModal = function() {
         modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
     }
 };
+
+// =========================================================================
+// INSTANT UI HYDRATION CORE: Prevents visual ₹0 resets during page reloads
+// =========================================================================
+(function hydrateUiImmediately() {
+    console.log("RESRIDE_CORE: Hydrating interface from secure local storage...");
+    window.updateWalletUI();
+})();
