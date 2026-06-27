@@ -47,12 +47,12 @@ window.syncUserData = async function(uid) {
     const userRef = window.dbRef.doc(window.db, "users", uid);
     let userSnap = await window.dbRef.getDoc(userRef);
 
-    // FIX: Only initialize default data if the user explicitly DOES NOT exist in the database
+    // If the user document doesn't exist in Firestore at all, create it
     if (!userSnap.exists()) {
         console.log("RESRIDE_AI: Creating fresh profile ledger map node...");
         const defaultData = {
-            wallet: wallet > 0 ? wallet : 0, 
-            points: points > 0 ? points : 0,
+            wallet: 0,
+            points: 0,
             history: []
         };
         await window.dbRef.setDoc(userRef, defaultData);
@@ -61,30 +61,29 @@ window.syncUserData = async function(uid) {
 
     const data = userSnap.data();
     
-    // Core state assignment from Firestore data exclusively
-    wallet = Number(data.wallet);
-    points = Number(data.points);
+    // CRITICAL ASSIGNMENT: Pull values STRICTLY from the Firestore cloud document
+    wallet = data.wallet !== undefined ? Number(data.wallet) : 0;
+    points = data.points !== undefined ? Number(data.points) : 0;
     rideHistory = data.history || [];
 
-    // Force commit updates immediately to the browser cache memory state layer
+    // Immediately commit the cloud values into local memory blocks so home screen works
     localStorage.setItem('resrideWallet', wallet);
     localStorage.setItem('resridePoints', points);
     localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
 
     isVaultLocked = false; 
-    window.updateWalletUI(); 
+    
+    // Explicitly update the UI elements immediately with the freshly downloaded balances
+    const balAmtEl = document.getElementById('bal-amount');
+    const ecoPtsEl = document.getElementById('eco-pts');
+
+    if (balAmtEl) balAmtEl.innerText = wallet;
+    if (ecoPtsEl) ecoPtsEl.innerText = points;
+
+    if (typeof renderHistory === 'function' && document.getElementById('history-list')) {
+        renderHistory();
+    }
 };
-
-async function saveToCloud() {
-    if (!window.auth.currentUser || isVaultLocked) return;
-
-    const userRef = window.dbRef.doc(window.db, "users", window.auth.currentUser.uid);
-    await window.dbRef.updateDoc(userRef, {
-        wallet: Number(wallet),
-        points: Number(points),
-        history: rideHistory
-    });
-}
 
 // --- INTERFACE DIALOG MODALS ---
 window.toggleAuthMode = function() {
