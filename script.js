@@ -14,16 +14,22 @@ const subPlaces = {
 let wallet = Number(localStorage.getItem('resrideWallet')) || 0; 
 let points = Number(localStorage.getItem('resridePoints')) || 0;
 let rideHistory = localStorage.getItem('resrideHistory') ? JSON.parse(localStorage.getItem('resrideHistory')) : [];
-let isVaultLocked = true; // Strict lock active during layout startup configurations
-let isRideMoving = false;
+
+// GLOBAL PROTECTION MATRIX
+window.resrideState = {
+    isVaultLocked: true, // Start completely locked down
+    isDataDownloaded: false, // Explicit gate keeping track of successful downloads
+    isRideMoving: false
+};
+
 let autoReceiptTimer;
 let lastTrip;
 
 // --- CLOUD VAULT HANDSHAKE ---
 const vaultRestorer = setInterval(async () => {
     if (window.auth && window.auth.currentUser) {
-        if (!isRideMoving && !isVaultLocked) {
-            console.log("RESRIDE_AI: Cloud Vault synchronization active...");
+        if (!window.resrideState.isRideMoving && window.resrideState.isDataDownloaded) {
+            console.log("RESRIDE_AI: Background ledger sanity check...");
             await window.syncUserData(window.auth.currentUser.uid);
         }
     }
@@ -32,15 +38,15 @@ const vaultRestorer = setInterval(async () => {
 window.syncUserData = async function(uid) {
     if (!uid) return;
     
-    // Stop any outbound write operations from resetting data fields
-    isVaultLocked = true;
+    // Hard-lock writes during download execution
+    window.resrideState.isVaultLocked = true;
 
     try {
         const userRef = window.dbRef.doc(window.db, "users", uid);
         let userSnap = await window.dbRef.getDoc(userRef);
 
         if (!userSnap.exists()) {
-            console.log("RESRIDE_AI: Creating brand new cloud storage nodes...");
+            console.log("RESRIDE_AI: Creating brand new cloud document entry...");
             const defaultData = {
                 wallet: 0, 
                 points: 0,
@@ -52,18 +58,20 @@ window.syncUserData = async function(uid) {
 
         const data = userSnap.data();
         
-        // BALANCES ENFORCEMENT LAYER: Override local zero allocations natively
+        // CRITICAL PROTECTION: Read numbers strictly from Firestore cloud snapshot
         wallet = data.wallet !== undefined ? Number(data.wallet) : 0;
         points = data.points !== undefined ? Number(data.points) : 0;
         rideHistory = data.history || [];
 
-        // Commit download elements instantly to native machine cache metrics
+        // Save data safely to local cache blocks
         localStorage.setItem('resrideWallet', wallet);
         localStorage.setItem('resridePoints', points);
         localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
 
-        // Safely clear system locks
-        isVaultLocked = false;
+        // Mark download as completely successful and unlock database mutations
+        window.resrideState.isDataDownloaded = true;
+        window.resrideState.isVaultLocked = false;
+        
         window.updateWalletUI(); 
         
         const user = window.auth.currentUser;
@@ -75,15 +83,14 @@ window.syncUserData = async function(uid) {
             }
         }
     } catch (error) {
-        console.error("RESRIDE_CRITICAL: Handshake synchronization crash pipeline:", error);
-        isVaultLocked = false;
+        console.error("RESRIDE_CRITICAL: Handshake sync failure:", error);
     }
 };
 
 async function saveToCloud() {
-    // SECURITY GUARD: Stop operations if balance tracks have been dropped or if state is locked
-    if (!window.auth.currentUser || isVaultLocked) {
-        console.warn("RESRIDE_AI: System writes are locked down. Overwrite sequence blocked.");
+    // ABSOLUTE PROTECTION GATE: If data hasn't been explicitly downloaded yet, or vault is locked, FORBID database overrides!
+    if (!window.auth.currentUser || window.resrideState.isVaultLocked || !window.resrideState.isDataDownloaded) {
+        console.warn("RESRIDE_AI: Database save blocked to prevent structural corruption.");
         return;
     }
     
@@ -94,9 +101,9 @@ async function saveToCloud() {
             points: Number(points),
             history: rideHistory
         });
-        console.log("RESRIDE_AI: Remote ledger tracking node saved successfully.");
+        console.log("RESRIDE_AI: Cloud save successful.");
     } catch (e) {
-        console.error("Cloud document database stream write fault logs:", e);
+        console.error("Cloud document write failure:", e);
     }
 }
 
@@ -109,13 +116,13 @@ window.toggleAuthMode = function() {
 };
 
 window.handleGoogleLogin = function() {
-    isVaultLocked = true; // Lock down vault registers instantly before showing popup flow
+    window.resrideState.isVaultLocked = true;
+    window.resrideState.isDataDownloaded = false; // Reset download flag before fresh auth loop
     window.signInWithPopup(window.auth, window.googleProvider)
         .then(async (cred) => {
             await window.syncUserData(cred.user.uid);
         })
         .catch((error) => {
-            isVaultLocked = false;
             alert("Google Login Failed: " + error.message);
         });
 };
@@ -130,7 +137,8 @@ window.handleAuth = function(mode) {
     
     btn.disabled = true;
     btn.innerText = "Processing...";
-    isVaultLocked = true;
+    window.resrideState.isVaultLocked = true;
+    window.resrideState.isDataDownloaded = false;
 
     if(mode === 'login') {
         window.signInWithEmailAndPassword(window.auth, email, pass)
@@ -138,7 +146,6 @@ window.handleAuth = function(mode) {
                 await window.syncUserData(cred.user.uid);
             })
             .catch(err => {
-                isVaultLocked = false;
                 alert("Login Error: " + err.message);
                 btn.disabled = false;
                 btn.innerText = originalText;
@@ -148,11 +155,11 @@ window.handleAuth = function(mode) {
             .then(async (cred) => {
                 const userRef = window.dbRef.doc(window.db, "users", cred.user.uid);
                 await window.dbRef.setDoc(userRef, { wallet: 0, points: 0, history: [] });
-                isVaultLocked = false;
+                window.resrideState.isDataDownloaded = true;
+                window.resrideState.isVaultLocked = false;
                 await window.syncUserData(cred.user.uid);
             })
             .catch(err => {
-                isVaultLocked = false;
                 alert("Registration Error: " + err.message);
                 btn.disabled = false;
                 btn.innerText = originalText;
@@ -169,7 +176,8 @@ window.forgotPassword = function() {
 
 window.handleLogout = function() {
     if (confirm("Log out from RESRIDE?")) {
-        isVaultLocked = true; // Permanently freeze transmission channels
+        window.resrideState.isVaultLocked = true;
+        window.resrideState.isDataDownloaded = false;
         localStorage.clear(); 
         wallet = 0;           
         points = 0;
@@ -310,7 +318,7 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
     if (lblStart) lblStart.innerText = start;
     if (lblEnd) lblEnd.innerText = end;
 
-    isRideMoving = true;
+    window.resrideState.isRideMoving = true;
     clearTimeout(autoReceiptTimer);
 
     if (log) {
@@ -335,7 +343,7 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
     }
 
     setTimeout(() => {
-        if(!isRideMoving) return; 
+        if(!window.resrideState.isRideMoving) return; 
 
         if (car) {
             car.style.transition = 'left 5s linear';
@@ -348,7 +356,7 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
         }
 
         autoReceiptTimer = setTimeout(() => {
-            if(isRideMoving) {
+            if(window.resrideState.isRideMoving) {
                 wallet -= fare;
                 points += (quality > 100 ? 100 : 50);
                 lastTrip.status = "Completed";
@@ -372,7 +380,7 @@ function startRideSimulation(type, fare, start, end, timing, startTime, quality)
                     </div>` + log.innerHTML;
                 }
                 
-                isRideMoving = false;
+                window.resrideState.isRideMoving = false;
                 if (car) car.classList.remove('vehicle-moving');
             }
         }, 5000); 
@@ -394,13 +402,14 @@ window.rechargeWallet = async () => {
     localStorage.setItem('resrideWallet', wallet);
     window.updateWalletUI();
     
-    isVaultLocked = false; 
+    window.resrideState.isVaultLocked = false; 
+    window.resrideState.isDataDownloaded = true; // Set to true to allow custom recharges to write immediately
     await saveToCloud();
 };
 
 window.cancelRide = function() {
-    if (!isRideMoving) return;
-    isRideMoving = false;
+    if (!window.resrideState.isRideMoving) return;
+    window.resrideState.isRideMoving = false;
     clearTimeout(autoReceiptTimer);
     const car = document.getElementById('vehicle-icon');
     const log = document.getElementById('system-log');
@@ -549,6 +558,6 @@ window.toggleCareerModal = function() {
 };
 
 (function hydrateUiImmediately() {
-    console.log("RESRIDE_CORE: Initializing UI schema templates...");
+    console.log("RESRIDE_CORE: Initializing components...");
     window.updateWalletUI();
 })();
