@@ -357,9 +357,10 @@
         window.dbRef = { doc, setDoc, getDoc, updateDoc };
 
 // PROTECTED AUTHENTICATION SNAPSHOT HANDSHAKE
+  // PURE DATABASE FORCED AUTHENTICATION GATEWAY 
         onAuthStateChanged(window.auth, async (user) => {
             if (user) {
-                console.log("RESRIDE: User Authenticated via Cloud Secure Gateway. UID:", user.uid);
+                console.log("RESRIDE_AUTH: Session active for UID:", user.uid);
                 
                 const userImg = document.getElementById('nav-user-img');
                 if (user.photoURL && userImg) {
@@ -369,25 +370,25 @@
                     userImg.style.border = "2px solid #38bdf8";
                 }
                 
-                // CRITICAL FIX: Explicitly freeze vault tracking to stop accidental 0 overwrites
-                window.isVaultLocked = true; 
-                
                 document.getElementById('loginModal').style.display = 'none';
                 
-                try {
-                    // Force a fresh database download BEFORE the UI or any background loops can save anything
+                // CRITICAL FORCED STEP: If script.js hasn't unlocked yet, wait 300ms then force trigger
+                if (typeof window.syncUserData === 'function') {
                     await window.syncUserData(user.uid);
-                } catch (e) {
-                    console.error("Fresh login data download failed:", e);
+                } else {
+                    console.warn("RESRIDE_AUTH: script.js loading asynchronous pipeline delay. Retrying handshake...");
+                    setTimeout(async () => {
+                        if (typeof window.syncUserData === 'function') {
+                            await window.syncUserData(user.uid);
+                        }
+                    }, 500);
                 }
             } else {
-                console.log("RESRIDE: No active session. Displaying Auth Gate sanctuary...");
+                console.log("RESRIDE_AUTH: Clear routing active. Safe state locked.");
                 document.getElementById('loginModal').style.display = 'flex';
-                
                 const userImg = document.getElementById('nav-user-img');
                 if (userImg) userImg.style.display = 'none';
                 
-                // Clear out interface visuals on explicit sign out
                 const balAmtEl = document.getElementById('bal-amount');
                 if (balAmtEl) balAmtEl.innerText = "0";
             }
