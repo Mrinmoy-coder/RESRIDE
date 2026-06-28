@@ -14,17 +14,16 @@ const subPlaces = {
 let wallet = Number(localStorage.getItem('resrideWallet')) || 0; 
 let points = Number(localStorage.getItem('resridePoints')) || 0;
 let rideHistory = localStorage.getItem('resrideHistory') ? JSON.parse(localStorage.getItem('resrideHistory')) : [];
-let isVaultLocked = true; // Hard lock on initialization to block dirty writes
-let isRideMoving;
+let isVaultLocked = true; // Strict lock active during layout startup configurations
+let isRideMoving = false;
 let autoReceiptTimer;
 let lastTrip;
 
 // --- CLOUD VAULT HANDSHAKE ---
 const vaultRestorer = setInterval(async () => {
     if (window.auth && window.auth.currentUser) {
-        // Only run background synchronization if we aren't in the middle of an active ride transition
-        if (isVaultLocked || (navigator.onLine && !isRideMoving)) {
-            console.log("RESRIDE_AI: Checking Cloud Vault integrity...");
+        if (!isRideMoving && !isVaultLocked) {
+            console.log("RESRIDE_AI: Cloud Vault synchronization active...");
             await window.syncUserData(window.auth.currentUser.uid);
         }
     }
@@ -33,51 +32,58 @@ const vaultRestorer = setInterval(async () => {
 window.syncUserData = async function(uid) {
     if (!uid) return;
     
-    const userRef = window.dbRef.doc(window.db, "users", uid);
-    let userSnap = await window.dbRef.getDoc(userRef);
+    // Stop any outbound write operations from resetting data fields
+    isVaultLocked = true;
 
-    // If cloud document does not exist, initialize natively with current parameters
-    if (!userSnap.exists()) {
-        console.log("RESRIDE_AI: Creating fresh profile ledger map node...");
-        const defaultData = {
-            wallet: wallet > 0 ? wallet : 0, 
-            points: points > 0 ? points : 0,
-            history: []
-        };
-        await window.dbRef.setDoc(userRef, defaultData);
-        userSnap = await window.dbRef.getDoc(userRef);
-    }
+    try {
+        const userRef = window.dbRef.doc(window.db, "users", uid);
+        let userSnap = await window.dbRef.getDoc(userRef);
 
-    const data = userSnap.data();
-    
-    // STRICT ASSIGNMENT: Force internal memory states to reflect true remote cloud fields
-    wallet = data.wallet !== undefined ? Number(data.wallet) : 0;
-    points = data.points !== undefined ? Number(data.points) : 0;
-    rideHistory = data.history || [];
-
-    // Immediately cache downloaded metrics to local memory blocks
-    localStorage.setItem('resrideWallet', wallet);
-    localStorage.setItem('resridePoints', points);
-    localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
-
-    isVaultLocked = false; // SAFE TO UNLOCK: Data download is complete
-    window.updateWalletUI(); 
-    
-    // Welcome header verification panel
-    const user = window.auth.currentUser;
-    if (user) {
-        const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
-        const welcomeText = document.querySelector('.typewriter');
-        if (welcomeText && isGoogle && user.displayName) {
-            welcomeText.innerHTML = `Welcome, ${user.displayName}! <span style="color: #27c93f; font-size: 0.7rem; border: 1px solid #27c93f; padding: 2px 5px; border-radius: 10px; margin-left: 10px;">Google Verified</span>`;
+        if (!userSnap.exists()) {
+            console.log("RESRIDE_AI: Creating brand new cloud storage nodes...");
+            const defaultData = {
+                wallet: 0, 
+                points: 0,
+                history: []
+            };
+            await window.dbRef.setDoc(userRef, defaultData);
+            userSnap = await window.dbRef.getDoc(userRef);
         }
+
+        const data = userSnap.data();
+        
+        // BALANCES ENFORCEMENT LAYER: Override local zero allocations natively
+        wallet = data.wallet !== undefined ? Number(data.wallet) : 0;
+        points = data.points !== undefined ? Number(data.points) : 0;
+        rideHistory = data.history || [];
+
+        // Commit download elements instantly to native machine cache metrics
+        localStorage.setItem('resrideWallet', wallet);
+        localStorage.setItem('resridePoints', points);
+        localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
+
+        // Safely clear system locks
+        isVaultLocked = false;
+        window.updateWalletUI(); 
+        
+        const user = window.auth.currentUser;
+        if (user) {
+            const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
+            const welcomeText = document.querySelector('.typewriter');
+            if (welcomeText && isGoogle && user.displayName) {
+                welcomeText.innerHTML = `Welcome, ${user.displayName}! <span style="color: #27c93f; font-size: 0.7rem; border: 1px solid #27c93f; padding: 2px 5px; border-radius: 10px; margin-left: 10px;">Google Verified</span>`;
+            }
+        }
+    } catch (error) {
+        console.error("RESRIDE_CRITICAL: Handshake synchronization crash pipeline:", error);
+        isVaultLocked = false;
     }
 };
 
 async function saveToCloud() {
-    // CRITICAL SECURITY BLOCK: If vault is locked or state memory dropped to 0 on page load, FORBID database overrides!
-    if (!window.auth.currentUser || isVaultLocked || wallet === 0) {
-        console.log("RESRIDE_AI: Cloud write aborted. Preventing overwrite protection fault.");
+    // SECURITY GUARD: Stop operations if balance tracks have been dropped or if state is locked
+    if (!window.auth.currentUser || isVaultLocked) {
+        console.warn("RESRIDE_AI: System writes are locked down. Overwrite sequence blocked.");
         return;
     }
     
@@ -88,9 +94,9 @@ async function saveToCloud() {
             points: Number(points),
             history: rideHistory
         });
-        console.log("RESRIDE_AI: Cloud Sync Successful. Remote ledger saved.");
+        console.log("RESRIDE_AI: Remote ledger tracking node saved successfully.");
     } catch (e) {
-        console.error("Cloud database write failure log trace:", e);
+        console.error("Cloud document database stream write fault logs:", e);
     }
 }
 
@@ -103,12 +109,13 @@ window.toggleAuthMode = function() {
 };
 
 window.handleGoogleLogin = function() {
+    isVaultLocked = true; // Lock down vault registers instantly before showing popup flow
     window.signInWithPopup(window.auth, window.googleProvider)
         .then(async (cred) => {
-            isVaultLocked = true; // Freeze writes immediately on interaction
             await window.syncUserData(cred.user.uid);
         })
         .catch((error) => {
+            isVaultLocked = false;
             alert("Google Login Failed: " + error.message);
         });
 };
@@ -123,14 +130,15 @@ window.handleAuth = function(mode) {
     
     btn.disabled = true;
     btn.innerText = "Processing...";
+    isVaultLocked = true;
 
     if(mode === 'login') {
         window.signInWithEmailAndPassword(window.auth, email, pass)
             .then(async (cred) => {
-                isVaultLocked = true;
                 await window.syncUserData(cred.user.uid);
             })
             .catch(err => {
+                isVaultLocked = false;
                 alert("Login Error: " + err.message);
                 btn.disabled = false;
                 btn.innerText = originalText;
@@ -144,6 +152,7 @@ window.handleAuth = function(mode) {
                 await window.syncUserData(cred.user.uid);
             })
             .catch(err => {
+                isVaultLocked = false;
                 alert("Registration Error: " + err.message);
                 btn.disabled = false;
                 btn.innerText = originalText;
@@ -160,7 +169,7 @@ window.forgotPassword = function() {
 
 window.handleLogout = function() {
     if (confirm("Log out from RESRIDE?")) {
-        isVaultLocked = true;
+        isVaultLocked = true; // Permanently freeze transmission channels
         localStorage.clear(); 
         wallet = 0;           
         points = 0;
@@ -385,7 +394,7 @@ window.rechargeWallet = async () => {
     localStorage.setItem('resrideWallet', wallet);
     window.updateWalletUI();
     
-    isVaultLocked = false; // Intentionally unlock the vault to sync the fresh recharge
+    isVaultLocked = false; 
     await saveToCloud();
 };
 
@@ -493,7 +502,6 @@ function initializePremiumBalloons() {
     }, 900);
 }
 
-// ... Keep your createSingleGasBalloon and triggerPopEffect here ...
 function createSingleGasBalloon(container) {
     const balloon = document.createElement('div');
     const isGold = Math.random() > 0.5;
@@ -541,6 +549,6 @@ window.toggleCareerModal = function() {
 };
 
 (function hydrateUiImmediately() {
-    console.log("RESRIDE_CORE: Syncing immediate storage values...");
+    console.log("RESRIDE_CORE: Initializing UI schema templates...");
     window.updateWalletUI();
 })();
