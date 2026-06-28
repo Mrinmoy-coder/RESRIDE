@@ -38,42 +38,45 @@ const vaultRestorer = setInterval(async () => {
 window.syncUserData = async function(uid) {
     if (!uid) return;
     
-    // Hard-lock writes during download execution
-    window.resrideState.isVaultLocked = true;
+    // Explicit system-wide lock down to secure background saves
+    window.resrideState = {
+        isVaultLocked: true,
+        isDataDownloaded: false,
+        isRideMoving: false
+    };
+
+    console.log("RESRIDE_CORE: Running targeted Firebase database extraction pass for:", uid);
 
     try {
         const userRef = window.dbRef.doc(window.db, "users", uid);
         let userSnap = await window.dbRef.getDoc(userRef);
 
         if (!userSnap.exists()) {
-            console.log("RESRIDE_AI: Creating brand new cloud document entry...");
-            const defaultData = {
-                wallet: 0, 
-                points: 0,
-                history: []
-            };
+            console.log("RESRIDE_AI: Cloud identity missing. Setting safe zero profile root...");
+            const defaultData = { wallet: 0, points: 0, history: [] };
             await window.dbRef.setDoc(userRef, defaultData);
             userSnap = await window.dbRef.getDoc(userRef);
         }
 
         const data = userSnap.data();
         
-        // CRITICAL PROTECTION: Read numbers strictly from Firestore cloud snapshot
+        // PURE DATABASE OVERRIDE VALUES
         wallet = data.wallet !== undefined ? Number(data.wallet) : 0;
         points = data.points !== undefined ? Number(data.points) : 0;
         rideHistory = data.history || [];
 
-        // Save data safely to local cache blocks
+        // Save download straight into hardware memory track
         localStorage.setItem('resrideWallet', wallet);
         localStorage.setItem('resridePoints', points);
         localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
 
-        // Mark download as completely successful and unlock database mutations
+        // Unlock system updates safely
         window.resrideState.isDataDownloaded = true;
         window.resrideState.isVaultLocked = false;
         
         window.updateWalletUI(); 
         
+        // Explicitly update Typewriter tracking layout natively right here
         const user = window.auth.currentUser;
         if (user) {
             const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
@@ -83,7 +86,8 @@ window.syncUserData = async function(uid) {
             }
         }
     } catch (error) {
-        console.error("RESRIDE_CRITICAL: Handshake sync failure:", error);
+        console.error("RESRIDE_CORE: Handshake sync failure:", error);
+        window.resrideState.isVaultLocked = false;
     }
 };
 
