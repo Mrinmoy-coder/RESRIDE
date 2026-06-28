@@ -14,7 +14,7 @@ const subPlaces = {
 let wallet = Number(localStorage.getItem('resrideWallet')) || 0; 
 let points = Number(localStorage.getItem('resridePoints')) || 0;
 let rideHistory = localStorage.getItem('resrideHistory') ? JSON.parse(localStorage.getItem('resrideHistory')) : [];
-let isVaultLocked = true; 
+let isVaultLocked = true; // Hard lock on initialization to block dirty writes
 let isRideMoving;
 let autoReceiptTimer;
 let lastTrip;
@@ -22,6 +22,7 @@ let lastTrip;
 // --- CLOUD VAULT HANDSHAKE ---
 const vaultRestorer = setInterval(async () => {
     if (window.auth && window.auth.currentUser) {
+        // Only run background synchronization if we aren't in the middle of an active ride transition
         if (isVaultLocked || (navigator.onLine && !isRideMoving)) {
             console.log("RESRIDE_AI: Checking Cloud Vault integrity...");
             await window.syncUserData(window.auth.currentUser.uid);
@@ -35,7 +36,7 @@ window.syncUserData = async function(uid) {
     const userRef = window.dbRef.doc(window.db, "users", uid);
     let userSnap = await window.dbRef.getDoc(userRef);
 
-    // If cloud document does not exist, initialize natively with current cache parameters
+    // If cloud document does not exist, initialize natively with current parameters
     if (!userSnap.exists()) {
         console.log("RESRIDE_AI: Creating fresh profile ledger map node...");
         const defaultData = {
@@ -49,20 +50,20 @@ window.syncUserData = async function(uid) {
 
     const data = userSnap.data();
     
-    // STRICT ALIGNMENT: Read absolute numbers cleanly from Cloud Firebase console
+    // STRICT ASSIGNMENT: Force internal memory states to reflect true remote cloud fields
     wallet = data.wallet !== undefined ? Number(data.wallet) : 0;
     points = data.points !== undefined ? Number(data.points) : 0;
     rideHistory = data.history || [];
 
-    // Immediately map to local system blocks
+    // Immediately cache downloaded metrics to local memory blocks
     localStorage.setItem('resrideWallet', wallet);
     localStorage.setItem('resridePoints', points);
     localStorage.setItem('resrideHistory', JSON.stringify(rideHistory));
 
-    isVaultLocked = false; 
+    isVaultLocked = false; // SAFE TO UNLOCK: Data download is complete
     window.updateWalletUI(); 
     
-    // Welcome text handling safely
+    // Welcome header verification panel
     const user = window.auth.currentUser;
     if (user) {
         const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
@@ -74,7 +75,12 @@ window.syncUserData = async function(uid) {
 };
 
 async function saveToCloud() {
-    if (!window.auth.currentUser || isVaultLocked) return;
+    // CRITICAL SECURITY BLOCK: If vault is locked or state memory dropped to 0 on page load, FORBID database overrides!
+    if (!window.auth.currentUser || isVaultLocked || wallet === 0) {
+        console.log("RESRIDE_AI: Cloud write aborted. Preventing overwrite protection fault.");
+        return;
+    }
+    
     try {
         const userRef = window.dbRef.doc(window.db, "users", window.auth.currentUser.uid);
         await window.dbRef.updateDoc(userRef, {
@@ -82,9 +88,9 @@ async function saveToCloud() {
             points: Number(points),
             history: rideHistory
         });
-        console.log("RESRIDE_AI: Cloud Sync Successful ledger updated safely.");
+        console.log("RESRIDE_AI: Cloud Sync Successful. Remote ledger saved.");
     } catch (e) {
-        console.error("Cloud tracking persistence layout write error:", e);
+        console.error("Cloud database write failure log trace:", e);
     }
 }
 
@@ -99,7 +105,7 @@ window.toggleAuthMode = function() {
 window.handleGoogleLogin = function() {
     window.signInWithPopup(window.auth, window.googleProvider)
         .then(async (cred) => {
-            isVaultLocked = false; 
+            isVaultLocked = true; // Freeze writes immediately on interaction
             await window.syncUserData(cred.user.uid);
         })
         .catch((error) => {
@@ -121,7 +127,7 @@ window.handleAuth = function(mode) {
     if(mode === 'login') {
         window.signInWithEmailAndPassword(window.auth, email, pass)
             .then(async (cred) => {
-                isVaultLocked = false;
+                isVaultLocked = true;
                 await window.syncUserData(cred.user.uid);
             })
             .catch(err => {
@@ -153,7 +159,7 @@ window.forgotPassword = function() {
 };
 
 window.handleLogout = function() {
-    if (confirm("Log out?")) {
+    if (confirm("Log out from RESRIDE?")) {
         isVaultLocked = true;
         localStorage.clear(); 
         wallet = 0;           
@@ -379,8 +385,7 @@ window.rechargeWallet = async () => {
     localStorage.setItem('resrideWallet', wallet);
     window.updateWalletUI();
     
-    // Explicitly enforce vault unlocking rules to allow write access pass
-    isVaultLocked = false; 
+    isVaultLocked = false; // Intentionally unlock the vault to sync the fresh recharge
     await saveToCloud();
 };
 
@@ -488,6 +493,7 @@ function initializePremiumBalloons() {
     }, 900);
 }
 
+// ... Keep your createSingleGasBalloon and triggerPopEffect here ...
 function createSingleGasBalloon(container) {
     const balloon = document.createElement('div');
     const isGold = Math.random() > 0.5;
