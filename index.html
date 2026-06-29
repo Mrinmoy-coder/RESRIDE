@@ -358,9 +358,10 @@
 
 // PROTECTED AUTHENTICATION SNAPSHOT HANDSHAKE
   // PURE DATABASE FORCED AUTHENTICATION GATEWAY 
+        // PURE SECURITY HANDSHAKE FOR INITIAL AUTHS
         onAuthStateChanged(window.auth, async (user) => {
             if (user) {
-                console.log("RESRIDE_AUTH: Session active for UID:", user.uid);
+                console.log("RESRIDE_AUTH: Active secure session verified for token node:", user.uid);
                 
                 const userImg = document.getElementById('nav-user-img');
                 if (user.photoURL && userImg) {
@@ -372,20 +373,26 @@
                 
                 document.getElementById('loginModal').style.display = 'none';
                 
-                // CRITICAL FORCED STEP: If script.js hasn't unlocked yet, wait 300ms then force trigger
+                // FORCE SEQUENCE WRAPPER: Delays background loops until data download settles
+                if (window.resrideState) {
+                    window.resrideState.isVaultLocked = true;
+                    window.resrideState.isDataDownloaded = false;
+                }
+
                 if (typeof window.syncUserData === 'function') {
                     await window.syncUserData(user.uid);
                 } else {
-                    console.warn("RESRIDE_AUTH: script.js loading asynchronous pipeline delay. Retrying handshake...");
+                    console.warn("RESRIDE_AUTH: Script modules compiling... establishing fallback delay hooks.");
                     setTimeout(async () => {
                         if (typeof window.syncUserData === 'function') {
                             await window.syncUserData(user.uid);
                         }
-                    }, 500);
+                    }, 600); // 600ms network interface gap protection
                 }
             } else {
-                console.log("RESRIDE_AUTH: Clear routing active. Safe state locked.");
+                console.log("RESRIDE_AUTH: Session disconnected. Displaying login panel sanctuary.");
                 document.getElementById('loginModal').style.display = 'flex';
+                
                 const userImg = document.getElementById('nav-user-img');
                 if (userImg) userImg.style.display = 'none';
                 
